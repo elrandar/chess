@@ -1,6 +1,7 @@
 #include "chessboard-representation.hh"
 #include "piece-type.hh"
 
+#include <cstdlib>
 #include <vector>
 #include <utility>
 #include <optional>
@@ -30,95 +31,98 @@ namespace board
 
     void Chessboard_rpr::print()
     {
-        std::vector<std::optional<std::pair<PieceType, Color>>> board(64);
-
         std::string output;
 
         for (int i = 63; i >= 0; i--)
         {
             if ((white_king >> i) & 1U)
-            {
-                auto tuple = std::pair(PieceType::KING, Color::WHITE);
-                board.at(i) = tuple;
-                output += "K";
-            }
+                output += "K ";
             else if ((white_queen >> i) & 1U)
-            {
-                auto tuple = std::pair(PieceType::QUEEN, Color::WHITE);
-                board.at(i) = tuple;
-                output += "Q";
-            }
+                output += "Q ";
             else if ((white_bishop >> i) & 1U)
-            {
-                auto tuple = std::pair(PieceType::BISHOP, Color::WHITE);
-                board.at(i) = tuple;
-                output += "B";
-            }
+                output += "B ";
             else if ((white_rook >> i) & 1U)
-            {
-                auto tuple = std::pair(PieceType::ROOK, Color::WHITE);
-                board.at(i) = tuple;
-                output += "R";
-            }
+                output += "R ";
             else if ((white_pawn >> i) & 1U)
-            {
-                auto tuple = std::pair(PieceType::ROOK, Color::WHITE);
-                board.at(i) = tuple;
-                output += "P";
-            }
+                output += "P ";
             else if ((white_knight >> i) & 1U)
-            {
-                auto tuple = std::pair(PieceType::ROOK, Color::WHITE);
-                board.at(i) = tuple;
-                output += "C";
-            }
+                output += "C ";
             else if ((black_king >> i) & 1U)
-            {
-                auto tuple = std::pair(PieceType::KING, Color::BLACK);
-                board.at(i) = tuple;
-                output += "k";
-            }
+                output += "k ";
             else if ((black_queen >> i) & 1U)
-            {
-                auto tuple = std::pair(PieceType::QUEEN, Color::BLACK);
-                board.at(i) = tuple;
-                output += "q";
-            }
+                output += "q ";
             else if ((black_bishop >> i) & 1U)
-            {
-                auto tuple = std::pair(PieceType::BISHOP, Color::BLACK);
-                board.at(i) = tuple;
-                output += "b";
-            }
+                output += "b ";
             else if ((black_rook >> i) & 1U)
-            {
-                auto tuple = std::pair(PieceType::ROOK, Color::BLACK);
-                board.at(i) = tuple;
-                output += "r";
-            }
+                output += "r ";
             else if ((black_pawn >> i) & 1U)
-            {
-                auto tuple = std::pair(PieceType::ROOK, Color::BLACK);
-                board.at(i) = tuple;
-                output += "p";
-            }
+                output += "p ";
             else if ((black_knight >> i) & 1U)
-            {
-                auto tuple = std::pair(PieceType::ROOK, Color::BLACK);
-                board.at(i) = tuple;
-                output += "c";
-            }
+                output += "c ";
             else
-            {
-                board.at(i) = std::nullopt;
-                output += " ";
-            }
+                output += "  ";
 
             if (i % 8 == 0)
-            {
                 output += "\n";
-            }
         }
         std::cout << output;
+    }
+
+    void Chessboard_rpr::alter_rpr(Move move)
+    {
+        auto dest = move.dest_pos_get();
+        auto src = move.start_pos_get();
+
+        auto piece = at(src);
+        auto capture = at(dest);
+
+        unsigned int source_int = ((int) src.file_get() + 1) *
+            (abs((int) src.rank_get() - 8)) - 1;
+        unsigned int source_int = ((int) src.file_get() + 1) *
+            (abs((int) src.rank_get() - 8)) - 1;
+
+        if (move.piece_get() == PieceType::BISHOP)
+    }
+
+    void Chessboard_rpr::update_piece(PieceType type, Color color,
+            int src, int dst)
+    {
+        if (type == PieceType::KING)
+        {
+            if (color == Color::BLACK)
+        }
+    }
+
+    std::optional<std::pair<PieceType, Color>> Chessboard_rpr::at(Position pos)
+    {
+        unsigned int pos_int = ((int) pos.file_get() + 1) *
+            (abs((int) pos.rank_get() - 8)) - 1;
+
+        if ((white_king >> pos_int) & 1U)
+            return std::pair<PieceType, Color>(PieceType::KING, Color::WHITE);
+        else if ((white_queen >> pos_int) & 1U)
+            return std::pair<PieceType, Color>(PieceType::QUEEN, Color::WHITE);
+        else if ((white_bishop >> pos_int) & 1U)
+            return std::pair<PieceType, Color>(PieceType::BISHOP, Color::WHITE);
+        else if ((white_rook >> pos_int) & 1U)
+            return std::pair<PieceType, Color>(PieceType::ROOK, Color::WHITE);
+        else if ((white_pawn >> pos_int) & 1U)
+            return std::pair<PieceType, Color>(PieceType::PAWN, Color::WHITE);
+        else if ((white_knight >> pos_int) & 1U)
+            return std::pair<PieceType, Color>(PieceType::KNIGHT, Color::WHITE);
+        else if ((black_king >> pos_int) & 1U)
+            return std::pair<PieceType, Color>(PieceType::KING, Color::BLACK);
+        else if ((black_queen >> pos_int) & 1U)
+            return std::pair<PieceType, Color>(PieceType::QUEEN, Color::BLACK);
+        else if ((black_bishop >> pos_int) & 1U)
+            return std::pair<PieceType, Color>(PieceType::BISHOP, Color::BLACK);
+        else if ((black_rook >> pos_int) & 1U)
+            return std::pair<PieceType, Color>(PieceType::ROOK, Color::BLACK);
+        else if ((black_pawn >> pos_int) & 1U)
+            return std::pair<PieceType, Color>(PieceType::PAWN, Color::BLACK);
+        else if ((black_knight >> pos_int) & 1U)
+            return std::pair<PieceType, Color>(PieceType::KNIGHT, Color::BLACK);
+        else
+            return std::nullopt;
     }
 }

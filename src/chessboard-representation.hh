@@ -23,10 +23,13 @@ namespace board
         BitBoard black_bishop;
         BitBoard black_pawn;
         BitBoard black_knight;
+
+        void update_piece(PieceType type, Color color, int src, int dst);
     public:
         Chessboard_rpr();
         Chessboard_rpr(Move move);
         void alter_rpr(Move move);
         void print();
+        std::optional<std::pair<PieceType, Color>> at(Position pos);
     };
 }

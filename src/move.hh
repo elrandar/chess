@@ -20,5 +20,8 @@ namespace board
 
     public:
         PieceType piece_get();
+        Position start_pos_get();
+        Position dest_pos_get();
+        PieceType capture_get();
     };
 } // namespace board

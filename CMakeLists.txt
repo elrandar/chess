@@ -16,7 +16,7 @@ set(SRC_ENGINE
 
 # Directories containing headers must be specified in the include_directories()
 include_directories(
-    ""
+    "src"
 )
 
 # Put your test files here
@@ -69,7 +69,7 @@ if(GTest_FOUND)
   include(GoogleTest)
 
   add_executable(tests)
-  target_sources(tests PRIVATE 
+  target_sources(tests PRIVATE
     ${SRC_GTEST}
     ${SRC_ENGINE}
   )
