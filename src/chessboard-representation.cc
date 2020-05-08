@@ -90,6 +90,7 @@ namespace board
         if (type == PieceType::KING)
         {
             if (color == Color::BLACK)
+
         }
     }
 

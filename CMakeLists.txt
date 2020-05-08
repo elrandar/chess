@@ -16,7 +16,7 @@ set(SRC_ENGINE
 
 # Directories containing headers must be specified in the include_directories()
 include_directories(
-    "src"
+    ""
 )
 
 # Put your test files here
@@ -41,7 +41,7 @@ endif()
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Werror -Wextra -pedantic")
 set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} ${OPT_FLAGS}")
-set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Og -g3 -fsanitize=address")
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -O0 -g3 -fsanitize=address")
 
 # LIBRARIES
 if (CMAKE_BUILD_TYPE STREQUAL "Release")
@@ -53,11 +53,7 @@ set(LIBRARIES Boost::system Boost::program_options ${CMAKE_DL_LIBS})
 # CHESSENGINE
 add_executable(chessengine)
 target_sources(chessengine PRIVATE "src/main.cc" ${SRC_ENGINE})
-if (CMAKE_BUILD_TYPE STREQUAL "Release")
-    target_link_libraries(chessengine PRIVATE ${LIBRARIES} -static)
-else()
-    target_link_libraries(chessengine PRIVATE ${LIBRARIES})
-endif()
+target_link_libraries(chessengine PRIVATE ${LIBRARIES})
 
 
 # TESTS
@@ -69,10 +65,17 @@ if(GTest_FOUND)
   include(GoogleTest)
 
   add_executable(tests)
-  target_sources(tests PRIVATE
+  target_sources(tests PRIVATE 
     ${SRC_GTEST}
     ${SRC_ENGINE}
   )
   target_compile_options(tests PRIVATE -Wall -Werror -Wextra)
   target_link_libraries(tests PRIVATE GTest::GTest ${LIBRARIES})
+endif()
+
+# STATIC TARGET
+if (CMAKE_BUILD_TYPE STREQUAL "Release")
+    add_executable(chessengine-static)
+    target_sources(chessengine-static PRIVATE "src/main.cc" ${SRC_ENGINE})
+    target_link_libraries(chessengine-static PRIVATE ${LIBRARIES} -static)
 endif()
