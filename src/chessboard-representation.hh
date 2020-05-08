@@ -1,7 +1,9 @@
 #pragma once
 
 #include <cstdint>
+#include <vector>
 #include "move.hh"
+#include "color.hh"
 
 namespace board
 {
@@ -10,21 +12,7 @@ namespace board
     class Chessboard_rpr
     {
     private:
-        BitBoard white_king;
-        BitBoard white_queen;
-        BitBoard white_rook;
-        BitBoard white_bishop;
-        BitBoard white_pawn;
-        BitBoard white_knight;
-
-        BitBoard black_king;
-        BitBoard black_queen;
-        BitBoard black_rook;
-        BitBoard black_bishop;
-        BitBoard black_pawn;
-        BitBoard black_knight;
-
-        void update_piece(PieceType type, Color color, int src, int dst);
+        std::vector<BitBoard> boards;
     public:
         Chessboard_rpr();
         Chessboard_rpr(Move move);

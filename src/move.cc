@@ -6,10 +6,6 @@ namespace board
     {
         return piece_;
     }
-    PieceType Move::capture_get()
-    {
-        return capture_;
-    }
     Position Move::start_pos_get()
     {
         return start_pos_;
@@ -18,4 +14,11 @@ namespace board
     {
         return dest_pos_;
     }
+
+    Move::Move(Position start, Position dest, PieceType pieceType)
+        : start_pos_(start)
+        , dest_pos_(dest)
+        , piece_(pieceType)
+    {}
+
 }

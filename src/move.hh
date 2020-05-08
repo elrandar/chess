@@ -19,9 +19,9 @@ namespace board
         bool en_passant_;
 
     public:
+        Move(Position start, Position dest, PieceType pieceType);
         PieceType piece_get();
         Position start_pos_get();
         Position dest_pos_get();
-        PieceType capture_get();
     };
 } // namespace board

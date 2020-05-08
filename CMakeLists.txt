@@ -11,12 +11,12 @@ set(OPT_FLAGS
 # SOURCES : FIXME
 # Put all your sources here EXCEPT YOUR MAIN.CC
 set(SRC_ENGINE
-    ""
+    "src/chessboard-representation.cc" "src/move.cc"
 )
 
 # Directories containing headers must be specified in the include_directories()
 include_directories(
-    ""
+    "src"
 )
 
 # Put your test files here
