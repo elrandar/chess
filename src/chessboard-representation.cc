@@ -51,25 +51,29 @@ namespace board
 
     void Chessboard_rpr::print()
     {
-        std::string output;
-
+        std::string line;
+        std::vector<std::string> out;
         std::vector<char> chars {'Q', 'R', 'B', 'C', 'P', 'K', 'q', 'r', 'b', 'c', 'p', 'k'};
 
         for (int i = 0; i < 64; i++)
         {
-            auto size = output.size();
+            auto size = line.size();
             for (int j = 0; j < 12; ++j) {
                 if ((boards.at(j) >> i) & 1U) {
-                    output += chars.at(j);
-                    output += " ";
+                    line += chars.at(j);
+                    line += " ";
                 }
             }
-            if (size == output.size())
-                output += ". ";
-            if ((i + 1) % 8 == 0)
-                output += "\n";
+            if (size == line.size())
+                line += ". ";
+            if ((i + 1) % 8 == 0) {
+                line += "\n";
+                out.insert(out.begin(), line);
+                line = "";
+            }
         }
-        std::cout << output;
+        for (const auto& i : out)
+            std::cout << i;
     }
 
     void Chessboard_rpr::alter_rpr(Move move)

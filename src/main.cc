@@ -31,7 +31,10 @@
             std::cout << "\n";
         }
 
+
+
         Chessboard_rpr::bitBoardPrint(board.generalBoard());
+        std::cout << "\n";
         board.print();
         return 0;
     }
