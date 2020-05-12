@@ -19,12 +19,14 @@ namespace board
         unsigned int turn_;
         unsigned int last_fifty_turn_;
     public:
+        Chessboard()
         std::vector<Move> generate_legal_moves();
         void do_move(Move move);
         bool is_move_legal(Move move);
         bool is_check();
         bool is_checkmate();
         bool is_draw();
-        std::tuple<PieceType, Color> operator[](Position position);
+        void set_turn(unsigned int i);
+        std::optional<std::pair<PieceType, Color>> operator[](Position position);
     };
 }

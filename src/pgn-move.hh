@@ -27,6 +27,27 @@ namespace board
 
         void report_set(ReportType report);
 
+        Position get_start()
+        {
+            return start_;
+        }
+        Position get_end()
+        {
+            return end_;
+        }
+        PieceType get_piece()
+        {
+            return piece_;
+        }
+        opt_piece_t get_promotion()
+        {
+            return promotion_;
+        }
+        bool get_capture()
+        {
+            return capture_;
+        }
+
 
     private:
         // The original position of the piece

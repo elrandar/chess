@@ -15,10 +15,9 @@ namespace board
         return dest_pos_;
     }
 
-    Move::Move(Position start, Position dest, PieceType pieceType)
-        : start_pos_(start)
-        , dest_pos_(dest)
-        , piece_(pieceType)
-    {}
+    opt_piecetype_t Move::get_promotion()
+    {
+        return promotion_;
+    }
 
 }

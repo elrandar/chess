@@ -1,14 +1,6 @@
 #include "option.hh"
 
-using po = boost::program_options;
 
-Option::Option()
-{
-    help = false;
-    pgn_path = "";
-    perft_path = "";
-    listeners_list = std::vector<std::string>();
-}
 
 bool Option::parse_options(int argc, char **argv)
 {
@@ -16,11 +8,11 @@ bool Option::parse_options(int argc, char **argv)
 
     while (i < argc)
     {
-        if (!strcmp(argv[i]),"-h" || !strcmp(argv[i]),"--help")
+        if (!strcmp(argv[i],"-h") || !strcmp(argv[i],"--help"))
         {
             help = true;
         }
-        else if (!strcmp(argv[i]),"--pgn")
+        else if (!strcmp(argv[i],"--pgn"))
         {
             i++;
             if (i == argc)
@@ -56,3 +48,18 @@ bool Option::parse_options(int argc, char **argv)
     }
     return true;
 }
+
+void Option::show_help()
+{
+    std::cerr << "Options:" << std::endl;
+            std::cerr << "\t-h [ --help ]\t\tshow usage" << std::endl;
+            std::cerr << "\t--pgn arg\t\tpath to the PGN file" << std::endl;
+            std::cerr << "\t-l [ --listeners ] args\tlist of the paths of the listeners plugins" << std::endl;
+}
+
+
+std::vector<std::string> Option::get_listeners()
+{
+    return listeners_list;
+}
+
