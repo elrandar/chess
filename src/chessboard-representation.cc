@@ -25,7 +25,7 @@ namespace board
         BitBoard white_pawn = 1UL << 8u | 1UL << 9u | 1UL << 10u | 1UL << 11u |
                      1UL << 12u | 1UL << 13u | 1UL << 14u | 1UL << 15u;
         boards.push_back(white_pawn);
-        BitBoard white_king = 1UL << 4u;
+        BitBoard white_king = 1UL << 4u | 1UL << 22u;
         boards.push_back(white_king);
 
         BitBoard black_queen = 1UL << 59u;
@@ -113,11 +113,31 @@ namespace board
         return std::nullopt;
     }
 
-    BitBoard Chessboard_rpr::generalBoard() {
+    BitBoard Chessboard_rpr::occupied() {
         BitBoard res = 0UL;
         for (auto bitboard : boards)
         {
             res |= bitboard;
+        }
+        return res;
+    }
+
+    BitBoard Chessboard_rpr::WhitePieces()
+    {
+        BitBoard res = 0UL;
+        for (int i = 0; i < 6; i++)
+        {
+            res |= boards[i];
+        }
+        return res;
+    }
+
+    BitBoard Chessboard_rpr::BlackPieces()
+    {
+        BitBoard res = 0UL;
+        for (int i = 6; i < 12; i++)
+        {
+            res |= boards[i];
         }
         return res;
     }
@@ -143,5 +163,10 @@ namespace board
         {
             std::cout << l;
         }
+        std::cout << '\n';
+    }
+
+    BitBoard Chessboard_rpr::get(PieceType pieceType, Color color) {
+        return boards[static_cast<int>(pieceType) + static_cast<int>(color) * 8];
     }
 }

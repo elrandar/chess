@@ -4,17 +4,20 @@
 #include <vector>
 #include "move.hh"
 #include "color.hh"
+#include "bitboard-operations.hh"
 
 namespace board
 {
-    using BitBoard = uint64_t;
 
     class Chessboard_rpr
     {
     private:
     public:
         std::vector<BitBoard> boards;
-        BitBoard generalBoard();
+        BitBoard occupied();
+        BitBoard WhitePieces();
+        BitBoard BlackPieces();
+        BitBoard get(PieceType pieceType, Color color);
         static void bitBoardPrint(BitBoard bitBoard);
         Chessboard_rpr();
         Chessboard_rpr(Move move);

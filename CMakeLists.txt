@@ -17,6 +17,9 @@ set(SRC_ENGINE
         "src/move.hh"
         "src/chessboard.hh"
         "src/chessboard.cc"
+        "src/masks.cc"
+        "src/bitboard-operations.cc"
+        "src/bitboard-operations.hh"
 )
 
 # Directories containing headers must be specified in the include_directories()

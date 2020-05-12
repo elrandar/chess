@@ -1,3 +1,6 @@
+
+#include "position.hh"
+
 namespace board
 {
     inline Position::Position(File file, Rank rank)
@@ -23,6 +26,11 @@ namespace board
     inline Rank Position::rank_get() const
     {
         return rank_;
+    }
+
+    inline Position::Position(unsigned int box) {
+        file_ = static_cast<File>(box / 8);
+        rank_ = static_cast<Rank>(box % 8);
     }
 
 } // namespace board
