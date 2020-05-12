@@ -18,7 +18,7 @@ namespace board
         static void bitBoardPrint(BitBoard bitBoard);
         Chessboard_rpr();
         Chessboard_rpr(Move move);
-        void alter_rpr(Move move);
+        void execute_move(Move move);
         void print();
         std::optional<std::pair<PieceType, Color>> at(Position pos);
     };

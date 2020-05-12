@@ -75,7 +75,7 @@ if(GTest_FOUND)
     ${SRC_ENGINE}
   )
   target_compile_options(tests PRIVATE -Wall -Werror -Wextra)
-  target_link_libraries(tests PRIVATE GTest::GTest ${LIBRARIES})
+  target_link_libraries(tests PRIVATE GTest::GTest gtest_main ${LIBRARIES})
 endif()
 
 # STATIC TARGET

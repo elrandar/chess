@@ -5,7 +5,7 @@ namespace board
 {
     void Chessboard::do_move(Move move)
     {
-        boardRpr.alter_rpr(move);
+        boardRpr.execute_move(move);
     }
 
 //    bool is_move_legal(Move move)

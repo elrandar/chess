@@ -46,7 +46,7 @@ namespace board
     Chessboard_rpr::Chessboard_rpr(Move move)
         : Chessboard_rpr()
     {
-        alter_rpr(move);
+        execute_move(move);
     }
 
     void Chessboard_rpr::print()
@@ -55,7 +55,7 @@ namespace board
         std::vector<std::string> out;
         std::vector<char> chars {'Q', 'R', 'B', 'C', 'P', 'K', 'q', 'r', 'b', 'c', 'p', 'k'};
 
-        for (int i = 0; i < 64; i++)
+        for (size_t i = 0; i < 64; i++)
         {
             auto size = line.size();
             for (int j = 0; j < 12; ++j) {
@@ -76,7 +76,7 @@ namespace board
             std::cout << i;
     }
 
-    void Chessboard_rpr::alter_rpr(Move move)
+    void Chessboard_rpr::execute_move(Move move)
     {
         auto dest = move.dest_pos_get();
         auto src = move.start_pos_get();

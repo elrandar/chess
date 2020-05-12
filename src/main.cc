@@ -5,7 +5,7 @@
 
 
 
-    int main(void) {
+    int main() {
 
         using namespace board;
         Chessboard_rpr board = Chessboard_rpr();
@@ -24,7 +24,7 @@
 
 
         Move move =  Move(src, dst, board::PieceType::PAWN);
-        board.alter_rpr(move);
+        board.execute_move(move);
         for (auto bit : board.boards)
         {
             Chessboard_rpr::bitBoardPrint(bit);
