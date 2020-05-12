@@ -3,13 +3,14 @@
 #include <vector>
 #include "move.hh"
 #include "color.hh"
+#include "chessboard-representation.hh"
 
 namespace board
 {
     class Chessboard
     {
     private:
-        //TODO chessboard representation
+        Chessboard_rpr boardRpr;
         bool white_turn_;
         bool white_king_castling_;
         bool white_queen_castling_;
@@ -19,6 +20,7 @@ namespace board
         unsigned int turn_;
         unsigned int last_fifty_turn_;
     public:
+        Chessboard();
         std::vector<Move> generate_legal_moves();
         void do_move(Move move);
         bool is_move_legal(Move move);

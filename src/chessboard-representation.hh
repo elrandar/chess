@@ -12,8 +12,10 @@ namespace board
     class Chessboard_rpr
     {
     private:
-        std::vector<BitBoard> boards;
     public:
+        std::vector<BitBoard> boards;
+        BitBoard generalBoard();
+        static void bitBoardPrint(BitBoard bitBoard);
         Chessboard_rpr();
         Chessboard_rpr(Move move);
         void alter_rpr(Move move);

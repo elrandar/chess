@@ -2,6 +2,7 @@
 
 using po = boost::program_options;
 
+
 Option::Option()
 {
     help = false;
@@ -13,7 +14,6 @@ Option::Option()
 bool Option::parse_options(int argc, char **argv)
 {
     int i = 1;
-
     while (i < argc)
     {
         if (!strcmp(argv[i]),"-h" || !strcmp(argv[i]),"--help")
