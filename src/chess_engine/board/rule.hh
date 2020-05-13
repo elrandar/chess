@@ -1,8 +1,8 @@
 #pragma once
 
 #include <vector>
-#include "move.hh"
-#include "chessboard.hh"
+#include "chess_engine/board/move.hh"
+#include "chess_engine/board/chessboard.hh"
 
 namespace board
 {

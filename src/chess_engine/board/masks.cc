@@ -1,6 +1,6 @@
 #include <iostream>
 #include "masks.hh"
-#include "bitboard-operations.hh"
+#include "chess_engine/board/bitboard-operations.hh"
 
 namespace board
 {

@@ -2,7 +2,7 @@
 
 #include <utility>
 
-#include "utype.hh"
+#include "utility/utype.hh"
 
 namespace board
 {

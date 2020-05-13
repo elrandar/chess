@@ -1,9 +1,9 @@
 #include <iostream>
-#include "chessboard-representation.hh"
-#include "position.hh"
-#include "move.hh"
-#include "chessboard.hh"
-#include "masks.hh"
+#include "chess_engine/board/chessboard-representation.hh"
+#include "chess_engine/board/position.hh"
+#include "chess_engine/board/move.hh"
+#include "chess_engine/board/chessboard.hh"
+#include "chess_engine/board/masks.hh"
 
 int main()
 {

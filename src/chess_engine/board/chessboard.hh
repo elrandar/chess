@@ -3,7 +3,7 @@
 #include <vector>
 #include "move.hh"
 #include "color.hh"
-#include "chessboard-representation.hh"
+#include "chess_engine/board/chessboard-representation.hh"
 
 namespace board
 {
