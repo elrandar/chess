@@ -38,15 +38,25 @@ namespace board
         return std::vector<Move>();
     }
 
-    void bitboard_to_moves(unsigned initialPosition, BitBoard movesB, PieceType pieceType,
-                                        std::vector<Move> &moves)
+    void
+    Chessboard::bitboard_to_moves(unsigned initialPosition, BitBoard pushMovesBitboard, BitBoard attackMovesBitboard,
+                                  PieceType pieceType, std::vector<Move> &moves)
     {
-        while (movesB != 0)
+        while (pushMovesBitboard != 0)
         {
-            unsigned moveCell = ffsll(movesB) - 1;
+            unsigned moveCell = ffsll(pushMovesBitboard) - 1;
             moves.emplace_back(Position(initialPosition), Position(moveCell),
                                pieceType);
-            movesB &= ~(1UL << (moveCell));
+            pushMovesBitboard &= ~(1UL << (moveCell));
+        }
+        while (attackMovesBitboard != 0)
+        {
+            unsigned moveCell = ffsll(attackMovesBitboard) - 1;
+            auto pos1 = Position(initialPosition);
+            auto pos2 = Position(moveCell);
+            auto capture = boardRpr.at(moveCell);
+            moves.emplace_back(pos1, pos2, pieceType, capture.value().first);
+            attackMovesBitboard &= ~(1UL << (moveCell));
         }
     }
 
@@ -82,15 +92,14 @@ namespace board
 
             attackMoves = Masks::pawn_attacks(color, pieceCell) & enemyPieces;
 
-            Chessboard_rpr::bitBoardPrint(attackMoves);
-            Chessboard_rpr::bitBoardPrint(pushMoves);
-            bitboard_to_moves(pieceCell, pushMoves, PieceType::PAWN, moves);
+            if (attackMoves != 0)
+                Chessboard_rpr::bitBoardPrint(attackMoves);
+//            Chessboard_rpr::bitBoardPrint(pushMoves);
+            bitboard_to_moves(pieceCell, pushMoves, attackMoves, PieceType::PAWN, moves);
             pawns &= ~(1UL << pieceCell);
         }
         return moves;
     }
-
-
 
     std::vector<Move> Chessboard::generate_knight_king_moves(PieceType pieceType, Color color)
     {
@@ -133,6 +142,4 @@ namespace board
         last_fifty_turn_ = 50;
         boardRpr = Chessboard_rpr();
     }
-
-
 }

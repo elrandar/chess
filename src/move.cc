@@ -21,4 +21,10 @@ namespace board
         , piece_(pieceType)
     {}
 
+    Move::Move(Position start, Position dest, PieceType pieceType, PieceType capture)
+        : Move(start, dest, pieceType)
+    {
+        capture_ = capture;
+    }
+
 }

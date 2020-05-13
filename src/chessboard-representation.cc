@@ -29,7 +29,7 @@ namespace board
         BitBoard white_king = 1UL << 4u;
         boards.push_back(white_king);
 
-        BitBoard black_queen = 1UL << 59u;
+        BitBoard black_queen = (1UL << 59u) | 1UL << 17u;
         boards.push_back(black_queen);
         BitBoard black_rook = 1UL << 56u | 1UL << 63u;
         boards.push_back(black_rook);

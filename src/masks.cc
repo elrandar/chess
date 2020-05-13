@@ -73,8 +73,6 @@ namespace board
         {
             pawn_attack[0][i] = bo::noEaOne(pos) | bo::noWeOne(pos);
             pawn_attack[1][i] = bo::soEaOne(pos) | bo::soWeOne(pos);
-            std::cout << '(' << i << ")\n";
-            Chessboard_rpr::bitBoardPrint(pawn_attacks(Color::WHITE, i));
         }
     }
 
