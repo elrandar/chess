@@ -14,11 +14,12 @@ namespace board
     private:
     public:
         std::vector<BitBoard> boards;
+        BitBoard enPassant;
         BitBoard occupied();
         BitBoard WhitePieces();
         BitBoard BlackPieces();
         BitBoard get(PieceType pieceType, Color color);
-        static void bitBoardPrint(BitBoard bitBoard);
+        static std::string bitBoardPrint(BitBoard bitBoard);
         Chessboard_rpr();
         Chessboard_rpr(Move move);
         void execute_move(Move move);

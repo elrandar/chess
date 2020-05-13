@@ -13,6 +13,7 @@ int main()
     auto cb = Chessboard();
 
 
-    cb.generate_legal_moves();
+    auto moves = cb.generate_legal_moves();
+
     return 0;
 }

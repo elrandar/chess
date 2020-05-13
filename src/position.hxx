@@ -28,9 +28,9 @@ namespace board
         return rank_;
     }
 
-    inline Position::Position(unsigned int box) {
-        file_ = static_cast<File>(box / 8);
-        rank_ = static_cast<Rank>(box % 8);
+    inline Position::Position(unsigned int cell) {
+        file_ = static_cast<File>(cell % 8);
+        rank_ = static_cast<Rank>(cell / 8);
     }
 
 } // namespace board

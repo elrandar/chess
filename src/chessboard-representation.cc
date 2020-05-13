@@ -6,6 +6,7 @@
 #include <utility>
 #include <optional>
 #include <iostream>
+#include <sstream>
 #include "color.hh"
 
 namespace board
@@ -25,7 +26,7 @@ namespace board
         BitBoard white_pawn = 1UL << 8u | 1UL << 9u | 1UL << 10u | 1UL << 11u |
                      1UL << 12u | 1UL << 13u | 1UL << 14u | 1UL << 15u;
         boards.push_back(white_pawn);
-        BitBoard white_king = 1UL << 4u | 1UL << 22u;
+        BitBoard white_king = 1UL << 4u;
         boards.push_back(white_king);
 
         BitBoard black_queen = 1UL << 59u;
@@ -142,7 +143,7 @@ namespace board
         return res;
     }
 
-    void Chessboard_rpr::bitBoardPrint(BitBoard bitBoard)
+    std::string Chessboard_rpr::bitBoardPrint(BitBoard bitBoard)
     {
         std::vector<std::string> out;
         std::string line;
@@ -159,14 +160,19 @@ namespace board
                 line = "";
             }
         }
+
+        std::stringstream stream;
+
         for (const auto& l : out)
         {
-            std::cout << l;
+            stream << l;
         }
-        std::cout << '\n';
+        stream << '\n';
+        std::cout << stream.str();
+        return stream.str();
     }
 
     BitBoard Chessboard_rpr::get(PieceType pieceType, Color color) {
-        return boards[static_cast<int>(pieceType) + static_cast<int>(color) * 8];
+        return boards[static_cast<int>(pieceType) + static_cast<int>(color) * 6];
     }
 }

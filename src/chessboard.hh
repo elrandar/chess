@@ -20,7 +20,8 @@ namespace board
         unsigned int turn_;
         unsigned int last_fifty_turn_;
 
-        std::vector<Move> generate_king_moves();
+        std::vector<Move> generate_piece_moves(PieceType pieceType, Color color);
+        std::vector<Move> generate_knight_king_moves(PieceType pieceType, Color color);
     public:
         Chessboard();
         std::vector<Move> generate_legal_moves();

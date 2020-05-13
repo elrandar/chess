@@ -13,45 +13,61 @@ namespace board
 
     std::vector<Move> Chessboard::generate_legal_moves()
     {
-        return generate_king_moves();
+        auto moves = std::vector<Move>();
+        for (int i = 0; i < 2; i++)
+        {
+            for (int j = 0; j < 6; j++)
+            {
+                auto val = generate_piece_moves(static_cast<PieceType>(j), static_cast<Color>(i));
+                moves.insert(moves.end(), val.begin(), val.end());
+            }
+        }
+        boardRpr.print();
+        return moves;
     }
 
-    std::vector<Move> Chessboard::generate_king_moves()
+    std::vector<Move> Chessboard::generate_piece_moves(PieceType pieceType, Color color)
     {
-        auto moves = std::vector<Move>();
-        // Get the BitBoard containing the kings
-        BitBoard remainingKings = boardRpr.get(PieceType::KING, Color::WHITE);
-        BitBoard eligibleSquares = ~boardRpr.WhitePieces();
-
-        // While there still are kings that have their moves to be generated
-        while (remainingKings != 0)
+        if (pieceType == PieceType::KNIGHT || pieceType == PieceType::KING)
         {
-            Chessboard_rpr::bitBoardPrint(remainingKings);
-            // Get the position of the least significant bit that is set
-            unsigned bitPos = ffsll(remainingKings);
-
-            BitBoard generatedMoves = Masks::king_attacks(bitPos - 1) & eligibleSquares;
-            Chessboard_rpr::bitBoardPrint(generatedMoves);
-
-            while (generatedMoves != 0)
-            {
-                unsigned movePos = ffsll(generatedMoves);
-                moves.emplace_back(Position(bitPos - 1), Position(movePos - 1), PieceType::KING);
-                generatedMoves &= ~(1UL << (movePos - 1));
-            }
-            std::cout << bitPos << '\n';
-
-            // Unset the bit
-            remainingKings &= ~(1UL << (bitPos - 1));
-            Chessboard_rpr::bitBoardPrint(remainingKings);
+            return generate_knight_king_moves(pieceType, color);
         }
         return std::vector<Move>();
     }
 
-//    bool is_move_legal(Move move)
-//    {
-//
-//    }
+    std::vector<Move> Chessboard::generate_knight_king_moves(PieceType pieceType, Color color)
+    {
+        auto moves = std::vector<Move>();
+        // Get the BitBoard containing the kings
+        BitBoard remainingPieces = boardRpr.get(pieceType, color);
+        BitBoard eligibleSquares = color == Color::WHITE ? ~boardRpr.WhitePieces() : ~boardRpr.BlackPieces();
+
+        // While there still are kings that have their moves to be generated
+        while (remainingPieces != 0)
+        {
+            // Get the position of the least significant bit that is set
+            unsigned pieceCell = ffsll(remainingPieces);
+
+            BitBoard mask = pieceType == PieceType::KING ? Masks::king_attacks(pieceCell - 1)
+                                                         : Masks::knight_attacks(pieceCell - 1);
+            BitBoard generatedMoves = mask & eligibleSquares;
+
+            if (generatedMoves != 0)
+            {
+                Chessboard_rpr::bitBoardPrint(generatedMoves);
+            }
+            while (generatedMoves != 0)
+            {
+                unsigned moveCell = ffsll(generatedMoves);
+                moves.emplace_back(Position(pieceCell - 1), Position(moveCell - 1),
+                                    pieceType);
+                generatedMoves &= ~(1UL << (moveCell - 1));
+            }
+            // Unset the bit
+            remainingPieces &= ~(1UL << (pieceCell - 1));
+        }
+        return moves;
+    }
 
     Chessboard::Chessboard()
     {
