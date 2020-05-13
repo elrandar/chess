@@ -13,35 +13,35 @@ namespace board
 {
     Chessboard_rpr::Chessboard_rpr()
     {
-        boards = std::vector<BitBoard>(0);
+        boards = std::array<BitBoard, 12>();
 
         BitBoard white_queen = 1UL << 3u;
-        boards.push_back(white_queen);
+        boards[0] = white_queen;
         BitBoard white_rook = 1UL << 0u | 1UL << 7u;
-        boards.push_back(white_rook);
+        boards[1] = white_rook;
         BitBoard white_bishop = 1UL << 2u | 1UL << 5u;
-        boards.push_back(white_bishop);
+        boards[2] = white_bishop;
         BitBoard white_knight = 1UL << 1u | 1UL << 6u;
-        boards.push_back(white_knight);
+        boards[3] = white_knight;
         BitBoard white_pawn = 1UL << 8u | 1UL << 9u | 1UL << 10u | 1UL << 11u |
                      1UL << 12u | 1UL << 13u | 1UL << 14u | 1UL << 15u;
-        boards.push_back(white_pawn);
+        boards[4] = white_pawn;
         BitBoard white_king = 1UL << 4u;
-        boards.push_back(white_king);
+        boards[5] = white_king;
 
         BitBoard black_queen = (1UL << 59u) | 1UL << 17u;
-        boards.push_back(black_queen);
+        boards[6] = black_queen;
         BitBoard black_rook = 1UL << 56u | 1UL << 63u;
-        boards.push_back(black_rook);
+        boards[7] = black_rook;
         BitBoard black_bishop = 1UL << 58u | 1UL << 61u;
-        boards.push_back(black_bishop);
+        boards[8] = black_bishop;
         BitBoard black_knight = 1UL << 57u | 1UL << 62u;
-        boards.push_back(black_knight);
+        boards[9] = black_knight;
         BitBoard black_pawn = 1UL << 48u | 1UL << 49u | 1UL << 50u | 1UL << 51u |
                               1UL << 52u | 1UL << 53u | 1UL << 54u | 1UL << 55u;
-        boards.push_back(black_pawn);
+        boards[10] = black_pawn;
         BitBoard black_king = 1UL << 60u;
-        boards.push_back(black_king);
+        boards[11] = black_king;
     }
 
     Chessboard_rpr::Chessboard_rpr(Move move)

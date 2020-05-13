@@ -2,6 +2,7 @@
 
 #include <cstdint>
 #include <vector>
+#include <array>
 #include "move.hh"
 #include "color.hh"
 #include "bitboard-operations.hh"
@@ -13,7 +14,7 @@ namespace board
     {
     private:
     public:
-        std::vector<BitBoard> boards;
+        std::array<BitBoard, 12> boards;
         BitBoard enPassant;
         BitBoard occupied();
         BitBoard WhitePieces();
