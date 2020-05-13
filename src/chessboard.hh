@@ -21,6 +21,7 @@ namespace board
         unsigned int last_fifty_turn_;
 
         std::vector<Move> generate_piece_moves(PieceType pieceType, Color color);
+        std::vector<Move> generate_pawn_moves(Color color);
         std::vector<Move> generate_knight_king_moves(PieceType pieceType, Color color);
     public:
         Chessboard();
@@ -31,6 +32,5 @@ namespace board
         bool is_checkmate();
         bool is_draw();
         std::tuple<PieceType, Color> operator[](Position position);
-
     };
 }

@@ -31,9 +31,66 @@ namespace board
         if (pieceType == PieceType::KNIGHT || pieceType == PieceType::KING)
         {
             return generate_knight_king_moves(pieceType, color);
+        } else if (pieceType == PieceType::PAWN)
+        {
+            return generate_pawn_moves(color);
         }
         return std::vector<Move>();
     }
+
+    void bitboard_to_moves(unsigned initialPosition, BitBoard movesB, PieceType pieceType,
+                                        std::vector<Move> &moves)
+    {
+        while (movesB != 0)
+        {
+            unsigned moveCell = ffsll(movesB) - 1;
+            moves.emplace_back(Position(initialPosition), Position(moveCell),
+                               pieceType);
+            movesB &= ~(1UL << (moveCell));
+        }
+    }
+
+    std::vector<Move> Chessboard::generate_pawn_moves(Color color) {
+        using bo = BitboardOperations;
+
+        BitBoard eligibleSquares = ~boardRpr.occupied();
+        BitBoard enemyPieces = color == Color::WHITE ? boardRpr.BlackPieces() : boardRpr.WhitePieces();
+        BitBoard pawns = boardRpr.get(PieceType::PAWN, color);
+
+        auto moves = std::vector<Move>();
+
+        while (pawns != 0)
+        {
+            unsigned pieceCell = ffsll(pawns) - 1;
+
+            BitBoard pushMoves;
+            BitBoard attackMoves;
+            if (color == Color::WHITE)
+            {
+                // Single push
+                pushMoves = bo::nortOne(1UL << pieceCell) & eligibleSquares;
+                // Double push
+                pushMoves |= bo::nortOne(pushMoves) & bo::rank4 & eligibleSquares;
+            }
+            else
+            {
+                // Single push
+                pushMoves = bo::soutOne(1UL << pieceCell) & eligibleSquares;
+                // Double push
+                pushMoves |= bo::soutOne(pushMoves) & eligibleSquares & bo::rank5;
+            }
+
+            attackMoves = Masks::pawn_attacks(color, pieceCell) & enemyPieces;
+
+            Chessboard_rpr::bitBoardPrint(attackMoves);
+            Chessboard_rpr::bitBoardPrint(pushMoves);
+            bitboard_to_moves(pieceCell, pushMoves, PieceType::PAWN, moves);
+            pawns &= ~(1UL << pieceCell);
+        }
+        return moves;
+    }
+
+
 
     std::vector<Move> Chessboard::generate_knight_king_moves(PieceType pieceType, Color color)
     {
@@ -52,10 +109,6 @@ namespace board
                                                          : Masks::knight_attacks(pieceCell - 1);
             BitBoard generatedMoves = mask & eligibleSquares;
 
-            if (generatedMoves != 0)
-            {
-                Chessboard_rpr::bitBoardPrint(generatedMoves);
-            }
             while (generatedMoves != 0)
             {
                 unsigned moveCell = ffsll(generatedMoves);

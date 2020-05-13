@@ -6,6 +6,7 @@ namespace board
 {
     BitBoard Masks::king_attack[64];
     BitBoard Masks::knight_attack[64];
+    BitBoard Masks::pawn_attack[2][64];
 
     BitBoard Masks::king_attacks(int position)
     {
@@ -50,6 +51,7 @@ namespace board
     void Masks::init() {
         computeKingAttacks();
         computeKnightAttacks();
+        computePawnAttacks();
     }
 
     BitBoard Masks::knight_attacks(unsigned int i) {
@@ -62,5 +64,21 @@ namespace board
         {
             knight_attack[i] = computeKnightAttack(pos);
         }
+    }
+
+    void Masks::computePawnAttacks() {
+        using bo = BitboardOperations;
+        unsigned long long pos = 1UL;
+        for (int i = 0; i < 64; i++, pos <<= 1)
+        {
+            pawn_attack[0][i] = bo::noEaOne(pos) | bo::noWeOne(pos);
+            pawn_attack[1][i] = bo::soEaOne(pos) | bo::soWeOne(pos);
+            std::cout << '(' << i << ")\n";
+            Chessboard_rpr::bitBoardPrint(pawn_attacks(Color::WHITE, i));
+        }
+    }
+
+    BitBoard Masks::pawn_attacks(Color color, int i) {
+        return pawn_attack[static_cast<int>(color)][i];
     }
 }
