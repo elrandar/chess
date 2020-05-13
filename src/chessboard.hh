@@ -36,6 +36,5 @@ namespace board
         bool is_checkmate();
         bool is_draw();
         std::tuple<PieceType, Color> operator[](Position position);
-
     };
 }

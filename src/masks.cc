@@ -5,6 +5,7 @@
 namespace board
 {
     BitBoard Masks::king_attack[64];
+    BitBoard Masks::rook_attack[64];
     BitBoard Masks::knight_attack[64];
     BitBoard Masks::pawn_attack[2][64];
 
@@ -52,9 +53,10 @@ namespace board
         computeKingAttacks();
         computeKnightAttacks();
         computePawnAttacks();
+        computeRookAttacks();
     }
 
-    BitBoard Masks::knight_attacks(unsigned int i) {
+    BitBoard Masks::knight_attacks(int i) {
         return knight_attack[i];
     }
 
@@ -78,5 +80,21 @@ namespace board
 
     BitBoard Masks::pawn_attacks(Color color, int i) {
         return pawn_attack[static_cast<int>(color)][i];
+    }
+
+    void Masks::computeRookAttacks()
+    {
+        unsigned long long pos = 1UL;
+        uint64_t  rankMask = 0xff;
+        uint64_t fileMask = 0x0101010101010101;
+        for (int i = 0; i < 64; i++, pos <<= 1)
+        {
+            rook_attack[i] = ((rankMask << (i & 56))| (fileMask << (i & 7))) ^ pos;
+            Chessboard_rpr::bitBoardPrint(rook_attack[i]);
+        }
+    }
+
+    BitBoard Masks::rook_attacks(int i) {
+        return rook_attack[i];
     }
 }
