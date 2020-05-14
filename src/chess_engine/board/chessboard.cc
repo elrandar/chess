@@ -92,9 +92,6 @@ namespace board
 
             attackMoves = Masks::pawn_attacks(color, pieceCell) & enemyPieces;
 
-            if (attackMoves != 0)
-                Chessboard_rpr::bitBoardPrint(attackMoves);
-//            Chessboard_rpr::bitBoardPrint(pushMoves);
             bitboard_to_moves(pieceCell, pushMoves, attackMoves, PieceType::PAWN, moves);
             pawns &= ~(1UL << pieceCell);
         }
