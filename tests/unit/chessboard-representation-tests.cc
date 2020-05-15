@@ -1,5 +1,5 @@
 
-#include "chess_engine/board/chessboard-representation.hh"
+#include "../../src/chess_engine/board/chessboard-representation.hh"
 #include <gtest/gtest.h>
 
 

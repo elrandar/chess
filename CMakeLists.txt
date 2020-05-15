@@ -27,7 +27,9 @@ set(SRC_ENGINE
 
 # Put your test files here
 set(SRC_GTEST
-    "tests/unit/chessboard-representation-tests.cc"
+        "tests/unit/chessboard-representation-tests.cc"
+        "tests/unit/magic-tests.cc"
+
 )
 
 # END SOURCES
