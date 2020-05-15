@@ -8,6 +8,7 @@
 int main()
 {
     board::Masks::init();
+    board::BitboardOperations::init_ms1bTable();
 
     using namespace board;
     auto cb = Chessboard();

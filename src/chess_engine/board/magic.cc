@@ -29,7 +29,7 @@ namespace board::magic
         return blockboard;
     }
 
-    BitBoard generate_attack(int index, BitBoard blockboard)
+    BitBoard generate_attack_bishop(int index, BitBoard blockboard)
     {
         BitBoard attacks = 0ULL;
 
