@@ -7,7 +7,7 @@
 
 namespace board::magic
 {
-    BitBoard generate_blockboard(unsigned int index, BitBoard attackMask)
+    BitBoard generate_blockboard(int index, BitBoard attackMask)
     {
         /* Start with a blockboard identical to the attackMask. */
         uint64_t blockboard = attackMask;
