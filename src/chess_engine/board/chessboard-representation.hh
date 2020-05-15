@@ -5,7 +5,7 @@
 #include <array>
 #include "move.hh"
 #include "color.hh"
-#include "chess_engine/board/bitboard-operations.hh"
+#include "bitboard-operations.hh"
 
 namespace board
 {

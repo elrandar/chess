@@ -20,10 +20,8 @@ set(SRC_ENGINE
         "src/chess_engine/board/masks.cc"
         "src/chess_engine/board/bitboard-operations.cc"
         "src/chess_engine/board/bitboard-operations.hh"
-)
-
-# Directories containing headers must be specified in the include_directories()
-include_directories(
+        "src/chess_engine/board/magic.cc"
+        "src/chess_engine/board/magic.hh"
     "src"
 )
 

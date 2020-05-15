@@ -22,6 +22,11 @@ namespace board
         static BitBoard soWeOne(BitBoard b);
         static BitBoard noWeOne(BitBoard b);
         static BitBoard soEaOne(BitBoard b);
+        static int bitScanReverse(BitBoard bb);
+        static int bitScanForward(BitBoard bb);
+        static void init_ms1bTable();
+        static int ms1bTable[256];
+
     };
 }
 
