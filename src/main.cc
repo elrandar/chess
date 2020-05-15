@@ -27,7 +27,6 @@ int main()
 //        Chessboard_rpr::bitBoardPrint(board::magic::generate_blockboard(i, Masks::rook_attack[27]));
 //    }
     //test move generation
-    Chessboard_rpr::bitBoardPrint(board::magic::generate_attack_bishop(27, 0x8041020000102041));
-    Chessboard_rpr::bitBoardPrint(0x40221400140201);
+    Chessboard_rpr::bitBoardPrint(board::magic::generate_attack_rook(0, 0x100000020));
     return 0;
 }

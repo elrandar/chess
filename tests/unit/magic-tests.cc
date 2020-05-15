@@ -13,6 +13,15 @@ protected:
     }
 };
 
+class rook_generation : public ::testing::Test {
+protected:
+    rook_generation()
+    {
+        board::Masks::init();
+        board::BitboardOperations::init_ms1bTable();
+    }
+};
+
 TEST_F(bishop_generation, bishop_blockboard_1)
 {
     auto result = board::magic::generate_attack_bishop(27, 0x8041020000102041);
@@ -78,4 +87,66 @@ TEST_F(bishop_generation, bishop_blockboard_10)
 {
     auto result = board::magic::generate_attack_bishop(26, 0x40001000000a0000);
     ASSERT_EQ(result, (unsigned long) 0x110a000a0000);
+}
+
+TEST_F(rook_generation, rook_blockboard_1)
+{
+    auto result = board::magic::generate_attack_rook(0, 0x100000020);
+    ASSERT_EQ(result, (unsigned long) 0x10101013e);
+}
+
+TEST_F(rook_generation, rook_blockboard_2)
+{
+    auto result = board::magic::generate_attack_rook(27, 0x800000882000000);
+    ASSERT_EQ(result, (unsigned long) 0x8f6080808);
+}
+
+TEST_F(rook_generation, rook_blockboard_3)
+{
+    auto result = board::magic::generate_attack_rook(63, 0x6680808000000000);
+    ASSERT_EQ(result, (unsigned long) 0x4080000000000000);
+}
+
+TEST_F(rook_generation, rook_blockboard_4)
+{
+    auto result = board::magic::generate_attack_rook(35, 0x8006708080808);
+    ASSERT_EQ(result, (unsigned long) 0x8083408000000);
+}
+
+TEST_F(rook_generation, rook_blockboard_5)
+{
+    auto result = board::magic::generate_attack_rook(28, 0x10100010cb001010);
+    ASSERT_EQ(result, (unsigned long) 0x1068101000);
+}
+
+TEST_F(rook_generation, rook_blockboard_6)
+{
+    auto result = board::magic::generate_attack_rook(7, 0x80008000000f);
+    ASSERT_EQ(result, (unsigned long) 0x80808078);
+}
+
+
+TEST_F(rook_generation, rook_blockboard_7)
+{
+    auto result = board::magic::generate_attack_rook(63, 0x2a00008080008000);
+    ASSERT_EQ(result, (unsigned long) 0x6080808000000000);
+}
+
+
+TEST_F(rook_generation, rook_blockboard_8)
+{
+    auto result = board::magic::generate_attack_rook(56, 0x5c00000001000000);
+    ASSERT_EQ(result, (unsigned long) 0x601010101000000);
+}
+
+TEST_F(rook_generation, rook_blockboard_9)
+{
+    auto result = board::magic::generate_attack_rook(5, 0x0);
+    ASSERT_EQ(result, (unsigned long) 0x20202020202020df);
+}
+
+TEST_F(rook_generation, rook_blockboard_10)
+{
+    auto result = board::magic::generate_attack_rook(35, 0x8d508000000);
+    ASSERT_EQ(result, (unsigned long) 0x81408000000);
 }

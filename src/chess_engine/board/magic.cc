@@ -10,7 +10,7 @@ namespace board::magic
     BitBoard generate_blockboard(int index, BitBoard attackMask)
     {
         /* Start with a blockboard identical to the attackMask. */
-        uint64_t blockboard = attackMask;
+        BitBoard blockboard = attackMask;
 
         /* Loop through the attackMask to find the indices of all set bits. */
         uint8_t bitindex = 0;
@@ -59,6 +59,41 @@ namespace board::magic
         if (Masks::bishop_attack_rays[Masks::SOUTH_WEST][index] & blockboard) {
             int blockerIndex = BitboardOperations::bitScanReverse(Masks::bishop_attack_rays[Masks::SOUTH_WEST][index] & blockboard);
             attacks &= ~Masks::bishop_attack_rays[Masks::SOUTH_WEST][blockerIndex];
+        }
+
+        return attacks;
+    }
+
+    BitBoard generate_attack_rook(int index, BitBoard blockboard)
+    {
+        BitBoard attacks = 0ULL;
+
+        // North West
+        attacks |= Masks::rook_attack_rays[Masks::NORTH][index];
+        if (Masks::rook_attack_rays[Masks::NORTH][index] & blockboard) {
+            int blockerIndex = BitboardOperations::bitScanForward(Masks::rook_attack_rays[Masks::Masks::NORTH][index] & blockboard);
+            attacks &= ~Masks::rook_attack_rays[Masks::NORTH][blockerIndex];
+        }
+
+        // North East
+        attacks |= Masks::rook_attack_rays[Masks::WEST][index];
+        if (Masks::rook_attack_rays[Masks::WEST][index] & blockboard) {
+            int blockerIndex = BitboardOperations::bitScanReverse(Masks::rook_attack_rays[Masks::WEST][index] & blockboard);
+            attacks &= ~Masks::rook_attack_rays[Masks::WEST][blockerIndex];
+        }
+
+        // South East
+        attacks |= Masks::rook_attack_rays[Masks::EAST][index];
+        if (Masks::rook_attack_rays[Masks::EAST][index] & blockboard) {
+            int blockerIndex = BitboardOperations::bitScanForward(Masks::rook_attack_rays[Masks::EAST][index] & blockboard);
+            attacks &= ~Masks::rook_attack_rays[Masks::EAST][blockerIndex];
+        }
+
+        // South West
+        attacks |= Masks::rook_attack_rays[Masks::SOUTH][index];
+        if (Masks::rook_attack_rays[Masks::SOUTH][index] & blockboard) {
+            int blockerIndex = BitboardOperations::bitScanReverse(Masks::rook_attack_rays[Masks::SOUTH][index] & blockboard);
+            attacks &= ~Masks::rook_attack_rays[Masks::SOUTH][blockerIndex];
         }
 
         return attacks;
