@@ -20,6 +20,7 @@ namespace board
 
     public:
         Move(Position start, Position dest, PieceType pieceType);
+        Move(Position start, Position dest, PieceType pieceType, PieceType capture);
         PieceType piece_get();
         Position start_pos_get();
         Position dest_pos_get();

@@ -11,17 +11,27 @@ set(OPT_FLAGS
 # SOURCES : FIXME
 # Put all your sources here EXCEPT YOUR MAIN.CC
 set(SRC_ENGINE
-    "src/chessboard-representation.cc" "src/move.cc"
-)
-
-# Directories containing headers must be specified in the include_directories()
-include_directories(
-    "src"
+        "src/chess_engine/board/chessboard-representation.cc"
+        "src/chess_engine/board/chessboard-representation.hh"
+        "src/chess_engine/board/move.cc"
+        "src/chess_engine/board/move.hh"
+        "src/chess_engine/board/chessboard.hh"
+        "src/chess_engine/board/chessboard.cc"
+        "src/chess_engine/board/masks.cc"
+        "src/chess_engine/board/bitboard-operations.cc"
+        "src/chess_engine/board/bitboard-operations.hh"
+        "src/chess_engine/board/magic.cc"
+        "src/chess_engine/board/magic.hh"
+        "src/parsing/option.cc"
+        "src/parsing/option.hh"
 )
 
 # Put your test files here
 set(SRC_GTEST
-    "tests/unit/chessboard-representation-tests.cc"
+        "tests/unit/chessboard-representation-tests.cc"
+        "tests/unit/magic-tests.cc"
+        "tests/unit/option-tests.cc"
+
 )
 
 # END SOURCES
@@ -70,7 +80,7 @@ if(GTest_FOUND)
     ${SRC_ENGINE}
   )
   target_compile_options(tests PRIVATE -Wall -Werror -Wextra)
-  target_link_libraries(tests PRIVATE GTest::GTest ${LIBRARIES})
+  target_link_libraries(tests PRIVATE GTest::GTest gtest_main ${LIBRARIES})
 endif()
 
 # STATIC TARGET

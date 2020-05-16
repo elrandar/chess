@@ -2,7 +2,6 @@
 
 #include <utility>
 
-#include "utype.hh"
 
 namespace board
 {
@@ -40,7 +39,7 @@ namespace board
     {
     public:
         Position(File file, Rank rank);
-
+        Position(unsigned cell);
         File file_get() const;
         Rank rank_get() const;
 
