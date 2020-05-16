@@ -22,6 +22,7 @@ set(SRC_ENGINE
         "src/chess_engine/board/bitboard-operations.hh"
         "src/chess_engine/board/magic.cc"
         "src/chess_engine/board/magic.hh"
+        "src/chess_engine/board/rule.cc"
         "src/parsing/option.cc"
         "src/parsing/option.hh"
 )

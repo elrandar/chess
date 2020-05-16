@@ -11,6 +11,10 @@ namespace board
     {
     private:
         Chessboard_rpr boardRpr;
+    public:
+        Chessboard_rpr &getBoardRpr();
+
+    private:
         bool white_turn_;
         bool white_king_castling_;
         bool white_queen_castling_;
@@ -20,13 +24,6 @@ namespace board
         unsigned int turn_;
         unsigned int last_fifty_turn_;
 
-        void
-        bitboard_to_moves(unsigned initialPosition, BitBoard pushMovesBitboard, BitBoard attackMovesBitboard,
-                          PieceType pieceType, std::vector<Move> &moves);
-
-        std::vector<Move> generate_piece_moves(PieceType pieceType, Color color);
-        std::vector<Move> generate_pawn_moves(Color color);
-        std::vector<Move> generate_knight_king_moves(PieceType pieceType, Color color);
     public:
         Chessboard();
         std::vector<Move> generate_legal_moves();
@@ -35,6 +32,7 @@ namespace board
         bool is_check();
         bool is_checkmate();
         bool is_draw();
-        std::tuple<PieceType, Color> operator[](Position position);
+        std::pair<PieceType, Color> operator[](Position position);
+
     };
 }
