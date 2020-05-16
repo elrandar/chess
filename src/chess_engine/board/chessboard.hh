@@ -35,7 +35,7 @@ namespace board
         bool is_check();
         bool is_checkmate();
         bool is_draw();
-        std::optional<std::pair<PieceType, Color>> operator[](Position position);
+        std::optional<std::pair<PieceType, Color>> operator[](const Position &position) const;
         bool isWhiteTurn() const;
         void setWhiteTurn(bool whiteTurn);
         bool isWhiteKingCastling() const;

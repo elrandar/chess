@@ -28,9 +28,8 @@ set(SRC_ENGINE
         "src/parsing/pgn-parser/pgn-exception.cc"
         "src/parsing/pgn-parser/report-type.hh"
         "src/parsing/pgn-parser/pgn-move.cc"
-        "src/listener/Handle_listeners.cc"
-        "src/listener/Handle_listeners.hh"
-        "src/engine.cc"
+        "src/listener-manager.cc"
+        "src/listener/listener-wrapper.cc"
 )
 
 # Put your test files here

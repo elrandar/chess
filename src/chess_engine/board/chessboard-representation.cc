@@ -98,8 +98,7 @@ namespace board
         }
     }
 
-    std::optional<std::pair<PieceType, Color>> Chessboard_rpr::at(Position pos)
-    {
+    std::optional<std::pair<PieceType, Color>> Chessboard_rpr::at(Position pos) const {
         unsigned int pos_int = static_cast<int>(pos.file_get()) + static_cast<int>(pos.rank_get()) * 8;
 
         for (size_t i = 0; i < 12; i++)

@@ -186,7 +186,7 @@ namespace board
         return false;
     }
 
-    std::optional<std::pair<PieceType, Color>> Chessboard::operator[](Position position) {
+    std::optional<std::pair<PieceType, Color>> Chessboard::operator[](const Position &position) const {
         return boardRpr.at(position);
     }
 }
