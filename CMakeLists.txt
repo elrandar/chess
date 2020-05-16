@@ -37,6 +37,7 @@ set(SRC_GTEST
         "tests/unit/chessboard-representation-tests.cc"
         "tests/unit/magic-tests.cc"
         "tests/unit/option-tests.cc"
+        "tests/unit/chessboard-tests.cc"
 
 )
 

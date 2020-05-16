@@ -189,4 +189,9 @@ namespace board
     std::optional<std::pair<PieceType, Color>> Chessboard::operator[](const Position &position) const {
         return boardRpr.at(position);
     }
+
+    Position Chessboard::king_position() {
+        BitBoard kingBoard = boardRpr.get(PieceType::KING, white_turn_ ? Color::WHITE : Color::BLACK);
+        return Position(BitboardOperations::bitScanForward(kingBoard));
+    }
 }
