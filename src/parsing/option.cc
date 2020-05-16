@@ -1,6 +1,6 @@
+#include <cstring>
 #include "option.hh"
 
-using po = boost::program_options;
 
 
 Option::Option()
@@ -8,7 +8,7 @@ Option::Option()
     help = false;
     pgn_path = "";
     perft_path = "";
-    listeners_list = std::vector<std::string>();
+    listeners_vector = std::vector<std::string>();
 }
 
 bool Option::parse_options(int argc, char **argv)
@@ -16,11 +16,11 @@ bool Option::parse_options(int argc, char **argv)
     int i = 1;
     while (i < argc)
     {
-        if (!strcmp(argv[i]),"-h" || !strcmp(argv[i]),"--help")
+        if (!strcmp(argv[i],"-h") || !strcmp(argv[i],"--help"))
         {
             help = true;
         }
-        else if (!strcmp(argv[i]),"--pgn")
+        else if (!strcmp(argv[i],"--pgn"))
         {
             i++;
             if (i == argc)
@@ -39,7 +39,7 @@ bool Option::parse_options(int argc, char **argv)
             while (i < argc)
             {
                 std::string tmp = argv[i];
-                listeners_list.push_back(tmp);
+                listeners_vector.push_back(tmp);
                 i++;
             }
         }
@@ -55,4 +55,16 @@ bool Option::parse_options(int argc, char **argv)
         i++;
     }
     return true;
+}
+
+const std::vector<std::string> &Option::getListenersVector() const {
+    return listeners_vector;
+}
+
+const std::string &Option::getPgnPath() const {
+    return pgn_path;
+}
+
+const std::string &Option::getPerftPath() const {
+    return perft_path;
 }

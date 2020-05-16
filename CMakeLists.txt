@@ -22,13 +22,15 @@ set(SRC_ENGINE
         "src/chess_engine/board/bitboard-operations.hh"
         "src/chess_engine/board/magic.cc"
         "src/chess_engine/board/magic.hh"
-    "src"
+        "src/parsing/option.cc"
+        "src/parsing/option.hh"
 )
 
 # Put your test files here
 set(SRC_GTEST
         "tests/unit/chessboard-representation-tests.cc"
         "tests/unit/magic-tests.cc"
+        "tests/unit/option-tests.cc"
 
 )
 
