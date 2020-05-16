@@ -19,7 +19,9 @@ public:
     , handler(handler)
     {}
 
-  bool start_game(board::Chessboard chessboard, HandleListener handler);
+  bool start_game(board::Chessboard chessboard, HandleListener handle);
+  bool do_castling(board::Chessboard chessboard, HandleListener handle, board::Move move,board::Rank rank);
+  void disqualify(HandleListener handle, board::Color color);
 
   static std::vector<board::Move> get_moves(const std::string& file);
 
