@@ -1,9 +1,7 @@
 #pragma once
 
-#include "Handle_listeners.hh"
-#include "chessboard.hh"
-#include "pgn-parser.hh"
-#include "move.hh"
+#include "listener/Handle_listeners.hh"
+#include "chess_engine/board/chessboard.hh"
 #include <string>
 #include <fstream>
 #include <utility>
@@ -12,23 +10,21 @@
 class Engine
 {
 
+private:
+
+    std::string pgn_path;
+    listener::HandleListener handler;
+
 public:
 
-  Engine(std::string pgn, HandleListener& handler)
+  Engine(std::string pgn, listener::HandleListener& handler)
     : pgn_path(std::move(pgn))
     , handler(handler)
     {}
 
-  bool start_game(board::Chessboard chessboard, HandleListener handle);
-  bool do_castling(board::Chessboard chessboard, HandleListener handle, board::Move move,board::Rank rank);
-  void disqualify(HandleListener handle, board::Color color);
+  bool start_game(board::Chessboard chessboard, listener::HandleListener handle);
+  bool do_castling(board::Chessboard chessboard, listener::HandleListener handle, board::Move move,board::Rank rank);
+  void disqualify(listener::HandleListener handle, board::Color color);
 
   static std::vector<board::Move> get_moves(const std::string& file);
-
-
-private:
-
-  std::string pgn_path;
-  HandleListener handler;
-
 };

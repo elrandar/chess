@@ -35,6 +35,16 @@ namespace board
         bool is_check();
         bool is_checkmate();
         bool is_draw();
-        std::tuple<PieceType, Color> operator[](Position position);
+        std::optional<std::pair<PieceType, Color>> operator[](Position position);
+        bool isWhiteTurn() const;
+        void setWhiteTurn(bool whiteTurn);
+        bool isWhiteKingCastling() const;
+        void setWhiteKingCastling(bool whiteKingCastling);
+        bool isWhiteQueenCastling() const;
+        void setWhiteQueenCastling(bool whiteQueenCastling);
+        bool isBlackKingCastling() const;
+        void setBlackKingCastling(bool blackKingCastling);
+        bool isBlackQueenCastling() const;
+        void setBlackQueenCastling(bool blackQueenCastling);
     };
 }

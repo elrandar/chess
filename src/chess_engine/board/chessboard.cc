@@ -139,4 +139,54 @@ namespace board
         last_fifty_turn_ = 50;
         boardRpr = Chessboard_rpr();
     }
+
+    bool Chessboard::isWhiteTurn() const {
+        return white_turn_;
+    }
+
+    void Chessboard::setWhiteTurn(bool whiteTurn) {
+        white_turn_ = whiteTurn;
+    }
+
+    bool Chessboard::isWhiteKingCastling() const {
+        return white_king_castling_;
+    }
+
+    void Chessboard::setWhiteKingCastling(bool whiteKingCastling) {
+        white_king_castling_ = whiteKingCastling;
+    }
+
+    bool Chessboard::isWhiteQueenCastling() const {
+        return white_queen_castling_;
+    }
+
+    void Chessboard::setWhiteQueenCastling(bool whiteQueenCastling) {
+        white_queen_castling_ = whiteQueenCastling;
+    }
+
+    bool Chessboard::isBlackKingCastling() const {
+        return black_king_castling_;
+    }
+
+    void Chessboard::setBlackKingCastling(bool blackKingCastling) {
+        black_king_castling_ = blackKingCastling;
+    }
+
+    bool Chessboard::isBlackQueenCastling() const {
+        return black_queen_castling_;
+    }
+
+    void Chessboard::setBlackQueenCastling(bool blackQueenCastling) {
+        black_queen_castling_ = blackQueenCastling;
+    }
+
+    bool Chessboard::is_move_legal(Move move) {
+        if (move.dest_pos_get() == Position(56)) // FIXME de la merde pour que ca compile
+        {}
+        return false;
+    }
+
+    std::optional<std::pair<PieceType, Color>> Chessboard::operator[](Position position) {
+        return boardRpr.at(position);
+    }
 }

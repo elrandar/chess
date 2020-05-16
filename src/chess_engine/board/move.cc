@@ -26,4 +26,24 @@ namespace board
         capture_ = capture;
     }
 
+    Move::Move(Position start, Position end, PieceType pieceType, std::optional<PieceType> promotion, bool b)
+        : Move(start, end, pieceType)
+    {
+        promotion_ = promotion;
+        if (b)
+        {
+            capture_b_ = b;
+        } else
+        {
+            capture_ = std::nullopt;
+        }
+    }
+
+    Move::Move(Position start, Position dest, PieceType pieceType)
+        : start_pos_(start)
+        , dest_pos_(dest)
+        , piece_(pieceType)
+    {
+    }
+
 }

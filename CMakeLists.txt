@@ -24,6 +24,13 @@ set(SRC_ENGINE
         "src/chess_engine/board/magic.hh"
         "src/parsing/option.cc"
         "src/parsing/option.hh"
+        "src/parsing/pgn-parser/pgn-parser.cc"
+        "src/parsing/pgn-parser/pgn-exception.cc"
+        "src/parsing/pgn-parser/report-type.hh"
+        "src/parsing/pgn-parser/pgn-move.cc"
+        "src/listener/Handle_listeners.cc"
+        "src/listener/Handle_listeners.hh"
+        "src/engine.cc"
 )
 
 # Put your test files here

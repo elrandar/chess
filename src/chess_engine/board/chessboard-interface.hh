@@ -2,9 +2,9 @@
 
 #include <optional>
 
-#include "chess_engine/board/color.hh"
-#include "chess_engine/board/piece-type.hh"
-#include "chess_engine/board/position.hh"
+#include "piece-type.hh"
+#include "color.hh"
+#include "position.hh"
 
 namespace board
 {
