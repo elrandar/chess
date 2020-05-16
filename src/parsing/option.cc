@@ -1,11 +1,19 @@
+#include <cstring>
 #include "option.hh"
 
 
 
+Option::Option()
+{
+    help = false;
+    pgn_path = "";
+    perft_path = "";
+    listeners_vector = std::vector<std::string>();
+}
+
 bool Option::parse_options(int argc, char **argv)
 {
     int i = 1;
-
     while (i < argc)
     {
         if (!strcmp(argv[i],"-h") || !strcmp(argv[i],"--help"))
@@ -31,7 +39,7 @@ bool Option::parse_options(int argc, char **argv)
             while (i < argc)
             {
                 std::string tmp = argv[i];
-                listeners_list.push_back(tmp);
+                listeners_vector.push_back(tmp);
                 i++;
             }
         }
@@ -49,17 +57,14 @@ bool Option::parse_options(int argc, char **argv)
     return true;
 }
 
-void Option::show_help()
-{
-    std::cerr << "Options:" << std::endl;
-            std::cerr << "\t-h [ --help ]\t\tshow usage" << std::endl;
-            std::cerr << "\t--pgn arg\t\tpath to the PGN file" << std::endl;
-            std::cerr << "\t-l [ --listeners ] args\tlist of the paths of the listeners plugins" << std::endl;
+const std::vector<std::string> &Option::getListenersVector() const {
+    return listeners_vector;
 }
 
-
-std::vector<std::string> Option::get_listeners()
-{
-    return listeners_list;
+const std::string &Option::getPgnPath() const {
+    return pgn_path;
 }
 
+const std::string &Option::getPerftPath() const {
+    return perft_path;
+}
