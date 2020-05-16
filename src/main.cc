@@ -14,20 +14,20 @@ int main(int argc, char** argv)
 
     Option option;
     board::Chessboard chessboard;
-    HandleListener handler(option.get_listeners());
-    Engine engine(option.get_pgn(), handler);
+    HandleListener handler(option.getListenersVector());
+    Engine engine(option.getPgnPath(), handler);
     engine.start_game(chessboard, handler);
 
     if (!option.parse_options(argc, argv))
     {
         std::cout << "Options are not valid" << "\n";
     }
-    if (option.get_help())
+    if (option.isHelp())
     {
-        Option::show_help();
+        option.show_help();
         return 0;
     }
-    if (option.get_pgn().empty())
+    if (option.getPgnPath().empty())
     {
         std::cerr << "PGN file invalid" << "\n";
     }
