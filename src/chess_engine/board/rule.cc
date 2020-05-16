@@ -82,7 +82,7 @@ namespace board
         // Get the BitBoard containing the kings
         BitBoard remainingPieces = boardRpr.get(pieceType, color);
         BitBoard eligibleSquares = color == Color::WHITE ? ~boardRpr.WhitePieces() : ~boardRpr.BlackPieces();
-
+        BitBoard enemyPieces = color == Color::WHITE ? boardRpr.BlackPieces() : boardRpr.WhitePieces();
         // While there still are kings that have their moves to be generated
         while (remainingPieces != 0)
         {
@@ -93,13 +93,8 @@ namespace board
                                                          : Masks::knight_attacks(pieceCell);
             BitBoard generatedMoves = mask & eligibleSquares;
 
-            while (generatedMoves != 0)
-            {
-                unsigned moveCell = BitboardOperations::bitScanForward(generatedMoves);
-                moves.emplace_back(Position(pieceCell), Position(moveCell),
-                                   pieceType);
-                generatedMoves &= ~(1UL << (moveCell));
-            }
+            bitboard_to_moves(pieceCell, generatedMoves & ~enemyPieces,
+                    generatedMoves & enemyPieces, pieceType, moves, boardRpr);
             // Unset the bit
             remainingPieces &= ~(1UL << (pieceCell));
         }

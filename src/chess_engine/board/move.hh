@@ -11,8 +11,8 @@ namespace board
         Position start_pos_;
         Position dest_pos_;
         PieceType piece_;
-        PieceType promotion_;
-        PieceType capture_;
+        std::optional<PieceType> promotion_;
+        std::optional<PieceType> capture_;
         bool double_pawn_push_;
         bool king_castling_;
         bool queen_castling_;

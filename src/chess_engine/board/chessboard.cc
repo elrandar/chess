@@ -18,7 +18,7 @@ namespace board
 
         std::vector<std::vector<Move>> pieceMoves;
 
-        pieceMoves.push_back(Rule::generate_pawn_moves(*this));
+//        pieceMoves.push_back(Rule::generate_pawn_moves(*this));
         pieceMoves.push_back(Rule::generate_king_moves(*this));
 //        pieceMoves.push_back(Rule::generate_bishop_moves(*this));
 //        pieceMoves.push_back(Rule::generate_rook_moves(*this));

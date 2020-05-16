@@ -11,10 +11,6 @@ namespace board
     {
     private:
         Chessboard_rpr boardRpr;
-    public:
-        Chessboard_rpr &getBoardRpr();
-
-    private:
         bool white_turn_;
         bool white_king_castling_;
         bool white_queen_castling_;
@@ -33,6 +29,7 @@ namespace board
         bool is_checkmate();
         bool is_draw();
         std::pair<PieceType, Color> operator[](Position position);
+        Chessboard_rpr &getBoardRpr();
 
     };
 }
