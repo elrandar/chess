@@ -18,12 +18,18 @@ namespace board
 
         std::vector<std::vector<Move>> pieceMoves;
 
-//        pieceMoves.push_back(Rule::generate_pawn_moves(*this));
+        pieceMoves.push_back(Rule::generate_pawn_moves(*this));
+        std::cout << "There are " << pieceMoves.at(0).size() << " pawn moves\n";
         pieceMoves.push_back(Rule::generate_king_moves(*this));
-//        pieceMoves.push_back(Rule::generate_bishop_moves(*this));
-//        pieceMoves.push_back(Rule::generate_rook_moves(*this));
-//        pieceMoves.push_back(Rule::generate_queen_moves(*this));
+        std::cout << "There are " << pieceMoves.at(1).size() << " king moves\n";
+        pieceMoves.push_back(Rule::generate_bishop_moves(*this));
+        std::cout << "There are " << pieceMoves.at(2).size() << " bishop moves\n";
+        pieceMoves.push_back(Rule::generate_rook_moves(*this));
+        std::cout << "There are " << pieceMoves.at(3).size() << " rook moves\n";
+        pieceMoves.push_back(Rule::generate_queen_moves(*this));
+        std::cout << "There are " << pieceMoves.at(4).size() << " queen moves\n";
         pieceMoves.push_back(Rule::generate_knight_moves(*this));
+        std::cout << "There are " << pieceMoves.at(5).size() << " knight moves\n";
 
         for (auto moveVector : pieceMoves)
             moves.insert(moves.begin(), moveVector.begin(), moveVector.end());

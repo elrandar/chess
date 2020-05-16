@@ -89,7 +89,8 @@ namespace board
         const BitBoard fileMask = 0x0101010101010101;
         for (size_t i = 0; i < 64; i++, pos <<= 1UL)
         {
-            rook_attack[i] = (((rankMask << (i & 56UL))| (fileMask << (i & 7UL))) ^ pos) & 0x7e7e7e7e7e7e00UL;
+            rook_attack[i] = BitboardOperations::trim_edges(i, ((rankMask << (i & 56UL))| (fileMask << (i & 7UL))) ^ pos);
+            Chessboard_rpr::bitBoardPrint(rook_attacks(i));
         }
     }
 
@@ -126,7 +127,7 @@ namespace board
             nort = -diag & ( diag >> 31);
             sout =  diag & (-diag >> 31);
             BitBoard antiDiagMask = (mainAntiDiag >> sout) << nort;
-            bishop_attack[i] = ((diagMask | antiDiagMask) ^ pos) & 0x7e7e7e7e7e7e00UL;
+            bishop_attack[i] = BitboardOperations::trim_edges(i, (diagMask | antiDiagMask) ^ pos);
         }
     }
 

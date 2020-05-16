@@ -82,5 +82,17 @@ namespace board
     int BitboardOperations::bitScanForward(BitBoard bb) {
         return ffsll(bb) - 1;
     }
+
+    BitBoard BitboardOperations::trim_edges(int i, BitBoard bb) {
+        if (!(i <= 7))
+            bb &= ~FirstRank;
+        if (!(i >= 56))
+            bb &= ~EightRank;
+        if (!(i % 8 == 0))
+            bb &= notAFile;
+        if (!(i % 8 == 7))
+            bb &= notHFile;
+        return bb;
+    }
 }
 

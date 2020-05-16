@@ -1,5 +1,6 @@
 #include "rule.hh"
 #include "masks.hh"
+#include "magic.hh"
 
 namespace board
 {
@@ -114,6 +115,78 @@ namespace board
         auto moves = std::vector<Move>();
         generate_knight_king_moves_color(PieceType::KNIGHT, Color::WHITE, boardRpr, moves);
         generate_knight_king_moves_color(PieceType::KNIGHT, Color::BLACK, boardRpr, moves);
+        return moves;
+    }
+
+    std::vector<Move> Rule::generate_bishop_moves(Chessboard &board) {
+        auto boardRpr = board.getBoardRpr();
+        auto moves = std::vector<Move>();
+        generate_bishop_rook_moves_color(boardRpr, Color::WHITE, PieceType::BISHOP, moves, false);
+        generate_bishop_rook_moves_color(boardRpr, Color::BLACK, PieceType::BISHOP, moves, false);
+        return moves;
+    }
+
+    std::vector<Move>
+    Rule::generate_bishop_rook_moves_color(Chessboard_rpr &chessboardRpr, Color color, PieceType pieceType,
+                                           std::vector<Move> &moves, bool isQueen)
+    {
+        BitBoard remainingPieces = isQueen ? chessboardRpr.get(PieceType::QUEEN, color) :
+                                            chessboardRpr.get(pieceType, color);
+        BitBoard eligibleSquares = color == Color::WHITE ? ~chessboardRpr.WhitePieces() : ~chessboardRpr.BlackPieces();
+        BitBoard enemyPieces = color == Color::WHITE ? chessboardRpr.BlackPieces() : chessboardRpr.WhitePieces();
+        // While there still are pieces that have their moves to be generated
+        while (remainingPieces != 0)
+        {
+            // Get the position of the least significant bit that is set
+            unsigned pieceCell = BitboardOperations::bitScanForward(remainingPieces);
+
+            BitBoard mask;
+            BitBoard magic;
+            unsigned shift;
+
+            if (pieceType == PieceType::BISHOP)
+            {
+                mask = Masks::bishop_attacks(pieceCell);
+                magic = magic::BMagics[pieceCell];
+                shift = magic::BShift[pieceCell];
+            } else
+            {
+                mask = Masks::rook_attacks(pieceCell);
+                magic = magic::RMagics[pieceCell];
+                shift = magic::RShift[pieceCell];
+            }
+
+            auto index = ((chessboardRpr.occupied() & mask) * magic) >> shift;
+
+            BitBoard generatedMoves;
+            if (pieceType == PieceType::BISHOP)
+                generatedMoves = magic::BishopAttacksSquare[pieceCell][index] & eligibleSquares;
+            else
+                generatedMoves = magic::RookAttacksSquare[pieceCell][index] & eligibleSquares;
+
+            bitboard_to_moves(pieceCell, generatedMoves & ~enemyPieces,
+                              generatedMoves & enemyPieces, pieceType, moves, chessboardRpr);
+            // Unset the bit
+            remainingPieces &= ~(1UL << (pieceCell));
+        }
+        return moves;
+    }
+
+    std::vector<Move> Rule::generate_rook_moves(Chessboard &board) {
+        auto boardRpr = board.getBoardRpr();
+        auto moves = std::vector<Move>();
+        generate_bishop_rook_moves_color(boardRpr, Color::WHITE, PieceType::ROOK, moves, false);
+        generate_bishop_rook_moves_color(boardRpr, Color::BLACK, PieceType::ROOK, moves, false);
+        return moves;
+    }
+
+    std::vector<Move> Rule::generate_queen_moves(Chessboard &board) {
+        auto boardRpr = board.getBoardRpr();
+        auto moves = std::vector<Move>();
+        generate_bishop_rook_moves_color(boardRpr, Color::WHITE, PieceType::ROOK, moves, true);
+        generate_bishop_rook_moves_color(boardRpr, Color::BLACK, PieceType::ROOK, moves, true);
+        generate_bishop_rook_moves_color(boardRpr, Color::WHITE, PieceType::BISHOP, moves, true);
+        generate_bishop_rook_moves_color(boardRpr, Color::BLACK, PieceType::BISHOP, moves, true);
         return moves;
     }
 
