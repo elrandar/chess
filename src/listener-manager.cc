@@ -96,13 +96,48 @@ namespace listener
         }
         return true;
     }
+    //check si le roi est en echec
+    bool ListenerManager::check_on_position(std::vector<board::Move> legal_moves, board::Position king_pos, board::Color color)
+    {
+        for (auto move : legal_moves)
+        {
+            if (move.dest_pos_get() == king_pos)
+            {
+                auto pair = chessboard_[move.start_pos_get()];
+                if (pair->first != board::PieceType::KING && pair->second != color)
+                {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+    //check si le roi a un move possible dans les legal move
+    bool ListenerManager::piece_can_move(std::vector<board::Move> legal_moves,board::PieceType piece, board::Color color)
+    {
+        for (auto move: legal_moves)
+        {
+            if (chessboard_[move.start_pos_get()]->first == piece
+                && chessboard_[move.start_pos_get()]->second == color)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
 
+    bool ListenerManager::is_king_oncheck(board::Color color)
+    {
+        std::vector<board::Move> vect = chessboard_.generate_legal_moves();
+        return check_on_position(vect, chessboard_.king_position(color), color);
+    }
 
     bool ListenerManager::run_pgn(std::string pgn_path){
 
         std::vector<board::Move> move_list = pgn_to_moves(pgn_path);
         for(auto move: move_list)
         {
+            std::vector<board::Move> vect = chessboard_.generate_legal_moves();
             if (!chessboard_.is_move_legal(move))
             {
                 if (chessboard_.isWhiteTurn())
@@ -159,9 +194,44 @@ namespace listener
                     chessboard_.setBlackQueenCastling(false);
                 }
             }
-            //Gere le Check -- A COMPLETER
-            /* if ( chessboard_[move.dest_pos_get()]->first
-            */
+            //Gere le Check / mat / pat
+             if ( chessboard_[move.dest_pos_get()]->first != board::PieceType::KING)
+             {
+                 bool check;
+                 bool can_move;
+                 if (chessboard_.isWhiteTurn()) {
+                     check = is_king_oncheck(board::Color::BLACK);
+                     can_move = piece_can_move(vect,board::PieceType::KING,board::Color::BLACK);
+                     if (check && can_move)
+                     {
+                         on_player_check(board::Color::BLACK);
+                     }
+                     else if (check && !can_move)
+                     {
+                         on_player_mat(board::Color::BLACK);
+                     }
+                     else if (!check && !can_move)
+                     {
+                         on_player_pat(board::Color::WHITE);
+                     }
+                 } else{
+                     check = is_king_oncheck(board::Color::WHITE);
+                     can_move = piece_can_move(vect,board::PieceType::KING,board::Color::WHITE);
+                     if (check && can_move)
+                     {
+                         on_player_check(board::Color::WHITE);
+                     }
+                     else if (check && !can_move)
+                     {
+                         on_player_mat(board::Color::WHITE);
+                     }
+                     else if (!check && !can_move)
+                     {
+                         on_player_pat(board::Color::BLACK);
+                     }
+                 }
+             }
+
             chessboard_.setWhiteTurn(!chessboard_.isWhiteTurn());
         }
         return true;

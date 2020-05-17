@@ -32,6 +32,10 @@ namespace listener
 
 
         static std::vector<board::Move> pgn_to_moves(const std::string& file);
+        bool check_on_position(std::vector<board::Move> legal_moves, board::Position king_pos, board::Color color);
+        bool is_king_oncheck(board::Color color);
+        bool piece_can_move(std::vector<board::Move> legal_moves,board::PieceType piece, board::Color color);
+
 
         // Wrapper Functions to act on all the listeners =============================================================
 

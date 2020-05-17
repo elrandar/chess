@@ -190,8 +190,8 @@ namespace board
         return boardRpr.at(position);
     }
 
-    Position Chessboard::king_position() {
-        BitBoard kingBoard = boardRpr.get(PieceType::KING, white_turn_ ? Color::WHITE : Color::BLACK);
+    Position Chessboard::king_position(Color color) {
+        BitBoard kingBoard = boardRpr.get(PieceType::KING, color/*white_turn_ ? Color::WHITE : Color::BLACK*/);
         return Position(BitboardOperations::bitScanForward(kingBoard));
     }
 }

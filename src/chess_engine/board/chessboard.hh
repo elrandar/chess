@@ -35,7 +35,7 @@ namespace board
         bool is_check();
         bool is_checkmate();
         bool is_draw();
-        Position king_position();
+        Position king_position(Color color);
         std::optional<std::pair<PieceType, Color>> operator[](const Position &position) const;
         bool isWhiteTurn() const;
         void setWhiteTurn(bool whiteTurn);
@@ -47,5 +47,8 @@ namespace board
         void setBlackKingCastling(bool blackKingCastling);
         bool isBlackQueenCastling() const;
         void setBlackQueenCastling(bool blackQueenCastling);
+
+
+
     };
 }
