@@ -51,6 +51,18 @@ namespace board
         boardRpr = Chessboard_rpr();
     }
 
+    Chessboard::Chessboard(std::string str)
+    {
+        white_turn_ = true;
+        white_king_castling_ = false;
+        white_queen_castling_ = false;
+        black_king_castling_ = false;
+        black_queen_castling_ = false;
+        turn_ = 1;
+        last_fifty_turn_ = 50;
+        boardRpr = Chessboard_rpr(str);
+    }
+
     Chessboard_rpr& Chessboard::getBoardRpr() {
         return boardRpr;
     }

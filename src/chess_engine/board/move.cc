@@ -51,4 +51,8 @@ namespace board
         }
     }
 
+    void Move::setPromotion(const std::optional<PieceType> &promotion) {
+        promotion_ = promotion;
+    }
+
 }

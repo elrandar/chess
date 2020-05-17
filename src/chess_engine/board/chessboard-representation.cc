@@ -44,6 +44,19 @@ namespace board
         boards[11] = black_king;
     }
 
+    Chessboard_rpr::Chessboard_rpr(std::string str) {
+       if (str.empty())
+       {
+
+       }
+       boards = std::array<BitBoard, 12>();
+       for (int i = 0; i < 12; i++)
+       {
+           boards[i] = 0ul;
+       }
+       boards[4] = 1ul << 50;
+    }
+
     Chessboard_rpr::Chessboard_rpr(Move move)
         : Chessboard_rpr()
     {

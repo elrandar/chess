@@ -14,6 +14,8 @@ namespace board
     {
     private:
     public:
+        Chessboard_rpr(std::string str);
+
         std::array<BitBoard, 12> boards;
         BitBoard enPassant;
         BitBoard occupied();

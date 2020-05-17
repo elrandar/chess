@@ -22,12 +22,13 @@ namespace board
     public:
         Move(Position start, Position dest, PieceType pieceType);
         Move(Position start, Position dest, PieceType pieceType, PieceType capture);
+        Move(Position start, Position end, PieceType pieceType, std::optional<PieceType> promotion, bool b);
         PieceType piece_get();
         Position start_pos_get();
         Position dest_pos_get();
 
-        Move(Position start, Position end, PieceType pieceType, std::optional<PieceType> promotion, bool b);
 
         opt_piecetype_t get_promotion();
+        void setPromotion(const std::optional<PieceType> &promotion);
     };
 } // namespace board

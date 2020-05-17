@@ -10,6 +10,7 @@ namespace board
     class Chessboard
     {
     private:
+
         Chessboard_rpr boardRpr;
         bool white_turn_;
         bool white_king_castling_;
@@ -42,5 +43,7 @@ namespace board
         void setBlackKingCastling(bool blackKingCastling);
         bool isBlackQueenCastling() const;
         void setBlackQueenCastling(bool blackQueenCastling);
+
+        Chessboard(std::string str);
     };
 }

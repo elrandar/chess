@@ -7,13 +7,27 @@ namespace board
 
     void
     bitboard_to_moves(unsigned initialPosition, BitBoard pushMovesBitboard, BitBoard attackMovesBitboard,
-                                  PieceType pieceType, std::vector<Move> &moves, Chessboard_rpr& boardRpr)
+                                  PieceType pieceType, Color color, std::vector<Move> &moves, Chessboard_rpr& boardRpr)
     {
         while (pushMovesBitboard != 0)
         {
             unsigned moveCell = BitboardOperations::bitScanForward(pushMovesBitboard);
-            moves.emplace_back(Position(initialPosition), Position(moveCell),
-                               pieceType);
+
+            auto pos2 = Position(moveCell);
+
+            auto move = Move(Position(initialPosition), Position(moveCell), pieceType);
+            // Is there promotion ?
+            if (((color == Color::BLACK && pos2.rank_get() == Rank::ONE)
+                || (color == Color::WHITE && pos2.rank_get() == Rank::EIGHT))
+                && pieceType == PieceType::PAWN)
+            {
+                for (int i = 0; i < 4; i++)
+                {
+                    move.setPromotion(static_cast<PieceType>(i));
+                    moves.push_back(move);
+                }
+            } else
+                moves.push_back(move);
             pushMovesBitboard &= ~(1UL << (moveCell));
         }
         while (attackMovesBitboard != 0)
@@ -22,7 +36,20 @@ namespace board
             auto pos1 = Position(initialPosition);
             auto pos2 = Position(moveCell);
             auto capture = boardRpr.at(moveCell);
-            moves.emplace_back(pos1, pos2, pieceType, capture.value().first);
+            auto move = Move(pos1, pos2, pieceType, capture.value().first);
+
+            if (((color == Color::BLACK && pos2.rank_get() == Rank::ONE)
+                 || (color == Color::WHITE && pos2.rank_get() == Rank::EIGHT))
+                && pieceType == PieceType::PAWN)
+            {
+                for (int i = 0; i < 4; i++)
+                {
+                    move.setPromotion(static_cast<PieceType>(i));
+                    moves.push_back(move);
+                }
+            } else
+                moves.push_back(move);
+
             attackMovesBitboard &= ~(1UL << (moveCell));
         }
     }
@@ -60,7 +87,7 @@ namespace board
 
             attackMoves = Masks::pawn_attacks(color, pieceCell) & enemyPieces;
 
-            bitboard_to_moves(pieceCell, pushMoves, attackMoves, PieceType::PAWN, moves, boardRpr);
+            bitboard_to_moves(pieceCell, pushMoves, attackMoves, PieceType::PAWN, color, moves, boardRpr);
             pawns &= ~(1UL << pieceCell);
         }
         return moves;
@@ -95,7 +122,7 @@ namespace board
             BitBoard generatedMoves = mask & eligibleSquares;
 
             bitboard_to_moves(pieceCell, generatedMoves & ~enemyPieces,
-                    generatedMoves & enemyPieces, pieceType, moves, boardRpr);
+                    generatedMoves & enemyPieces, pieceType, color, moves, boardRpr);
             // Unset the bit
             remainingPieces &= ~(1UL << (pieceCell));
         }
@@ -165,7 +192,7 @@ namespace board
                 generatedMoves = magic::RookAttacksSquare[pieceCell][index] & eligibleSquares;
 
             bitboard_to_moves(pieceCell, generatedMoves & ~enemyPieces,
-                              generatedMoves & enemyPieces, pieceType, moves, chessboardRpr);
+                              generatedMoves & enemyPieces, pieceType, color, moves, chessboardRpr);
             // Unset the bit
             remainingPieces &= ~(1UL << (pieceCell));
         }
