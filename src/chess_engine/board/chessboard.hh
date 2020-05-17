@@ -28,7 +28,7 @@ namespace board
         bool is_check();
         bool is_checkmate();
         bool is_draw();
-        std::pair<PieceType, Color> operator[](Position position);
+        std::optional<std::pair<PieceType, Color>> operator[](const Position &position) const;
         Chessboard_rpr &getBoardRpr();
 
         Position king_position();

@@ -4,7 +4,7 @@
 #include "chess_engine/board/magic.hh"
 #include "parsing/option.hh"
 
-int main(int argc, char** argv)
+int main()
 {
     board::Masks::init();
     board::BitboardOperations::init_ms1bTable();
@@ -18,8 +18,8 @@ int main(int argc, char** argv)
 //    ListenerManager engine(option.getPgnPath(), handler);
 //    engine.run_pgn(chessboard, handler);
 
-    auto moves = cb.generate_legal_moves();
-    cb.getBoardRpr().print();
+    auto moves = chessboard.generate_legal_moves();
+    chessboard.getBoardRpr().print();
 
 
     //test blockboard generation

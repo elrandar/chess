@@ -90,7 +90,6 @@ namespace board
         for (size_t i = 0; i < 64; i++, pos <<= 1UL)
         {
             rook_attack[i] = BitboardOperations::trim_edges(i, ((rankMask << (i & 56UL))| (fileMask << (i & 7UL))) ^ pos);
-            Chessboard_rpr::bitBoardPrint(rook_attacks(i));
         }
     }
 

@@ -51,11 +51,4 @@ namespace board
         }
     }
 
-    Move::Move(Position start, Position dest, PieceType pieceType)
-        : start_pos_(start)
-        , dest_pos_(dest)
-        , piece_(pieceType)
-    {
-    }
-
 }
