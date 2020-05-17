@@ -25,6 +25,6 @@ namespace board
         Chessboard_rpr(Move move);
         void execute_move(Move move);
         void print();
-        std::optional<std::pair<PieceType, Color>> at(Position pos);
+        std::optional<std::pair<PieceType, Color>> at(Position pos) const;
     };
 }

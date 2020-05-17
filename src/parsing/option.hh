@@ -18,6 +18,9 @@ public:
     const std::vector<std::string> &getListenersVector() const;
     const std::string &getPgnPath() const;
     const std::string &getPerftPath() const;
+    bool isHelp() const {
+        return help;
+    }
 
 
 };

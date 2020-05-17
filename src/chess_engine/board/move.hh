@@ -17,6 +17,7 @@ namespace board
         bool king_castling_;
         bool queen_castling_;
         bool en_passant_;
+        bool capture_b_;
 
     public:
         Move(Position start, Position dest, PieceType pieceType);
@@ -24,5 +25,9 @@ namespace board
         PieceType piece_get();
         Position start_pos_get();
         Position dest_pos_get();
+
+        Move(Position start, Position end, PieceType pieceType, std::optional<PieceType> promotion, bool b);
+
+        opt_piecetype_t get_promotion();
     };
 } // namespace board

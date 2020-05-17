@@ -2,9 +2,9 @@
 
 #include <optional>
 
-#include "chess_engine/board/color.hh"
-#include "chess_engine/board/piece-type.hh"
-#include "chess_engine/board/position.hh"
+#include "../../chess_engine/board/piece-type.hh"
+#include "../../chess_engine/board/position.hh"
+#include "../../chess_engine/board/color.hh"
 #include "report-type.hh"
 
 namespace board
@@ -26,6 +26,27 @@ namespace board
         static PgnMove generate_castling(bool queen_side, Color color);
 
         void report_set(ReportType report);
+
+        Position get_start()
+        {
+            return start_;
+        }
+        Position get_end()
+        {
+            return end_;
+        }
+        PieceType get_piece()
+        {
+            return piece_;
+        }
+        opt_piece_t get_promotion()
+        {
+            return promotion_;
+        }
+        bool get_capture()
+        {
+            return capture_;
+        }
 
 
     private:

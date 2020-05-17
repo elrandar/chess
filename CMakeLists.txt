@@ -25,6 +25,12 @@ set(SRC_ENGINE
         "src/chess_engine/board/rule.cc"
         "src/parsing/option.cc"
         "src/parsing/option.hh"
+        "src/parsing/pgn-parser/pgn-parser.cc"
+        "src/parsing/pgn-parser/pgn-exception.cc"
+        "src/parsing/pgn-parser/report-type.hh"
+        "src/parsing/pgn-parser/pgn-move.cc"
+        "src/listener-manager.cc"
+        "src/listener/listener-wrapper.cc"
 )
 
 # Put your test files here
@@ -32,6 +38,7 @@ set(SRC_GTEST
         "tests/unit/chessboard-representation-tests.cc"
         "tests/unit/magic-tests.cc"
         "tests/unit/option-tests.cc"
+        "tests/unit/chessboard-tests.cc"
 
 )
 

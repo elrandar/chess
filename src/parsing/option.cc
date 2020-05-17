@@ -1,4 +1,5 @@
 #include <cstring>
+#include <iostream>
 #include "option.hh"
 
 
@@ -9,6 +10,14 @@ Option::Option()
     pgn_path = "";
     perft_path = "";
     listeners_vector = std::vector<std::string>();
+}
+
+void Option::show_help()
+{
+    std::cerr << "Options:" << std::endl;
+    std::cerr << "\t-h [ --help ]\t\tshow usage" << std::endl;
+    std::cerr << "\t--pgn arg\t\tpath to the PGN file" << std::endl;
+    std::cerr << "\t-l [ --listeners ] args\tlist of the paths of the listeners plugins" << std::endl;
 }
 
 bool Option::parse_options(int argc, char **argv)

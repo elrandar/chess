@@ -5,7 +5,7 @@
 #include <iostream>
 
 #include "pgn-exception.hh"
-#include "chess_engine/board/piece-type.hh"
+#include "../../chess_engine/board/position.hh"
 
 namespace pgn_parser
 {

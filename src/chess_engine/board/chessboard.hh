@@ -31,5 +31,16 @@ namespace board
         std::pair<PieceType, Color> operator[](Position position);
         Chessboard_rpr &getBoardRpr();
 
+        Position king_position();
+        bool isWhiteTurn() const;
+        void setWhiteTurn(bool whiteTurn);
+        bool isWhiteKingCastling() const;
+        void setWhiteKingCastling(bool whiteKingCastling);
+        bool isWhiteQueenCastling() const;
+        void setWhiteQueenCastling(bool whiteQueenCastling);
+        bool isBlackKingCastling() const;
+        void setBlackKingCastling(bool blackKingCastling);
+        bool isBlackQueenCastling() const;
+        void setBlackQueenCastling(bool blackQueenCastling);
     };
 }

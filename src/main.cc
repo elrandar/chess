@@ -1,34 +1,35 @@
+#include "listener-manager.hh"
 #include <iostream>
-#include <bitset>
-#include "chess_engine/board/chessboard-representation.hh"
-#include "chess_engine/board/position.hh"
-#include "chess_engine/board/move.hh"
-#include "chess_engine/board/chessboard.hh"
 #include "chess_engine/board/masks.hh"
 #include "chess_engine/board/magic.hh"
+#include "parsing/option.hh"
 
-int main()
+int main(int argc, char** argv)
 {
     board::Masks::init();
     board::BitboardOperations::init_ms1bTable();
     board::magic::build_table();
 
     using namespace board;
-    auto cb = Chessboard();
 
+    Option option;
+    board::Chessboard chessboard;
+//    ListenerManager handler(option.getListenersVector());
+//    ListenerManager engine(option.getPgnPath(), handler);
+//    engine.run_pgn(chessboard, handler);
 
     auto moves = cb.generate_legal_moves();
     cb.getBoardRpr().print();
 
-//    test blockboard generation
-//    test move generation
-    auto result = board::magic::generate_attack_bishop(27, 0x8041020000102041);
-    Chessboard_rpr::bitBoardPrint(0x8041020000102041);
-    Chessboard_rpr::bitBoardPrint(result);
 
-    auto index = ((0x8041020000102041 & 0x7e7e7e7e7e7e00UL) * board::magic::BMagics[27]) >> board::magic::BShift[27];
-    Chessboard_rpr::bitBoardPrint(board::magic::BishopAttacksSquare[27][index]);
-
-
+    //test blockboard generation
+//    std::bitset<64> bigbit = Masks::rook_attack[27];
+//    auto nb_bbit = bigbit.count();
+//    for (int i = 0; i < (1 << nb_bbit); i++)
+//    {
+//        Chessboard_rpr::bitBoardPrint(board::magic::generate_blockboard(i, Masks::rook_attack[27]));
+//    }
+    //test move generation
+    Chessboard_rpr::bitBoardPrint(board::magic::generate_attack_rook(0, 0x100000020));
     return 0;
 }
