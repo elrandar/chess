@@ -100,4 +100,20 @@ namespace board
         en_passant_ = enPassant;
     }
 
+    void Move::setKingCastling(bool kingCastling) {
+        king_castling_ = kingCastling;
+    }
+
+    void Move::setQueenCastling(bool queenCastling) {
+        queen_castling_ = queenCastling;
+    }
+
+    bool Move::isKingCastling() const {
+        return king_castling_;
+    }
+
+    bool Move::isQueenCastling() const {
+        return queen_castling_;
+    }
+
 }

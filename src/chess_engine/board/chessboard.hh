@@ -14,10 +14,11 @@ namespace board
         std::vector<Move> legalMoves;
         Chessboard_rpr boardRpr;
         bool white_turn_;
-        bool white_king_castling_;
-        bool white_queen_castling_;
-        bool black_king_castling_;
-        bool black_queen_castling_;
+        bool white_king_rook_moved;
+        bool white_queen_rook_moved;
+        bool black_king_rook_moved;
+        bool black_queen_rook_moved;
+        bool king_moved;
         std::stack<BitBoard> en_passant_;
         unsigned int turn_;
         unsigned int last_fifty_turn_;
@@ -50,8 +51,12 @@ namespace board
 
         Chessboard(std::string str);
 
-        bool is_sq_attacked(int sq, Color color);
-
         bool is_sq_attacked_by_color(int sq, Color color);
+
+        void do_castling(Move &move);
+
+        void update_castling(Move &move, Color color);
+
+        void undo_castling(Move &move);
     };
 }

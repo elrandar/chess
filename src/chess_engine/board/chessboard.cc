@@ -8,8 +8,73 @@
 
 namespace board
 {
+
+    void Chessboard::update_castling(Move &move, Color color)
+    {
+        auto piece = move.piece_get();
+        if (piece == PieceType::KING)
+        {
+            king_moved = true;
+        }
+        else if (piece == PieceType::ROOK)
+        {
+            if (color == Color::WHITE)
+            {
+                if (move.start_pos_get() == Position(7))
+                {
+                    white_king_rook_moved = true;
+                }
+                else if (move.start_pos_get()  == Position(0))
+                {
+                    white_queen_rook_moved = true;
+                }
+            }
+            else
+            {
+                if (move.start_pos_get() == Position(63))
+                {
+                    black_king_rook_moved = true;
+                }
+                else if (move.start_pos_get()  == Position(56))
+                {
+                    black_queen_rook_moved = true;
+                }
+            }
+        }
+    }
+
+    void Chessboard::do_castling(Move &move)
+    {
+        auto king_board = isWhiteTurn() ? 5 : 11;
+        auto rook_board = isWhiteTurn() ? 1 : 7;
+        auto king_side_rook_mask = isWhiteTurn() ? ~128UL : ~(1UL << 63UL);
+        auto king_side_rook_set = isWhiteTurn() ? (1UL << 5UL) : (1UL << 61UL);
+        auto queen_side_rook_mask = isWhiteTurn() ? 1UL : (1UL << 56UL);
+        auto queen_side_rook_set = isWhiteTurn() ? (1UL << 3UL) : (1UL << 59UL);
+
+        if (move.isKingCastling())
+        {
+            boardRpr.boards[king_board] <<= 2UL;
+            boardRpr.boards[rook_board] &= king_side_rook_mask;
+            boardRpr.boards[rook_board] |= king_side_rook_set;
+        }
+        else
+        {
+            boardRpr.boards[king_board] >>= 2UL;
+            boardRpr.boards[rook_board] &= queen_side_rook_mask;
+            boardRpr.boards[rook_board] |= queen_side_rook_set;
+        }
+    }
     void Chessboard::do_move(Move &move)
     {
+        if (move.isKingCastling() || move.isQueenCastling())
+        {
+            do_castling(move);
+            en_passant_.push(0ul);
+            setWhiteTurn(!isWhiteTurn());
+            update_castling(move, isWhiteTurn() ? Color::WHITE : Color::BLACK);
+            return;
+        }
         auto &rpr = getBoardRpr();
 
         auto dest = move.dest_pos_get();
@@ -20,10 +85,11 @@ namespace board
             move.setCapture(rpr.at(dest).value().first);
         }
 
-
         auto piece = std::pair<PieceType, Color>(move.piece_get(), isWhiteTurn() ? Color::WHITE : Color::BLACK);
         bool capture = move.getCapture().has_value();
         std::optional<PieceType> promotion = move.get_promotion();
+
+        update_castling(move, piece.second);
 
         unsigned int source_int = static_cast<int>(src.file_get()) + static_cast<int>(src.rank_get()) * 8;
         unsigned int dest_int = static_cast<int>(dest.file_get()) + static_cast<int>(dest.rank_get()) * 8;
@@ -52,6 +118,33 @@ namespace board
         setWhiteTurn(!isWhiteTurn());
     }
 
+
+    void Chessboard::undo_castling(Move &move)
+    {
+        king_moved = false;
+
+        auto king_board = isWhiteTurn() ? 5 : 11;
+        auto rook_board = isWhiteTurn() ? 1 : 7;
+        auto king_side_rook_mask = isWhiteTurn() ? ~(1UL << 5UL) : ~(1UL << 61UL);
+        auto queen_side_rook_mask = isWhiteTurn() ? ~(1UL << 3UL) : ~(1UL << 59UL);
+        auto king_side_rook_set = isWhiteTurn() ? ~128UL : ~(1UL << 63UL);
+        auto queen_side_rook_set = isWhiteTurn() ? 1UL : (1UL << 56UL);
+
+        if (move.isKingCastling())
+        {
+            isWhiteTurn() ? white_king_rook_moved = false : black_king_rook_moved = false;
+            boardRpr.boards[king_board] >>= 2UL;
+            boardRpr.boards[rook_board] &= king_side_rook_mask;
+            boardRpr.boards[rook_board] |= king_side_rook_set;
+        }
+        else
+        {
+            isWhiteTurn() ? white_queen_rook_moved = false : black_queen_rook_moved = false;
+            boardRpr.boards[king_board] <<= 2UL;
+            boardRpr.boards[rook_board] &= queen_side_rook_mask;
+            boardRpr.boards[rook_board] |= queen_side_rook_set;
+        }
+    }
     void Chessboard::undo_move(Move move)
     {
         getEnPassant().pop();
@@ -90,19 +183,25 @@ namespace board
 
         std::vector<std::vector<Move>> pieceMoves;
 
-        pieceMoves.push_back(Rule::generate_pawn_moves(*this));
-        std::cout << "There are " << pieceMoves.at(0).size() << " pawn moves\n";
-        pieceMoves.push_back(Rule::generate_king_moves(*this));
-        std::cout << "There are " << pieceMoves.at(1).size() << " king moves\n";
-        pieceMoves.push_back(Rule::generate_bishop_moves(*this));
-        std::cout << "There are " << pieceMoves.at(2).size() << " bishop moves\n";
-        pieceMoves.push_back(Rule::generate_rook_moves(*this));
-        std::cout << "There are " << pieceMoves.at(3).size() << " rook moves\n";
-        pieceMoves.push_back(Rule::generate_queen_moves(*this));
-        std::cout << "There are " << pieceMoves.at(4).size() << " queen moves\n";
-        pieceMoves.push_back(Rule::generate_knight_moves(*this));
-        std::cout << "There are " << pieceMoves.at(5).size() << " knight moves\n";
-
+        if (is_check())
+        {
+            pieceMoves.push_back(Rule::generate_king_moves(*this));
+        }
+        else
+        {
+            pieceMoves.push_back(Rule::generate_pawn_moves(*this));
+            std::cout << "There are " << pieceMoves.at(0).size() << " pawn moves\n";
+            pieceMoves.push_back(Rule::generate_king_moves(*this));
+            std::cout << "There are " << pieceMoves.at(1).size() << " king moves\n";
+            pieceMoves.push_back(Rule::generate_bishop_moves(*this));
+            std::cout << "There are " << pieceMoves.at(2).size() << " bishop moves\n";
+            pieceMoves.push_back(Rule::generate_rook_moves(*this));
+            std::cout << "There are " << pieceMoves.at(3).size() << " rook moves\n";
+            pieceMoves.push_back(Rule::generate_queen_moves(*this));
+            std::cout << "There are " << pieceMoves.at(4).size() << " queen moves\n";
+            pieceMoves.push_back(Rule::generate_knight_moves(*this));
+            std::cout << "There are " << pieceMoves.at(5).size() << " knight moves\n";
+        }
         for (auto moveVector : pieceMoves)
             moves.insert(moves.begin(), moveVector.begin(), moveVector.end());
 
@@ -113,18 +212,57 @@ namespace board
             if (is_check())
                 moves.erase(i);
             undo_move(iCopy);
+
         }
 
+        //add castling
+
+        auto king_castling = (isWhiteTurn() ? !white_king_rook_moved : !black_king_rook_moved) && !king_moved;
+        auto queen_castling = (isWhiteTurn() ? !white_queen_rook_moved : !black_queen_rook_moved) && !king_moved;
+        auto dest_castling = isWhiteTurn() ? Position(6) : Position(2);
+        auto mask_king_side_occupied = isWhiteTurn() ? 0x60UL : 0x6000000000000000UL;
+        auto mask_queen_side_occupied = isWhiteTurn() ? 0xeUL : 0xe00000000000000UL;
+        auto index_king_side = isWhiteTurn() ? 5 : 61;
+        auto index_queen_side = isWhiteTurn() ? 2 : 58;
+        auto attacker_color = isWhiteTurn() ? Color::BLACK : Color::WHITE;
+
+        if (king_castling)
+        {
+            if ((boardRpr.occupied() & mask_king_side_occupied) == 0UL)
+            {
+                if (!is_sq_attacked_by_color(index_king_side, attacker_color)
+                    && !is_sq_attacked_by_color(index_king_side + 1 , attacker_color))
+                {
+                    auto castling = Move(Position(4), dest_castling, PieceType::KING);
+                    castling.setKingCastling(true);
+                    moves.push_back(castling);
+                }
+            }
+        }
+        if (queen_castling)
+        {
+            if ((boardRpr.occupied() & mask_queen_side_occupied) == 0UL)
+            {
+                if (!is_sq_attacked_by_color(index_queen_side, attacker_color)
+                    && !is_sq_attacked_by_color(index_queen_side + 1 , attacker_color))
+                {
+                    auto castling = Move(Position(4), dest_castling, PieceType::KING);
+                    castling.setQueenCastling(true);
+                    moves.push_back(castling);
+                }
+            }
+        }
         return moves;
     }
 
     Chessboard::Chessboard()
     {
         white_turn_ = true;
-        white_king_castling_ = false;
-        white_queen_castling_ = false;
-        black_king_castling_ = false;
-        black_queen_castling_ = false;
+        white_king_rook_moved = false;
+        white_queen_rook_moved = false;
+        black_king_rook_moved = false;
+        black_queen_rook_moved = false;
+        king_moved = false;
         turn_ = 1;
         last_fifty_turn_ = 50;
         boardRpr = Chessboard_rpr();
@@ -135,10 +273,11 @@ namespace board
     Chessboard::Chessboard(std::string str)
     {
         white_turn_ = true;
-        white_king_castling_ = false;
-        white_queen_castling_ = false;
-        black_king_castling_ = false;
-        black_queen_castling_ = false;
+        white_king_rook_moved = false;
+        white_queen_rook_moved = false;
+        black_king_rook_moved = false;
+        black_queen_rook_moved = false;
+        king_moved = false;
         turn_ = 1;
         last_fifty_turn_ = 50;
         boardRpr = Chessboard_rpr(str);
@@ -159,35 +298,35 @@ namespace board
     }
 
     bool Chessboard::isWhiteKingCastling() const {
-        return white_king_castling_;
+        return white_king_rook_moved;
     }
 
     void Chessboard::setWhiteKingCastling(bool whiteKingCastling) {
-        white_king_castling_ = whiteKingCastling;
+        white_king_rook_moved = whiteKingCastling;
     }
 
     bool Chessboard::isWhiteQueenCastling() const {
-        return white_queen_castling_;
+        return white_queen_rook_moved;
     }
 
     void Chessboard::setWhiteQueenCastling(bool whiteQueenCastling) {
-        white_queen_castling_ = whiteQueenCastling;
+        white_queen_rook_moved = whiteQueenCastling;
     }
 
     bool Chessboard::isBlackKingCastling() const {
-        return black_king_castling_;
+        return black_king_rook_moved;
     }
 
     void Chessboard::setBlackKingCastling(bool blackKingCastling) {
-        black_king_castling_ = blackKingCastling;
+        black_king_rook_moved = blackKingCastling;
     }
 
     bool Chessboard::isBlackQueenCastling() const {
-        return black_queen_castling_;
+        return black_queen_rook_moved;
     }
 
     void Chessboard::setBlackQueenCastling(bool blackQueenCastling) {
-        black_queen_castling_ = blackQueenCastling;
+        black_queen_rook_moved = blackQueenCastling;
     }
 
     bool Chessboard::is_move_legal(Move move) {

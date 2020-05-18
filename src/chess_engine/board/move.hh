@@ -27,6 +27,10 @@ namespace board
         Position start_pos_get();
         Position dest_pos_get();
 
+        void setKingCastling(bool kingCastling);
+
+        void setQueenCastling(bool queenCastling);
+
         bool operator==(const Move &rhs) const;
 
         bool operator!=(const Move &rhs) const;
@@ -42,6 +46,10 @@ namespace board
         bool isDoublePawnPush() const;
 
         void setDoublePawnPush(bool doublePawnPush);
+
+        bool isKingCastling() const;
+
+        bool isQueenCastling() const;
 
         const std::optional<PieceType> &getCapture() const;
         opt_piecetype_t get_promotion();

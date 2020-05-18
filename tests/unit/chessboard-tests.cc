@@ -152,3 +152,36 @@ TEST(chessboard, is_check_false)
 
     ASSERT_FALSE(chessboard.is_check());
 }
+
+TEST(chessboard, castling_test_white_king_side)
+{
+    board::Masks::init();
+    board::BitboardOperations::init_ms1bTable();
+    board::magic::build_table();
+    using namespace board;
+    auto chessboard = Chessboard();
+
+    auto &rpr = chessboard.getBoardRpr();
+    rpr.boards[(int)PieceType::KNIGHT] = 0UL;
+    rpr.boards[(int)PieceType::KNIGHT + 6] = 0UL;
+    rpr.boards[(int)PieceType::QUEEN] = 0UL;
+    rpr.boards[(int)PieceType::QUEEN + 6] = 0UL;
+    rpr.boards[(int)PieceType::BISHOP] = 0UL;
+    rpr.boards[(int)PieceType::BISHOP + 6] = 0UL;
+
+    auto moves = chessboard.generate_legal_moves();
+
+    chessboard.getBoardRpr().print();
+
+    for (auto move : moves)
+    {
+        if (move.isKingCastling())
+        {
+            chessboard.do_move(move);
+        }
+    }
+
+    chessboard.getBoardRpr().print();
+    EXPECT_EQ(rpr.at(Position(5)).value(), (std::pair<PieceType, Color> (PieceType::ROOK, Color::WHITE)));
+    EXPECT_EQ(rpr.at(Position(6)).value(), (std::pair<PieceType, Color> (PieceType::KING, Color::WHITE)));
+}
