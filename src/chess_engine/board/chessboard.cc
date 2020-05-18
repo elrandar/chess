@@ -121,4 +121,16 @@ namespace board
         BitBoard kingBoard = boardRpr.get(PieceType::KING, white_turn_ ? Color::WHITE : Color::BLACK);
         return Position(BitboardOperations::bitScanForward(kingBoard));
     }
+
+    bool Chessboard::is_check() {
+        Position kingPos = king_position();
+        for (auto move : generate_legal_moves())
+        {
+            if (move.dest_pos_get() == kingPos)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
 }

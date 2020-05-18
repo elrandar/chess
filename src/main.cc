@@ -13,8 +13,7 @@ int main()
     using namespace board;
 
     Option option;
-    std::string lol = std::string("lol");
-    board::Chessboard chessboard(lol);
+    auto chessboard = board::Chessboard();
 //    ListenerManager handler(option.getListenersVector());
 //    ListenerManager engine(option.getPgnPath(), handler);
 //    engine.run_pgn(chessboard, handler);
