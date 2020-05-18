@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vector>
+#include <stack>
 #include "move.hh"
 #include "color.hh"
 #include "chessboard-representation.hh"
@@ -17,7 +18,7 @@ namespace board
         bool white_queen_castling_;
         bool black_king_castling_;
         bool black_queen_castling_;
-        //TODO en_passant;
+        std::stack<BitBoard> en_passant_;
         unsigned int turn_;
         unsigned int last_fifty_turn_;
 
@@ -32,6 +33,8 @@ namespace board
         bool is_draw();
         std::optional<std::pair<PieceType, Color>> operator[](const Position &position) const;
         Chessboard_rpr &getBoardRpr();
+
+        std::stack<BitBoard> & getEnPassant();
 
         Position king_position();
         bool isWhiteTurn() const;

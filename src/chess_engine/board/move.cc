@@ -84,4 +84,20 @@ namespace board
         return !(rhs == *this);
     }
 
+    void Move::setDoublePawnPush(bool doublePawnPush) {
+        double_pawn_push_ = doublePawnPush;
+    }
+
+    bool Move::isDoublePawnPush() const {
+        return double_pawn_push_;
+    }
+
+    bool Move::isEnPassant() const {
+        return en_passant_;
+    }
+
+    void Move::setEnPassant(bool enPassant) {
+        en_passant_ = enPassant;
+    }
+
 }

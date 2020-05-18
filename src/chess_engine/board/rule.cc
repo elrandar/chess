@@ -7,7 +7,8 @@ namespace board
 
     void
     bitboard_to_moves(unsigned initialPosition, BitBoard pushMovesBitboard, BitBoard attackMovesBitboard,
-                                  PieceType pieceType, Color color, std::vector<Move> &moves, Chessboard_rpr& boardRpr)
+                      PieceType pieceType, Color color, std::vector<Move> &moves, Chessboard_rpr &boardRpr,
+                      bool isDoublePush)
     {
         while (pushMovesBitboard != 0)
         {
@@ -16,6 +17,8 @@ namespace board
             auto pos2 = Position(moveCell);
 
             auto move = Move(Position(initialPosition), Position(moveCell), pieceType);
+            if (isDoublePush)
+                move.setDoublePawnPush(true);
             // Is there promotion ?
             if (((color == Color::BLACK && pos2.rank_get() == Rank::ONE)
                 || (color == Color::WHITE && pos2.rank_get() == Rank::EIGHT))
@@ -37,7 +40,8 @@ namespace board
             auto pos2 = Position(moveCell);
             auto capture = boardRpr.at(moveCell);
             auto move = Move(pos1, pos2, pieceType, capture.value().first);
-
+            if (isDoublePush)
+                move.setEnPassant(true);
             if (((color == Color::BLACK && pos2.rank_get() == Rank::ONE)
                  || (color == Color::WHITE && pos2.rank_get() == Rank::EIGHT))
                 && pieceType == PieceType::PAWN)
@@ -56,7 +60,8 @@ namespace board
 
     //==============================PAWN===========================================
 
-    std::vector<Move> Rule::generate_pawn_moves_color(Chessboard_rpr &boardRpr, Color color, std::vector<Move> &moves) {
+    std::vector<Move> Rule::generate_pawn_moves_color(Chessboard_rpr &boardRpr, Color color, std::vector<Move> &moves,
+                                                        BitBoard en_passant) {
         using bo = BitboardOperations;
 
         BitBoard eligibleSquares = ~boardRpr.occupied();
@@ -69,25 +74,28 @@ namespace board
             unsigned pieceCell = bo::bitScanForward(pawns);
 
             BitBoard pushMoves;
+            BitBoard doublePushMoves;
             BitBoard attackMoves;
             if (color == Color::WHITE)
             {
                 // Single push
                 pushMoves = bo::nortOne(1UL << pieceCell) & eligibleSquares;
                 // Double push
-                pushMoves |= bo::nortOne(pushMoves) & bo::rank4 & eligibleSquares;
+                doublePushMoves = (bo::nortOne(pushMoves) & bo::rank4 & eligibleSquares);
             }
             else
             {
                 // Single push
                 pushMoves = bo::soutOne(1UL << pieceCell) & eligibleSquares;
                 // Double push
-                pushMoves |= bo::soutOne(pushMoves) & eligibleSquares & bo::rank5;
+                doublePushMoves = (bo::soutOne(pushMoves) & eligibleSquares & bo::rank5);
             }
 
             attackMoves = Masks::pawn_attacks(color, pieceCell) & enemyPieces;
+            auto enPassantattackMoves = Masks::pawn_attacks(color, pieceCell) & en_passant;
 
-            bitboard_to_moves(pieceCell, pushMoves, attackMoves, PieceType::PAWN, color, moves, boardRpr);
+            bitboard_to_moves(pieceCell, pushMoves, attackMoves, PieceType::PAWN, color, moves, boardRpr, false);
+            bitboard_to_moves(pieceCell, doublePushMoves, enPassantattackMoves, PieceType::PAWN, color, moves, boardRpr, true);
             pawns &= ~(1UL << pieceCell);
         }
         return moves;
@@ -97,10 +105,11 @@ namespace board
     {
         Chessboard_rpr rpr = board.getBoardRpr();
         auto moves = std::vector<Move>();
+
         if (board.isWhiteTurn())
-            generate_pawn_moves_color(rpr, Color::WHITE, moves);
+            generate_pawn_moves_color(rpr, Color::WHITE, moves, board.getEnPassant().top());
         else
-            generate_pawn_moves_color(rpr, Color::BLACK, moves);
+            generate_pawn_moves_color(rpr, Color::BLACK, moves, board.getEnPassant().top());
         return moves;
     }
 
@@ -124,7 +133,7 @@ namespace board
             BitBoard generatedMoves = mask & eligibleSquares;
 
             bitboard_to_moves(pieceCell, generatedMoves & ~enemyPieces,
-                    generatedMoves & enemyPieces, pieceType, color, moves, boardRpr);
+                              generatedMoves & enemyPieces, pieceType, color, moves, boardRpr, false);
             // Unset the bit
             remainingPieces &= ~(1UL << (pieceCell));
         }
@@ -200,7 +209,7 @@ namespace board
                 generatedMoves = magic::RookAttacksSquare[pieceCell][index] & eligibleSquares;
 
             bitboard_to_moves(pieceCell, generatedMoves & ~enemyPieces,
-                              generatedMoves & enemyPieces, pieceType, color, moves, chessboardRpr);
+                              generatedMoves & enemyPieces, pieceType, color, moves, chessboardRpr, false);
             // Unset the bit
             remainingPieces &= ~(1UL << (pieceCell));
         }

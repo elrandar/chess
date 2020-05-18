@@ -10,7 +10,7 @@ namespace board
     {
     private:
         static std::vector<Move>
-        generate_pawn_moves_color(Chessboard_rpr &boardRpr, Color color, std::vector<Move> &moves);
+        generate_pawn_moves_color(Chessboard_rpr &boardRpr, Color color, std::vector<Move> &moves, BitBoard en_passant);
         static std::vector<Move>
         generate_knight_king_moves_color(PieceType pieceType, Color color, Chessboard_rpr &boardRpr,
                                          std::vector<Move> &moves);

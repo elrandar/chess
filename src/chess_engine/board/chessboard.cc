@@ -27,31 +27,40 @@ namespace board
 
         unsigned int source_int = static_cast<int>(src.file_get()) + static_cast<int>(src.rank_get()) * 8;
         unsigned int dest_int = static_cast<int>(dest.file_get()) + static_cast<int>(dest.rank_get()) * 8;
-
         int board_index = static_cast<int>(piece.first) + (piece.second == Color::WHITE ? 0 : 6);
 
         rpr.boards.at(board_index) = (rpr.boards.at(board_index) & ~(1UL << source_int));
+        // PROMOTION
         if (promotion.has_value())
         {
             rpr.boards.at(static_cast<int>(promotion.value()) + (piece.second == Color::WHITE ? 0 : 6)) |= 1UL << dest_int;
         } else
             rpr.boards.at(board_index) = (rpr.boards.at(board_index)) | 1UL << dest_int;
+        // CAPTURE
         if (capture)
         {
             auto capturePiece = std::pair<PieceType, Color>(move.getCapture().value(), isWhiteTurn() ? Color::BLACK : Color::WHITE);
             int capture_board_index = static_cast<int>(capturePiece.first) + (capturePiece.second == Color::WHITE ? 0 : 6);
             rpr.boards.at(capture_board_index) &= ~(1UL << dest_int);
         }
+        // DOUBLE PUSH (EN PASSANT)
+        if (move.isDoublePawnPush())
+        {
+            en_passant_.push(isWhiteTurn() ? 1ul << (dest_int - 8) : 1ul << (dest_int + 8));
+        } else
+            en_passant_.push(0ul);
+        setWhiteTurn(!isWhiteTurn());
     }
 
     void Chessboard::undo_move(Move move)
     {
+        getEnPassant().pop();
         auto &rpr = getBoardRpr();
 
         auto dest = move.dest_pos_get();
         auto src = move.start_pos_get();
 
-        auto piece = std::pair<PieceType, Color>(move.piece_get(), isWhiteTurn() ? Color::WHITE : Color::BLACK);
+        auto piece = std::pair<PieceType, Color>(move.piece_get(), isWhiteTurn() ? Color::BLACK : Color::WHITE);
         bool capture = move.getCapture().has_value();
         std::optional<PieceType> promotion = move.get_promotion();
 
@@ -72,6 +81,7 @@ namespace board
             int capture_board_index = static_cast<int>(capturePiece.first) + (capturePiece.second == Color::WHITE ? 0 : 6);
             rpr.boards.at(capture_board_index) |= 1UL << dest_int;
         }
+        setWhiteTurn(!isWhiteTurn());
     }
 
     std::vector<Move> Chessboard::generate_legal_moves()
@@ -118,6 +128,8 @@ namespace board
         turn_ = 1;
         last_fifty_turn_ = 50;
         boardRpr = Chessboard_rpr();
+        en_passant_ = std::stack<BitBoard>();
+        en_passant_.push(0ul);
     }
 
     Chessboard::Chessboard(std::string str)
@@ -130,6 +142,8 @@ namespace board
         turn_ = 1;
         last_fifty_turn_ = 50;
         boardRpr = Chessboard_rpr(str);
+        en_passant_ = std::stack<BitBoard>();
+        en_passant_.push(0ul);
     }
 
     Chessboard_rpr& Chessboard::getBoardRpr() {
@@ -221,5 +235,9 @@ namespace board
         Position kingPos = king_position();
         return is_sq_attacked_by_color(static_cast<int>(kingPos.file_get()) + 8 * static_cast<int>(kingPos.rank_get()),
                 isWhiteTurn() ? Color::BLACK : Color::WHITE);
+    }
+
+    std::stack<BitBoard> & Chessboard::getEnPassant() {
+        return en_passant_;
     }
 }

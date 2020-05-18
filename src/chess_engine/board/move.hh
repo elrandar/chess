@@ -35,6 +35,14 @@ namespace board
 
         bool isCaptureB() const;
 
+        bool isEnPassant() const;
+
+        void setEnPassant(bool enPassant);
+
+        bool isDoublePawnPush() const;
+
+        void setDoublePawnPush(bool doublePawnPush);
+
         const std::optional<PieceType> &getCapture() const;
         opt_piecetype_t get_promotion();
         void setPromotion(const std::optional<PieceType> &promotion);
