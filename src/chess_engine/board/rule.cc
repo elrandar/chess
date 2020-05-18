@@ -97,8 +97,10 @@ namespace board
     {
         Chessboard_rpr rpr = board.getBoardRpr();
         auto moves = std::vector<Move>();
-        generate_pawn_moves_color(rpr, Color::WHITE, moves);
-        generate_pawn_moves_color(rpr, Color::BLACK, moves);
+        if (board.isWhiteTurn())
+            generate_pawn_moves_color(rpr, Color::WHITE, moves);
+        else
+            generate_pawn_moves_color(rpr, Color::BLACK, moves);
         return moves;
     }
 
@@ -132,24 +134,30 @@ namespace board
     std::vector<Move> Rule::generate_king_moves(Chessboard &board) {
         auto boardRpr = board.getBoardRpr();
         auto moves = std::vector<Move>();
-        generate_knight_king_moves_color(PieceType::KING, Color::WHITE, boardRpr, moves);
-        generate_knight_king_moves_color(PieceType::KING, Color::BLACK, boardRpr, moves);
+        if (board. isWhiteTurn())
+            generate_knight_king_moves_color(PieceType::KING, Color::WHITE, boardRpr, moves);
+        else
+            generate_knight_king_moves_color(PieceType::KING, Color::BLACK, boardRpr, moves);
         return moves;
     }
 
     std::vector<Move> Rule::generate_knight_moves(Chessboard &board) {
         auto boardRpr = board.getBoardRpr();
         auto moves = std::vector<Move>();
-        generate_knight_king_moves_color(PieceType::KNIGHT, Color::WHITE, boardRpr, moves);
-        generate_knight_king_moves_color(PieceType::KNIGHT, Color::BLACK, boardRpr, moves);
+        if (board.isWhiteTurn())
+            generate_knight_king_moves_color(PieceType::KNIGHT, Color::WHITE, boardRpr, moves);
+        else
+            generate_knight_king_moves_color(PieceType::KNIGHT, Color::BLACK, boardRpr, moves);
         return moves;
     }
 
     std::vector<Move> Rule::generate_bishop_moves(Chessboard &board) {
         auto boardRpr = board.getBoardRpr();
         auto moves = std::vector<Move>();
-        generate_bishop_rook_moves_color(boardRpr, Color::WHITE, PieceType::BISHOP, moves, false);
-        generate_bishop_rook_moves_color(boardRpr, Color::BLACK, PieceType::BISHOP, moves, false);
+        if (board.isWhiteTurn())
+            generate_bishop_rook_moves_color(boardRpr, Color::WHITE, PieceType::BISHOP, moves, false);
+        else
+            generate_bishop_rook_moves_color(boardRpr, Color::BLACK, PieceType::BISHOP, moves, false);
         return moves;
     }
 
@@ -202,18 +210,25 @@ namespace board
     std::vector<Move> Rule::generate_rook_moves(Chessboard &board) {
         auto boardRpr = board.getBoardRpr();
         auto moves = std::vector<Move>();
-        generate_bishop_rook_moves_color(boardRpr, Color::WHITE, PieceType::ROOK, moves, false);
-        generate_bishop_rook_moves_color(boardRpr, Color::BLACK, PieceType::ROOK, moves, false);
+        if (board.isWhiteTurn())
+            generate_bishop_rook_moves_color(boardRpr, Color::WHITE, PieceType::ROOK, moves, false);
+        else
+            generate_bishop_rook_moves_color(boardRpr, Color::BLACK, PieceType::ROOK, moves, false);
         return moves;
     }
 
     std::vector<Move> Rule::generate_queen_moves(Chessboard &board) {
         auto boardRpr = board.getBoardRpr();
         auto moves = std::vector<Move>();
-        generate_bishop_rook_moves_color(boardRpr, Color::WHITE, PieceType::ROOK, moves, true);
-        generate_bishop_rook_moves_color(boardRpr, Color::BLACK, PieceType::ROOK, moves, true);
-        generate_bishop_rook_moves_color(boardRpr, Color::WHITE, PieceType::BISHOP, moves, true);
-        generate_bishop_rook_moves_color(boardRpr, Color::BLACK, PieceType::BISHOP, moves, true);
+        if (board.isWhiteTurn())
+        {
+            generate_bishop_rook_moves_color(boardRpr, Color::WHITE, PieceType::ROOK, moves, true);
+            generate_bishop_rook_moves_color(boardRpr, Color::WHITE, PieceType::BISHOP, moves, true);
+        } else
+        {
+            generate_bishop_rook_moves_color(boardRpr, Color::BLACK, PieceType::ROOK, moves, true);
+            generate_bishop_rook_moves_color(boardRpr, Color::BLACK, PieceType::BISHOP, moves, true);
+        }
         return moves;
     }
 

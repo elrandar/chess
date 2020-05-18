@@ -67,6 +67,31 @@ namespace board::magic
         return blockboard;
     }
 
+    BitBoard attack_rook(BitBoard occ, int sq)
+    {
+        auto mask = Masks::rook_attacks(sq);
+        auto magic = magic::RMagics[sq];
+        auto shift = magic::RShift[sq];
+
+
+        auto index = ((occ & mask) * magic) >> shift;
+
+        return magic::RookAttacksSquare[sq][index];
+    }
+
+
+    BitBoard attack_bishop(BitBoard occ, int sq)
+    {
+        auto mask = Masks::bishop_attacks(sq);
+        auto magic = magic::BMagics[sq];
+        auto shift = magic::BShift[sq];
+
+        auto index = ((occ & mask) * magic) >> shift;
+
+        return magic::BishopAttacksSquare[sq][index];
+    }
+
+
     BitBoard generate_attack_bishop(int index, BitBoard blockboard)
     {
         BitBoard attacks = 0ULL;

@@ -54,14 +54,11 @@ namespace board
        {
            boards[i] = 0ul;
        }
-       boards[4] = 1ul << 50;
+       boards[1] = 1ul << 11;
+
+       boards[11] = 1ul << 59;
     }
 
-    Chessboard_rpr::Chessboard_rpr(Move move)
-        : Chessboard_rpr()
-    {
-        execute_move(move);
-    }
 
     void Chessboard_rpr::print()
     {
@@ -90,26 +87,6 @@ namespace board
             std::cout << i;
     }
 
-    void Chessboard_rpr::execute_move(Move move)
-    {
-        auto dest = move.dest_pos_get();
-        auto src = move.start_pos_get();
-
-        auto piece = this->at(src);
-        auto capture = this->at(dest);
-
-        unsigned int source_int = static_cast<int>(src.file_get()) + static_cast<int>(src.rank_get()) * 8;
-        unsigned int dest_int = static_cast<int>(dest.file_get()) + static_cast<int>(dest.rank_get()) * 8;
-
-        int board_index = static_cast<int>(piece->first) + (piece->second == Color::WHITE ? 0 : 6);
-
-        boards.at(board_index) = (boards.at(board_index) & ~(1UL << source_int)) | 1UL << dest_int;
-        if (capture.has_value())
-        {
-            int capture_board_index = static_cast<int>(capture->first) + (capture->second == Color::WHITE ? 0 : 6);
-            boards.at(capture_board_index) &= ~(1UL << dest_int);
-        }
-    }
 
     std::optional<std::pair<PieceType, Color>> Chessboard_rpr::at(Position pos) const {
         unsigned int pos_int = static_cast<int>(pos.file_get()) + static_cast<int>(pos.rank_get()) * 8;

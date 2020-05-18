@@ -19,6 +19,10 @@ int main()
 //    engine.run_pgn(chessboard, handler);
 
     auto moves = chessboard.generate_legal_moves();
+    moves = chessboard.generate_legal_moves();
+    moves = chessboard.generate_legal_moves();
+    moves = chessboard.generate_legal_moves();
+    moves = chessboard.generate_legal_moves();
     chessboard.getBoardRpr().print();
 
 

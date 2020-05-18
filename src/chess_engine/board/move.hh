@@ -27,7 +27,15 @@ namespace board
         Position start_pos_get();
         Position dest_pos_get();
 
+        bool operator==(const Move &rhs) const;
 
+        bool operator!=(const Move &rhs) const;
+
+        void setCapture(const std::optional<PieceType> &capture);
+
+        bool isCaptureB() const;
+
+        const std::optional<PieceType> &getCapture() const;
         opt_piecetype_t get_promotion();
         void setPromotion(const std::optional<PieceType> &promotion);
     };

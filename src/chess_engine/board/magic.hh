@@ -89,5 +89,7 @@ namespace board::magic {
         BitBoard generate_blockboard(int index, BitBoard attackMask);
         BitBoard generate_attack_bishop(int index, BitBoard blockboard);
         BitBoard generate_attack_rook(int index, BitBoard blockboard);
+        BitBoard attack_bishop(BitBoard occ, int sq);
+        BitBoard attack_rook(BitBoard occ, int sq);
 
 }

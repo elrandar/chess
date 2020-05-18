@@ -10,7 +10,7 @@ namespace board
     class Chessboard
     {
     private:
-
+        std::vector<Move> legalMoves;
         Chessboard_rpr boardRpr;
         bool white_turn_;
         bool white_king_castling_;
@@ -24,7 +24,8 @@ namespace board
     public:
         Chessboard();
         std::vector<Move> generate_legal_moves();
-        void do_move(Move move);
+        void do_move(Move &move);
+        void undo_move(Move move);
         bool is_move_legal(Move move);
         bool is_check();
         bool is_checkmate();
@@ -45,5 +46,9 @@ namespace board
         void setBlackQueenCastling(bool blackQueenCastling);
 
         Chessboard(std::string str);
+
+        bool is_sq_attacked(int sq, Color color);
+
+        bool is_sq_attacked_by_color(int sq, Color color);
     };
 }
