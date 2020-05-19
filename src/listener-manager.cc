@@ -88,58 +88,6 @@ namespace listener
         return move;
     }
 
-
-
-    bool ListenerManager::do_castling(board::Move move, board::Rank rank)
-    {
-        //IL FAUT CHECK SI une Case est mise en echec sur les position sur lequel le roi va passer
-        if (move.dest_pos_get().file_get() == board::File::G && move.dest_pos_get().rank_get() == rank)
-        {
-            board::Position pos(board::File::F,rank);
-            if (true){// TODO fonction pour verifier sur le roi serai en echec sur une case donnée) {
-                board::Position tower_start_pos(board::File::H, rank);
-                board::Position tower_dest_pos(board::File::F, rank);
-                board::Move Tower_move = board::Move(tower_start_pos, tower_dest_pos, board::PieceType::ROOK);
-                chessboard_.do_move(Tower_move);
-                if (rank == board::Rank::ONE) {
-                    on_kingside_castling(board::Color::WHITE);
-                    chessboard_.setWhiteKingCastling(false);
-                    chessboard_.setWhiteQueenCastling(false);
-                } else{
-                    on_kingside_castling(board::Color::BLACK);
-                    chessboard_.setBlackKingCastling(false);
-                    chessboard_.setBlackQueenCastling(false);
-                }
-            }
-            else
-            {
-                return false;
-            }
-        }
-        else if(move.dest_pos_get().file_get() == board::File::C && move.dest_pos_get().rank_get() == rank)
-        {
-            board::Position pos(board::File::D,rank);
-            if (true) { // TODO pareil que le todo de la ligne 33 lol
-                board::Position tower_start_pos(board::File::A, rank);
-                board::Position tower_dest_pos(board::File::D, rank);
-                board::Move Tower_move = board::Move(tower_start_pos, tower_dest_pos, board::PieceType::ROOK);
-                chessboard_.do_move(Tower_move);
-                if (rank == board::Rank::ONE) {
-                    on_queenside_castling(board::Color::WHITE);
-                    chessboard_.setWhiteQueenCastling(false);
-                    chessboard_.setWhiteKingCastling(false);
-                } else{
-                    on_queenside_castling(board::Color::BLACK);
-                    chessboard_.setBlackQueenCastling(false);
-                    chessboard_.setBlackKingCastling(false);
-                }
-            } else{
-                return false;
-            }
-        }
-        return true;
-    }
-
     bool ListenerManager::run_pgn(const std::string& pgn_path)
     {
         // Parse the pgn_file to build a vector of pgn moves
@@ -207,7 +155,7 @@ namespace listener
                 on_game_finished();
                 break;
             }
-            chessboard_.getBoardRpr().print();
+//            chessboard_.getBoardRpr().print();
             // Continue, there is no draw, the game is not finished
         }
         return true;
