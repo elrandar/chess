@@ -96,7 +96,7 @@ namespace board
         auto rook_board = isWhiteTurn() ? 1 : 7;
         auto king_side_rook_mask = isWhiteTurn() ? ~128UL : ~(1UL << 63UL);
         auto king_side_rook_set = isWhiteTurn() ? (1UL << 5UL) : (1UL << 61UL);
-        auto queen_side_rook_mask = isWhiteTurn() ? 1UL : (1UL << 56UL);
+        auto queen_side_rook_mask = isWhiteTurn() ? ~1UL : ~(1UL << 56UL);
         auto queen_side_rook_set = isWhiteTurn() ? (1UL << 3UL) : (1UL << 59UL);
 
         if (move.isKingCastling())
@@ -224,7 +224,7 @@ namespace board
             rpr.boards.at(board_index) = (rpr.boards.at(board_index) & ~(1UL << dest_int));
         if (capture)
         {
-            auto capturePiece = std::pair<PieceType, Color>(move.getCapture().value(), isWhiteTurn() ? Color::BLACK : Color::WHITE);
+            auto capturePiece = std::pair<PieceType, Color>(move.getCapture().value(), isWhiteTurn() ? Color::WHITE : Color::BLACK);
             int capture_board_index = static_cast<int>(capturePiece.first) + (capturePiece.second == Color::WHITE ? 0 : 6);
             rpr.boards.at(capture_board_index) |= 1UL << dest_int;
         }
