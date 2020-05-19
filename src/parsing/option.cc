@@ -14,10 +14,11 @@ Option::Option()
 
 void Option::show_help()
 {
-    std::cerr << "Options:" << std::endl;
+    std::cerr << "Usage: " << std::endl;
     std::cerr << "\t-h [ --help ]\t\tshow usage" << std::endl;
-    std::cerr << "\t--pgn arg\t\tpath to the PGN file" << std::endl;
+    std::cerr << "\t--pgn arg\t\tpath to a PGN file" << std::endl;
     std::cerr << "\t-l [ --listeners ] args\tlist of the paths of the listeners plugins" << std::endl;
+    std::cerr << "\t--perf arg\t\tpath to a perft file" << std::endl;
 }
 
 bool Option::parse_options(int argc, char **argv)
