@@ -13,22 +13,39 @@ int main(int argc, char** argv)
 
     Option option;
     board::Chessboard chessboard;
-//    ListenerManager handler(option.getListenersVector());
-//    ListenerManager engine(option.getPgnPath(), handler);
-//    engine.run_pgn(chessboard, handler);
+    if (argc == 1)
+    {
+        ai::init("ChessAi");
+        std::string my_move;
+        std::string board;
+        while(true)
+        {
+            board = get_board();
+            std::string get = get_input();
+            std::cin >> my_move;
+            play_move(my_move);
+        }
 
-    if (!option.parse_options(argc, argv))
-    {
-        std::cout << "Options are not valid" << "\n";
     }
-    if (option.isHelp())
+    else
     {
-        option.show_help();
-        return 0;
-    }
-    if (option.getPgnPath().empty())
-    {
-        std::cerr << "PGN file invalid" << "\n";
+//      ListenerManager handler(option.getListenersVector());
+//      ListenerManager engine(option.getPgnPath(), handler);
+//      engine.run_pgn(chessboard, handler);
+
+        if (!option.parse_options(argc, argv))
+        {
+            std::cout << "Options are not valid" << "\n";
+        }
+        if (option.isHelp())
+        {
+            option.show_help();
+            return 0;
+        }
+        if (option.getPgnPath().empty())
+        {
+            std::cerr << "PGN file invalid" << "\n";
+        }
     }
 
     return 0;
