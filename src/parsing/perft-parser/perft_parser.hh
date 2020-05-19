@@ -15,16 +15,15 @@
 class FenRank
 {
     public:
-    FenRank(std::vector<board::PieceType, board::Color> pieces)
+    FenRank(std::vector<std::optional<std::pair<board::PieceType, board::Color>>> pieces)
             : pieces_(pieces)
     {}
 
     FenRank();
 
-    std::pair<board::PieceType, board::Color> operator[](board::File file);
+    std::optional<std::pair<board::PieceType, board::Color>> operator[] (board::File file);
 
-
-private:
+    protected:
     std::vector<std::optional<std::pair<board::PieceType, board::Color>>> pieces_;
 };
 
@@ -54,13 +53,13 @@ private:
 
 class PerftObject : FenObject
 {
+
+
+public:
     PerftObject(FenObject fen, int depth)
             : fen_(fen)
             , depth_(depth)
     {}
-
-    FenObject fen_get();
-    int depth_get();
 
 private:
     FenObject fen_;

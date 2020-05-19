@@ -2,7 +2,7 @@
 #include "perft_parser.hh"
 //Function from class FenRank
 
-std::optional<std::pair<board::PieceType, board::Color>> FenRank::operator[](board::File file)
+std::optional<std::pair<board::PieceType, board::Color>> FenRank::operator[] (board::File file)
 {
     int i = 0;
     for (auto current : pieces_)
@@ -49,20 +49,12 @@ std::optional<board::Position> FenObject::en_passant_target_get()
 
 //Functions from class PerftObject
 
-FenObject PerftObject::fen_get()
-{
-    return fen_;
-}
 
-int PerftObject::depth_get()
-{
-    return depth_;
-}
 
 ///////////////////////////
 
 //recupere chacun des rank sous forme de string
-void parse_ranks(const std::string& input, std::vector<std::string> vect)
+std::vector<std::string> parse_ranks(const std::string& input, std::vector<std::string> vect)
 {
     std::stringstream ss(input);
     std::string tmp;
@@ -70,38 +62,38 @@ void parse_ranks(const std::string& input, std::vector<std::string> vect)
     {
         vect.push_back(tmp);
     }
+    return vect;
 }
 
 //transforme le char en pair<piecetype,color>
 std::pair<board::PieceType,board::Color> to_piece(char c)
 {
-        std::pair<board::PieceType,board::Color> rtn;
         switch (c)
         {
         case 'P':
-            return rtn(board::PieceType::PAWN,board::Color::WHITE);
+            return std::pair(board::PieceType::PAWN,board::Color::WHITE);
         case 'N':
-            return rtn(board::PieceType::KNIGHT,board::Color::WHITE);
+            return std::pair(board::PieceType::KNIGHT,board::Color::WHITE);
         case 'B':
-            return rtn(board::PieceType::BISHOP,board::Color::WHITE);
+            return std::pair(board::PieceType::BISHOP,board::Color::WHITE);
         case 'R':
-            return rtn(board::PieceType::ROOK,board::Color::WHITE);
+            return std::pair(board::PieceType::ROOK,board::Color::WHITE);
         case 'Q':
-            return rtn(board::PieceType::QUEEN,board::Color::WHITE);
+            return std::pair(board::PieceType::QUEEN,board::Color::WHITE);
         case 'K':
-            return rtn(board::PieceType::KING,board::Color::WHITE);
+            return std::pair(board::PieceType::KING,board::Color::WHITE);
         case 'p':
-            return rtn(board::PieceType::PAWN,board::Color::BLACK);
+            return std::pair(board::PieceType::PAWN,board::Color::BLACK);
         case 'n':
-            return rtn(board::PieceType::KNIGHT,board::Color::BLACK);
+            return std::pair(board::PieceType::KNIGHT,board::Color::BLACK);
         case 'b':
-            return rtn(board::PieceType::BISHOP,board::Color::BLACK);
+            return std::pair(board::PieceType::BISHOP,board::Color::BLACK);
         case 'r':
-            return rtn(board::PieceType::ROOK,board::Color::BLACK);
+            return std::pair(board::PieceType::ROOK,board::Color::BLACK);
         case 'q':
-            return rtn(board::PieceType::QUEEN,board::Color::BLACK);
+            return std::pair(board::PieceType::QUEEN,board::Color::BLACK);
         case 'k':
-            return rtn(board::PieceType::KING,board::Color::BLACK);
+            return std::pair(board::PieceType::KING,board::Color::BLACK);
         default:
             throw std::invalid_argument("Unknown piece");
         }
@@ -110,37 +102,32 @@ std::pair<board::PieceType,board::Color> to_piece(char c)
 //transforme la string en object fenrank
 FenRank fromStr_to_FenRank(std::string vect)
 {
-    int i = 0;
-    int j = 0;
-    FenRank fenrank;
+    size_t i = 0;
+    size_t j = 0;
     std::vector<std::optional<std::pair<board::PieceType,board::Color>>> rtn;
     while (i < vect.size())
     {
-        while (j < vect.at(i).size())
+        char check = vect.at(i);
+        if (!isdigit(check))
         {
-            char check = vect.at(i)[j];
-            if (!isdigit(check))
-            {
-                rtn.push_back(std::nullopt);
-            }
-            else
-            {
-                int k = static_cast<int>(check);
-                int l = 0;
-                while (l < k)
-                {
-                    rtn.push_back(std::nullopt);
-                    l++;
-                }
-                l = 0;
-
-            }
-            j++;
+            rtn.emplace_back(std::nullopt);
         }
-        j = 0;
-        i++;
+        else{
+            int k = static_cast<int>(check);
+            int l = 0;
+            while (l < k)
+            {
+                rtn.emplace_back(std::nullopt);
+                l++;
+            }
+            l = 0;
+
+        }
+        j++;
     }
-    return fenrank(rtn);
+    j = 0;
+    i++;
+    return FenRank(rtn);
 }
 
 //obtient la position du en_passant_target
@@ -195,7 +182,8 @@ board::Position get_position(char file, char rank)
 
 PerftObject parse_perft(std::string input)
 {
-    PerftObject perft;
+    FenObject fen;
+    int depth;
     std::stringstream ss(input);
     std::vector<std::string> vect;
     vect.reserve(7);
@@ -209,13 +197,13 @@ PerftObject parse_perft(std::string input)
     {
         if (i == 6)
         {
-            perft.depth_ = static_cast<int>(vect.at(i));
+            depth = static_cast<int>(vect.at(i)[0]);
             break;
         }
         i++;
     }
-    perft.fen_ = parse_fen(vect);
-    return perft;
+    fen = parse_fen(vect);
+    return PerftObject(fen,depth);
 }
 
 FenObject parse_fen(std::vector<std::string> splited_input)
@@ -229,54 +217,38 @@ FenObject parse_fen(std::vector<std::string> splited_input)
     ranks.reserve(7);
 
     int i = 0;
-    while (i < 7)
-    {
-        if (i == 0)
-        {
-            for (auto rank : parse_ranks(splited_input.at(i), keep))
-            {
+    while (i < 7) {
+        if (i == 0) {
+            for (auto rank : parse_ranks(splited_input.at(i), keep)) {
                 ranks.push_back(fromStr_to_FenRank(rank));
             }
         }
-        if (i == 1)
-        {
-            if (splited_input.at(i).compare("w") == 0)
-            {
+        if (i == 1) {
+            if (splited_input.at(i).compare("w") == 0) {
                 side_to_move = board::Color::WHITE;
-            }
-            else if (splited_input.at(i).compare("b") == 0)
-            {
+            } else if (splited_input.at(i).compare("b") == 0) {
                 side_to_move = board::Color::BLACK;
             }
         }
-        if (i == 2)
-        {
+        if (i == 2) {
             int size = splited_input.at(i).size();
             int j = 0;
             castling.reserve(size);
-            while (j < size)
-            {
+            while (j < size) {
                 castling.push_back(splited_input.at(i)[j]);
                 j++;
             }
         }
-        if (i == 3)
-        {
-            if (splited_input.at(i).compare("-") != 0)
-            {
-                en_passant_target = get_position(splited_input.at(i)[0],splited_input.at(i)[1]);
+        if (i == 3) {
+            if (splited_input.at(i).compare("-") != 0) {
+                en_passant_target = get_position(splited_input.at(i)[0], splited_input.at(i)[1]);
             }
-            
+
         }
-        if (i == 6)
-        {
-            depth = static_cast<int>(splited_input.at(i));
+        if (i == 6) {
+            depth = static_cast<int>(splited_input.at(i)[0]);
         }
         i++;
     }
-    fen_.rank = ranks;
-    fen_.side_to_move = side_to_move;
-    fen_.castling = castling;
-    fen_.en_passant_target = en_passant_target;
-    return fen_;
+    return FenObject(ranks,side_to_move,castling,en_passant_target);
 }
