@@ -27,6 +27,8 @@ namespace listener
 
     ListenerManager::~ListenerManager()
     {
+        for (auto listener : listeners)
+            delete listener;
         for (auto & handler : handlers)
             dlclose(handler);
     }
@@ -199,7 +201,7 @@ namespace listener
                 on_game_finished();
                 break;
             }
-//            chessboard_.getBoardRpr().print();
+            chessboard_.getBoardRpr().print();
             // Continue, there is no draw, the game is not finished
         }
         return true;

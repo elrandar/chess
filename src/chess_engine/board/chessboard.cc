@@ -34,15 +34,22 @@ namespace board
 
     void Chessboard::update_castling(Move &move)
     {
+        bool ft_bking = false;
+        bool ft_wking = false;
+        bool ft_wrook_queen = false;
+        bool ft_brook_queen = false;
+        bool ft_wrook_king = false;
+        bool ft_brook_king = false;
+
         auto piece = move.piece_get();
         if (piece == PieceType::KING)
         {
-            isWhiteTurn() ? white_king_moved++ : black_king_moved++;
+            isWhiteTurn() ? ft_wking = true : ft_bking = true;
             //first time rook move if it is with a castling
             if (move.isKingCastling())
-                isWhiteTurn() ? white_king_rook_moved++ : black_king_rook_moved++;
+                isWhiteTurn() ? ft_wrook_king = true : ft_brook_king = true;
             else if (move.isQueenCastling())
-                isWhiteTurn() ? white_queen_rook_moved++ : black_queen_rook_moved++;
+                isWhiteTurn() ? ft_wrook_queen = true : ft_brook_queen = true;
         }
         else if (piece == PieceType::ROOK) //first time rook move
         {
@@ -50,42 +57,42 @@ namespace board
             {
                 if (move.start_pos_get() == Position(7))
                 {
-                    white_king_rook_moved++;
+                    ft_wrook_king = true;
                 }
                 else if (move.start_pos_get()  == Position(0))
                 {
-                    white_queen_rook_moved++;
+                    ft_wrook_queen = true;
                 }
             }
             else
             {
                 if (move.start_pos_get() == Position(63))
                 {
-                    black_king_rook_moved++;
+                    ft_brook_king = true;
                 }
                 else if (move.start_pos_get()  == Position(56))
                 {
-                    black_queen_rook_moved++;
+                    ft_brook_queen = true;
                 }
             }
         }
         //update number of move after rook/king moved
         if (isWhiteTurn())
         {
-            if (white_king_moved > 1)
+            if (white_king_moved || ft_wking)
                 white_king_moved++;
-            if (white_queen_rook_moved > 1)
+            if (white_queen_rook_moved || ft_wrook_queen)
                 white_queen_rook_moved++;
-            if (white_king_rook_moved > 1)
+            if (white_king_rook_moved || ft_wrook_king)
                 white_king_rook_moved++;
         }
         else
         {
-            if (black_king_moved > 1)
+            if (black_king_moved || ft_bking)
                 black_king_moved++;
-            if (black_queen_rook_moved > 1)
+            if (black_queen_rook_moved || ft_brook_queen)
                 black_queen_rook_moved++;
-            if (black_king_rook_moved > 1)
+            if (black_king_rook_moved || ft_brook_king)
                 black_king_rook_moved++;
         }
     }
@@ -261,7 +268,7 @@ namespace board
         }
 
         //add castling moves to the vector
-        generate_castling(moves);
+        generate_castling(keepList);
 
         return keepList;
     }
@@ -270,7 +277,9 @@ namespace board
     {
         auto king_castling = (isWhiteTurn() ? !white_king_rook_moved && !white_king_moved: !black_king_rook_moved && !black_king_moved);
         auto queen_castling = (isWhiteTurn() ? !white_queen_rook_moved && !white_king_moved: !black_queen_rook_moved && !black_king_moved);
-        auto dest_castling = isWhiteTurn() ? Position(6) : Position(2);
+        auto dest_queen_castling = isWhiteTurn() ? Position(2) : Position(58);
+        auto dest_king_castling = isWhiteTurn() ? Position(6) : Position(62);
+        auto src_castling = isWhiteTurn() ? Position(4) : Position(60);
         auto mask_king_side_occupied = isWhiteTurn() ? 0x60UL : 0x6000000000000000UL;
         auto mask_queen_side_occupied = isWhiteTurn() ? 0xeUL : 0xe00000000000000UL;
         auto index_king_side = isWhiteTurn() ? 5 : 61;
@@ -284,7 +293,7 @@ namespace board
                 if (!is_sq_attacked_by_color(index_king_side, attacker_color)
                     && !is_sq_attacked_by_color(index_king_side + 1 , attacker_color))
                 {
-                    auto castling = Move(Position(4), dest_castling, PieceType::KING);
+                    auto castling = Move(src_castling, dest_king_castling, PieceType::KING);
                     castling.setKingCastling(true);
                     moves.push_back(castling);
 //                    std::cout << "king castling possible !\n";
@@ -298,7 +307,7 @@ namespace board
                 if (!is_sq_attacked_by_color(index_queen_side, attacker_color)
                     && !is_sq_attacked_by_color(index_queen_side + 1 , attacker_color))
                 {
-                    auto castling = Move(Position(4), dest_castling, PieceType::KING);
+                    auto castling = Move(src_castling, dest_queen_castling, PieceType::KING);
                     castling.setQueenCastling(true);
                     moves.push_back(castling);
 //                    std::cout << "queen castling possible !\n";
