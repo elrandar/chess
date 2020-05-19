@@ -232,40 +232,42 @@ namespace board
 
         std::vector<std::vector<Move>> pieceMoves;
 
-        if (is_check())
-        {
-            pieceMoves.push_back(Rule::generate_king_moves(*this));
-        }
-        else
-        {
-            pieceMoves.push_back(Rule::generate_pawn_moves(*this));
-            std::cout << "There are " << pieceMoves.at(0).size() << " pawn moves\n";
-            pieceMoves.push_back(Rule::generate_king_moves(*this));
-            std::cout << "There are " << pieceMoves.at(1).size() << " king moves\n";
-            pieceMoves.push_back(Rule::generate_bishop_moves(*this));
-            std::cout << "There are " << pieceMoves.at(2).size() << " bishop moves\n";
-            pieceMoves.push_back(Rule::generate_rook_moves(*this));
-            std::cout << "There are " << pieceMoves.at(3).size() << " rook moves\n";
-            pieceMoves.push_back(Rule::generate_queen_moves(*this));
-            std::cout << "There are " << pieceMoves.at(4).size() << " queen moves\n";
-            pieceMoves.push_back(Rule::generate_knight_moves(*this));
-            std::cout << "There are " << pieceMoves.at(5).size() << " knight moves\n";
-        }
+        pieceMoves.push_back(Rule::generate_pawn_moves(*this));
+        //std::cout << "There are " << pieceMoves.at(0).size() << " pawn moves\n";
+        pieceMoves.push_back(Rule::generate_king_moves(*this));
+//            std::cout << "There are " << pieceMoves.at(1).size() << " king moves\n";
+        pieceMoves.push_back(Rule::generate_bishop_moves(*this));
+//            std::cout << "There are " << pieceMoves.at(2).size() << " bishop moves\n";
+        pieceMoves.push_back(Rule::generate_rook_moves(*this));
+//            std::cout << "There are " << pieceMoves.at(3).size() << " rook moves\n";
+        pieceMoves.push_back(Rule::generate_queen_moves(*this));
+//            std::cout << "There are " << pieceMoves.at(4).size() << " queen moves\n";
+        pieceMoves.push_back(Rule::generate_knight_moves(*this));
+//            std::cout << "There are " << pieceMoves.at(5).size() << " knight moves\n";
+
         for (auto moveVector : pieceMoves)
             moves.insert(moves.begin(), moveVector.begin(), moveVector.end());
 
+        auto keepList = std::vector<Move>();
         for (auto i = moves.begin(); i != moves.end(); i++)
         {
             auto iCopy = *i;
-            do_move(iCopy);
-            if (is_check())
-                moves.erase(i);
-            undo_move(iCopy);
-
+            do_move(iCopy); // changes the color
+            setWhiteTurn(!isWhiteTurn()); // We want to check that the king from the color that did the move is in CHECK
+            if (!is_check())
+                keepList.push_back(*i);
+            setWhiteTurn(!isWhiteTurn());
+            undo_move(iCopy); // restore the color
         }
 
-        //add castling
+        //add castling moves to the vector
+        generate_castling(moves);
 
+        return keepList;
+    }
+
+    void Chessboard::generate_castling(std::vector<Move> &moves)
+    {
         auto king_castling = (isWhiteTurn() ? !white_king_rook_moved && !white_king_moved: !black_king_rook_moved && !black_king_moved);
         auto queen_castling = (isWhiteTurn() ? !white_queen_rook_moved && !white_king_moved: !black_queen_rook_moved && !black_king_moved);
         auto dest_castling = isWhiteTurn() ? Position(6) : Position(2);
@@ -285,6 +287,7 @@ namespace board
                     auto castling = Move(Position(4), dest_castling, PieceType::KING);
                     castling.setKingCastling(true);
                     moves.push_back(castling);
+//                    std::cout << "king castling possible !\n";
                 }
             }
         }
@@ -298,11 +301,13 @@ namespace board
                     auto castling = Move(Position(4), dest_castling, PieceType::KING);
                     castling.setQueenCastling(true);
                     moves.push_back(castling);
+//                    std::cout << "queen castling possible !\n";
                 }
             }
         }
-        return moves;
+
     }
+
 
     Chessboard::Chessboard()
     {
@@ -382,11 +387,9 @@ namespace board
 
     bool Chessboard::is_move_legal(Move move) {
         auto moveList = generate_legal_moves();
-        for (auto moveI : moveList)
-        {
-            if (move == moveI)
+        for (auto legalMove : moveList)
+            if (move == legalMove)
                 return true;
-        }
         return false;
     }
 
@@ -430,4 +433,17 @@ namespace board
     std::stack<BitBoard> & Chessboard::getEnPassant() {
         return en_passant_;
     }
+
+    bool Chessboard::is_pat() {
+        return generate_legal_moves().empty() && !is_check();
+    }
+
+    bool Chessboard::is_checkmate() {
+        return is_check() && generate_legal_moves().empty();
+    }
+
+    bool Chessboard::is_draw() {
+        return is_pat() || last_fifty_turn_ == 0;
+    }
+
 }

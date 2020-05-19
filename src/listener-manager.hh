@@ -20,14 +20,14 @@ namespace listener
         std::vector<void*> handlers;
 
     public:
-        ListenerManager(const std::vector<std::string>& files, board::Chessboard chessboard);
+        ListenerManager(const std::vector<std::string>& files, board::Chessboard &chessboard);
         ~ListenerManager() override;
 
         // Operator that has to be implemented for the ChessboardInterface
         opt_piece_t operator[](const board::Position &position) const override;
 
         // Functions used to run
-        bool run_pgn(std::string pgn_path);
+        bool run_pgn(const std::string& pgn_path);
         bool do_castling(board::Move move, board::Rank rank);
         void disqualify(board::Color color);
 

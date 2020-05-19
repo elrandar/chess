@@ -85,6 +85,7 @@ namespace board
         }
         for (const auto& i : out)
             std::cout << i;
+        std::cout << "\n";
     }
 
 

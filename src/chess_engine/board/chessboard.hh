@@ -11,7 +11,6 @@ namespace board
     class Chessboard
     {
     private:
-        std::vector<Move> legalMoves;
         Chessboard_rpr boardRpr;
         bool white_turn_;
         int white_king_rook_moved;
@@ -32,6 +31,7 @@ namespace board
         bool is_move_legal(Move move);
         bool is_check();
         bool is_checkmate();
+        bool is_pat();
         bool is_draw();
         std::optional<std::pair<PieceType, Color>> operator[](const Position &position) const;
         Chessboard_rpr &getBoardRpr();
@@ -61,5 +61,7 @@ namespace board
         void undo_update_castling();
 
         void update_castling(Move &move);
+
+        void generate_castling(std::vector<Move> &moves);
     };
 }

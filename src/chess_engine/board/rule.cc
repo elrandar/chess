@@ -209,7 +209,8 @@ namespace board
                 generatedMoves = magic::RookAttacksSquare[pieceCell][index] & eligibleSquares;
 
             bitboard_to_moves(pieceCell, generatedMoves & ~enemyPieces,
-                              generatedMoves & enemyPieces, pieceType, color, moves, chessboardRpr, false);
+                              generatedMoves & enemyPieces, isQueen ? PieceType::QUEEN : pieceType,
+                              color, moves, chessboardRpr, false);
             // Unset the bit
             remainingPieces &= ~(1UL << (pieceCell));
         }

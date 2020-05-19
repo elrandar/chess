@@ -4,18 +4,25 @@
 #include "chess_engine/board/magic.hh"
 #include "parsing/option.hh"
 
-int main()
+int main(int argc, char **argv)
 {
     board::Masks::init();
     board::BitboardOperations::init_ms1bTable();
     board::magic::build_table();
 
     using namespace board;
-
     Option option;
-    auto chessboard = board::Chessboard();
+    option.parse_options(argc, argv);
 
-    auto moves = chessboard.generate_legal_moves();
-    chessboard.getBoardRpr().print();
+
+    auto chessboard = board::Chessboard();
+    if (option.getPgnPath() != "")
+    {
+        if (!option.getListenersVector().empty())
+        {
+            auto big_boi = listener::ListenerManager(option.getListenersVector(), chessboard);
+            big_boi.run_pgn(option.getPgnPath());
+        }
+    }
     return 0;
 }
