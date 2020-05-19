@@ -2,6 +2,7 @@
 
 #include "listener/listener.hh"
 #include "chess_engine/board/chessboard.hh"
+#include "parsing/pgn-parser/pgn-move.hh"
 #include <string>
 #include <fstream>
 #include <utility>
@@ -31,7 +32,7 @@ namespace listener
         void disqualify(board::Color color);
 
 
-        static std::vector<board::Move> pgn_to_moves(const std::string& file);
+        static board::Move pgnMoveToMove(board::PgnMove pgnMove, board::Chessboard chessboard);
 
         // Wrapper Functions to act on all the listeners =============================================================
 
@@ -52,5 +53,7 @@ namespace listener
         void on_player_timeout(board::Color color);
         void on_player_disqualified(board::Color color);
         void on_draw();
+
+        static int is_pgn_move_castling(board::PgnMove pgnMove);
     };
 }

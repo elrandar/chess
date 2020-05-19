@@ -34,18 +34,52 @@ namespace listener
         return chessboard_[position];
     }
 
-    std::vector<board::Move> ListenerManager::pgn_to_moves(const std::string& file)
+    int ListenerManager::is_pgn_move_castling(board::PgnMove pgnMove)
     {
-        auto vect = pgn_parser::parse_pgn(file);
-        std::vector<board::Move> move_list;
-        move_list.reserve(vect.size());
-        for (auto pgn_move : vect)
-        {
-            move_list.emplace_back(pgn_move.get_start(),pgn_move.get_end(),
-                                   pgn_move.get_piece(), pgn_move.get_promotion(), pgn_move.get_capture());
-        }
-        return move_list;
+        if (pgnMove == board::PgnMove::generate_castling(false, board::Color::WHITE))
+            return 1;
+        if (pgnMove == board::PgnMove::generate_castling(true, board::Color::WHITE))
+            return 2;
+        if (pgnMove == board::PgnMove::generate_castling(false, board::Color::BLACK))
+            return 1;
+        if (pgnMove == board::PgnMove::generate_castling(true, board::Color::BLACK))
+            return 2;
+        return 0;
     }
+
+    board::Move ListenerManager::pgnMoveToMove(board::PgnMove pgnMove, board::Chessboard chessboard)
+    {
+        auto move = board::Move(pgnMove.get_start(), pgnMove.get_end(), pgnMove.get_piece(),
+                pgnMove.get_promotion());
+        // Set capture
+        if (pgnMove.get_capture())
+        {
+            move.setCapture(chessboard[move.dest_pos_get()].value().first);
+        }
+        // Set castling
+        auto castling = is_pgn_move_castling(pgnMove);
+        if (castling == 1)
+            move.setKingCastling(true);
+        else if (castling == 2)
+            move.setQueenCastling(true);
+        // Set double pawn
+        if (pgnMove.get_piece() == board::PieceType::PAWN &&
+                pgnMove.get_end() == board::Position(pgnMove.get_start().file_get(),
+                        chessboard.isWhiteTurn() ? static_cast<board::Rank>(static_cast<int>(pgnMove.get_start().rank_get()) + 2)
+                                                 : static_cast<board::Rank>(static_cast<int>(pgnMove.get_start().rank_get()) - 2)))
+        {
+            move.setDoublePawnPush(true);
+        }
+        // Set en_passant
+        auto en_passant = chessboard.getEnPassant().top();
+        auto bitSetEnPassant = board::BitboardOperations::bitScanForward(en_passant);
+        if (bitSetEnPassant != -1 && move.dest_pos_get() == board::Position(bitSetEnPassant) && pgnMove.get_capture())
+            move.setEnPassant(true);
+        // ======
+        return move;
+    }
+
+
 
     bool ListenerManager::do_castling(board::Move move, board::Rank rank)
     {
@@ -97,62 +131,53 @@ namespace listener
         return true;
     }
 
+    bool ListenerManager::run_pgn(std::string pgn_path)
+    {
+        // Parse the pgn_file to build a vector of pgn moves
+        auto pgnMoves = pgn_parser::parse_pgn(pgn_path);
+        for (auto pgnMove : pgnMoves) {
+            // Complete the fields of the pgnMove to turn it into a Move
+            auto move = pgnMoveToMove(pgnMove, chessboard_);
 
-    bool ListenerManager::run_pgn(std::string pgn_path){
-
-        std::vector<board::Move> move_list = pgn_to_moves(pgn_path);
-        for(auto move: move_list)
-        {
-            if (!chessboard_.is_move_legal(move))
-            {
-                if (chessboard_.isWhiteTurn())
-                {
+            // Check that the move is legal
+            if (!chessboard_.is_move_legal(move)) {
+                if (chessboard_.isWhiteTurn()) {
                     disqualify(board::Color::WHITE);
-                } else{
+                } else {
                     disqualify(board::Color::BLACK);
                 }
             }
             // Execution du move
             chessboard_.do_move(move);
-            if (chessboard_[move.dest_pos_get()].has_value())
-            {
+            if (chessboard_[move.dest_pos_get()].has_value()) {
                 on_piece_taken(chessboard_[move.dest_pos_get()]->first, move.dest_pos_get());
-            }
-            else
-            {
+            } else {
                 on_piece_moved(move.piece_get(), move.start_pos_get(), move.dest_pos_get());
             }
 
             //Gere la PROMOTION -- A TERMINER
             if (chessboard_[move.dest_pos_get()].has_value()) {
-                if (move.dest_pos_get().rank_get() == board::Rank::EIGHT && chessboard_.isWhiteTurn())
-                {
+                if (move.dest_pos_get().rank_get() == board::Rank::EIGHT && chessboard_.isWhiteTurn()) {
                     // new_piece_type -> move.get_promotion();
                     // do_promotion(new_piece_type, color);  WHITE
-                    on_piece_promoted(move.get_promotion().value(),move.dest_pos_get());
-                }
-                else if (move.dest_pos_get().rank_get() == board::Rank::ONE && !chessboard_.isWhiteTurn())
-                {
+                    on_piece_promoted(move.get_promotion().value(), move.dest_pos_get());
+                } else if (move.dest_pos_get().rank_get() == board::Rank::ONE && !chessboard_.isWhiteTurn()) {
                     //do_promotion(new_piece_type, color);  BLACk
-                    on_piece_promoted(move.get_promotion().value(),move.dest_pos_get());
+                    on_piece_promoted(move.get_promotion().value(), move.dest_pos_get());
                 }
             }
             //Gere le CASTLING
-            if (move.piece_get() == board::PieceType::KING)
-            {
-                if (chessboard_.isWhiteTurn())
-                {
+            if (move.piece_get() == board::PieceType::KING) {
+                if (chessboard_.isWhiteTurn()) {
                     //blancs
-                    if (!do_castling(move, board::Rank::ONE))
-                    {
+                    if (!do_castling(move, board::Rank::ONE)) {
                         disqualify(board::Color::WHITE);
                     }
                     chessboard_.setWhiteKingCastling(false);
                     chessboard_.setWhiteQueenCastling(false);
-                } else if (!chessboard_.isWhiteTurn()){
+                } else if (!chessboard_.isWhiteTurn()) {
                     //noirs
-                    if (!do_castling(move, board::Rank::EIGHT))
-                    {
+                    if (!do_castling(move, board::Rank::EIGHT)) {
                         disqualify(board::Color::BLACK);
                     }
                     chessboard_.setBlackKingCastling(false);
@@ -166,6 +191,76 @@ namespace listener
         }
         return true;
     }
+
+//    bool ListenerManager::run_pgn(std::string pgn_path){
+//
+//        std::vector<board::Move> move_list = pgnMoveToMove(pgn_path, board::Chessboard());
+//        auto pgnMoves = pgn_parser::parse_pgn(pgn_path);
+//        for(auto move: move_list)
+//        {
+//            if (!chessboard_.is_move_legal(move))
+//            {
+//                if (chessboard_.isWhiteTurn())
+//                {
+//                    disqualify(board::Color::WHITE);
+//                } else{
+//                    disqualify(board::Color::BLACK);
+//                }
+//            }
+//            // Execution du move
+//            chessboard_.do_move(move);
+//            if (chessboard_[move.dest_pos_get()].has_value())
+//            {
+//                on_piece_taken(chessboard_[move.dest_pos_get()]->first, move.dest_pos_get());
+//            }
+//            else
+//            {
+//                on_piece_moved(move.piece_get(), move.start_pos_get(), move.dest_pos_get());
+//            }
+//
+//            //Gere la PROMOTION -- A TERMINER
+//            if (chessboard_[move.dest_pos_get()].has_value()) {
+//                if (move.dest_pos_get().rank_get() == board::Rank::EIGHT && chessboard_.isWhiteTurn())
+//                {
+//                    // new_piece_type -> move.get_promotion();
+//                    // do_promotion(new_piece_type, color);  WHITE
+//                    on_piece_promoted(move.get_promotion().value(),move.dest_pos_get());
+//                }
+//                else if (move.dest_pos_get().rank_get() == board::Rank::ONE && !chessboard_.isWhiteTurn())
+//                {
+//                    //do_promotion(new_piece_type, color);  BLACk
+//                    on_piece_promoted(move.get_promotion().value(),move.dest_pos_get());
+//                }
+//            }
+//            //Gere le CASTLING
+//            if (move.piece_get() == board::PieceType::KING)
+//            {
+//                if (chessboard_.isWhiteTurn())
+//                {
+//                    //blancs
+//                    if (!do_castling(move, board::Rank::ONE))
+//                    {
+//                        disqualify(board::Color::WHITE);
+//                    }
+//                    chessboard_.setWhiteKingCastling(false);
+//                    chessboard_.setWhiteQueenCastling(false);
+//                } else if (!chessboard_.isWhiteTurn()){
+//                    //noirs
+//                    if (!do_castling(move, board::Rank::EIGHT))
+//                    {
+//                        disqualify(board::Color::BLACK);
+//                    }
+//                    chessboard_.setBlackKingCastling(false);
+//                    chessboard_.setBlackQueenCastling(false);
+//                }
+//            }
+//            //Gere le Check -- A COMPLETER
+//            /* if ( chessboard_[move.dest_pos_get()]->first
+//            */
+//            chessboard_.setWhiteTurn(!chessboard_.isWhiteTurn());
+//        }
+//        return true;
+//    }
 
 
 

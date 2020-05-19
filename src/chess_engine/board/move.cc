@@ -26,7 +26,6 @@ namespace board
         en_passant_ = false;
         promotion_ = std::nullopt;
         capture_ = std::nullopt;
-        capture_b_ = false;
     }
     opt_piecetype_t Move::get_promotion()
     {
@@ -39,17 +38,10 @@ namespace board
         capture_ = capture;
     }
 
-    Move::Move(Position start, Position end, PieceType pieceType, std::optional<PieceType> promotion, bool b)
+    Move::Move(Position start, Position end, PieceType pieceType, std::optional<PieceType> promotion)
         : Move(start, end, pieceType)
     {
         promotion_ = promotion;
-        if (b)
-        {
-            capture_b_ = b;
-        } else
-        {
-            capture_ = std::nullopt;
-        }
     }
 
     void Move::setPromotion(const std::optional<PieceType> &promotion) {
@@ -60,29 +52,10 @@ namespace board
         return capture_;
     }
 
-    bool Move::isCaptureB() const {
-        return capture_b_;
-    }
-
     void Move::setCapture(const std::optional<PieceType> &capture) {
         capture_ = capture;
     }
 
-    bool Move::operator==(const Move &rhs) const {
-        return start_pos_ == rhs.start_pos_ &&
-               dest_pos_ == rhs.dest_pos_ &&
-               piece_ == rhs.piece_ &&
-               promotion_ == rhs.promotion_ &&
-               capture_ == rhs.capture_ &&
-               double_pawn_push_ == rhs.double_pawn_push_ &&
-               king_castling_ == rhs.king_castling_ &&
-               queen_castling_ == rhs.queen_castling_ &&
-               en_passant_ == rhs.en_passant_;
-    }
-
-    bool Move::operator!=(const Move &rhs) const {
-        return !(rhs == *this);
-    }
 
     void Move::setDoublePawnPush(bool doublePawnPush) {
         double_pawn_push_ = doublePawnPush;
@@ -114,6 +87,22 @@ namespace board
 
     bool Move::isQueenCastling() const {
         return queen_castling_;
+    }
+
+    bool Move::operator==(const Move &rhs) const {
+        return start_pos_ == rhs.start_pos_ &&
+               dest_pos_ == rhs.dest_pos_ &&
+               piece_ == rhs.piece_ &&
+               promotion_ == rhs.promotion_ &&
+               capture_ == rhs.capture_ &&
+               double_pawn_push_ == rhs.double_pawn_push_ &&
+               king_castling_ == rhs.king_castling_ &&
+               queen_castling_ == rhs.queen_castling_ &&
+               en_passant_ == rhs.en_passant_;
+    }
+
+    bool Move::operator!=(const Move &rhs) const {
+        return !(rhs == *this);
     }
 
 }

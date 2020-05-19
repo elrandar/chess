@@ -48,6 +48,9 @@ namespace board
             return capture_;
         }
 
+        bool operator==(const PgnMove &rhs) const;
+
+        bool operator!=(const PgnMove &rhs) const;
 
     private:
         // The original position of the piece

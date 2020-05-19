@@ -127,11 +127,6 @@ namespace board
         auto dest = move.dest_pos_get();
         auto src = move.start_pos_get();
 
-        if (move.isCaptureB())
-        {
-            move.setCapture(rpr.at(dest).value().first);
-        }
-
         auto piece = std::pair<PieceType, Color>(move.piece_get(), isWhiteTurn() ? Color::WHITE : Color::BLACK);
         bool capture = move.getCapture().has_value();
         std::optional<PieceType> promotion = move.get_promotion();
