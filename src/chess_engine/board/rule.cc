@@ -39,6 +39,10 @@ namespace board
             auto pos1 = Position(initialPosition);
             auto pos2 = Position(moveCell);
             auto capture = boardRpr.at(moveCell);
+            if (isDoublePush)
+            {
+                capture = boardRpr.at(color == Color::WHITE ? moveCell - 8 : moveCell + 8);
+            }
             auto move = Move(pos1, pos2, pieceType, capture.value().first);
             if (isDoublePush)
                 move.setEnPassant(true);

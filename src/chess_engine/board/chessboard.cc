@@ -156,7 +156,10 @@ namespace board
         {
             auto capturePiece = std::pair<PieceType, Color>(move.getCapture().value(), isWhiteTurn() ? Color::BLACK : Color::WHITE);
             int capture_board_index = static_cast<int>(capturePiece.first) + (capturePiece.second == Color::WHITE ? 0 : 6);
-            rpr.boards.at(capture_board_index) &= ~(1UL << dest_int);
+            if (move.isEnPassant())
+                rpr.boards.at(capture_board_index) &= ~(1UL << (dest_int + (isWhiteTurn() ? -8 : 8)));
+            else
+                rpr.boards.at(capture_board_index) &= ~(1UL << dest_int);
         }
         // DOUBLE PUSH (EN PASSANT)
         if (move.isDoublePawnPush())
@@ -228,7 +231,12 @@ namespace board
         {
             auto capturePiece = std::pair<PieceType, Color>(move.getCapture().value(), isWhiteTurn() ? Color::WHITE : Color::BLACK);
             int capture_board_index = static_cast<int>(capturePiece.first) + (capturePiece.second == Color::WHITE ? 0 : 6);
-            rpr.boards.at(capture_board_index) |= 1UL << dest_int;
+            if (move.isEnPassant())
+            {
+                rpr.boards.at(capture_board_index) |= (1UL << (dest_int + (!isWhiteTurn() ? -8 : 8)));
+            }
+            else
+                rpr.boards.at(capture_board_index) |= 1UL << dest_int;
         }
         setWhiteTurn(!isWhiteTurn());
     }
@@ -444,7 +452,7 @@ namespace board
     }
 
     bool Chessboard::is_pat() {
-        return generate_legal_moves().empty() && !is_check();
+        return !is_check() && generate_legal_moves().empty();
     }
 
     bool Chessboard::is_checkmate() {
