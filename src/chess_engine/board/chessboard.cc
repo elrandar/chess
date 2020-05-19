@@ -9,37 +9,84 @@
 namespace board
 {
 
-    void Chessboard::update_castling(Move &move, Color color)
+
+    void Chessboard::undo_update_castling()
+    {
+        if (!isWhiteTurn())
+        {
+            if (white_king_moved)
+                white_king_moved--;
+            if (white_queen_rook_moved)
+                white_queen_rook_moved--;
+            if (white_king_rook_moved)
+                white_king_rook_moved--;
+        }
+        else
+        {
+            if (black_king_moved)
+                black_king_moved--;
+            if (black_queen_rook_moved)
+                black_queen_rook_moved--;
+            if (black_king_rook_moved)
+                black_king_rook_moved--;
+        }
+    }
+
+    void Chessboard::update_castling(Move &move)
     {
         auto piece = move.piece_get();
         if (piece == PieceType::KING)
         {
-            king_moved = true;
+            isWhiteTurn() ? white_king_moved++ : black_king_moved++;
+            //first time rook move if it is with a castling
+            if (move.isKingCastling())
+                isWhiteTurn() ? white_king_rook_moved++ : black_king_rook_moved++;
+            else if (move.isQueenCastling())
+                isWhiteTurn() ? white_queen_rook_moved++ : black_queen_rook_moved++;
         }
-        else if (piece == PieceType::ROOK)
+        else if (piece == PieceType::ROOK) //first time rook move
         {
-            if (color == Color::WHITE)
+            if (isWhiteTurn())
             {
                 if (move.start_pos_get() == Position(7))
                 {
-                    white_king_rook_moved = true;
+                    white_king_rook_moved++;
                 }
                 else if (move.start_pos_get()  == Position(0))
                 {
-                    white_queen_rook_moved = true;
+                    white_queen_rook_moved++;
                 }
             }
             else
             {
                 if (move.start_pos_get() == Position(63))
                 {
-                    black_king_rook_moved = true;
+                    black_king_rook_moved++;
                 }
                 else if (move.start_pos_get()  == Position(56))
                 {
-                    black_queen_rook_moved = true;
+                    black_queen_rook_moved++;
                 }
             }
+        }
+        //update number of move after rook/king moved
+        if (isWhiteTurn())
+        {
+            if (white_king_moved > 1)
+                white_king_moved++;
+            if (white_queen_rook_moved > 1)
+                white_queen_rook_moved++;
+            if (white_king_rook_moved > 1)
+                white_king_rook_moved++;
+        }
+        else
+        {
+            if (black_king_moved > 1)
+                black_king_moved++;
+            if (black_queen_rook_moved > 1)
+                black_queen_rook_moved++;
+            if (black_king_rook_moved > 1)
+                black_king_rook_moved++;
         }
     }
 
@@ -70,9 +117,9 @@ namespace board
         if (move.isKingCastling() || move.isQueenCastling())
         {
             do_castling(move);
+            update_castling(move);
             en_passant_.push(0ul);
             setWhiteTurn(!isWhiteTurn());
-            update_castling(move, isWhiteTurn() ? Color::WHITE : Color::BLACK);
             return;
         }
         auto &rpr = getBoardRpr();
@@ -89,7 +136,7 @@ namespace board
         bool capture = move.getCapture().has_value();
         std::optional<PieceType> promotion = move.get_promotion();
 
-        update_castling(move, piece.second);
+        update_castling(move);
 
         unsigned int source_int = static_cast<int>(src.file_get()) + static_cast<int>(src.rank_get()) * 8;
         unsigned int dest_int = static_cast<int>(dest.file_get()) + static_cast<int>(dest.rank_get()) * 8;
@@ -121,25 +168,25 @@ namespace board
 
     void Chessboard::undo_castling(Move &move)
     {
-        king_moved = false;
+        !isWhiteTurn() ? white_king_moved = 0 : black_king_moved = 0;
 
-        auto king_board = isWhiteTurn() ? 5 : 11;
-        auto rook_board = isWhiteTurn() ? 1 : 7;
-        auto king_side_rook_mask = isWhiteTurn() ? ~(1UL << 5UL) : ~(1UL << 61UL);
-        auto queen_side_rook_mask = isWhiteTurn() ? ~(1UL << 3UL) : ~(1UL << 59UL);
-        auto king_side_rook_set = isWhiteTurn() ? ~128UL : ~(1UL << 63UL);
-        auto queen_side_rook_set = isWhiteTurn() ? 1UL : (1UL << 56UL);
+        auto king_board = !isWhiteTurn() ? 5 : 11;
+        auto rook_board = !isWhiteTurn() ? 1 : 7;
+        auto king_side_rook_mask = !isWhiteTurn() ? ~(1UL << 5UL) : ~(1UL << 61UL);
+        auto queen_side_rook_mask = !isWhiteTurn() ? ~(1UL << 3UL) : ~(1UL << 59UL);
+        auto king_side_rook_set = !isWhiteTurn() ? ~128UL : ~(1UL << 63UL);
+        auto queen_side_rook_set = !isWhiteTurn() ? 1UL : (1UL << 56UL);
 
         if (move.isKingCastling())
         {
-            isWhiteTurn() ? white_king_rook_moved = false : black_king_rook_moved = false;
+            !isWhiteTurn() ? white_king_rook_moved = 0 : black_king_rook_moved = 0;
             boardRpr.boards[king_board] >>= 2UL;
             boardRpr.boards[rook_board] &= king_side_rook_mask;
             boardRpr.boards[rook_board] |= king_side_rook_set;
         }
         else
         {
-            isWhiteTurn() ? white_queen_rook_moved = false : black_queen_rook_moved = false;
+            !isWhiteTurn() ? white_queen_rook_moved = 0 : black_queen_rook_moved = 0;
             boardRpr.boards[king_board] <<= 2UL;
             boardRpr.boards[rook_board] &= queen_side_rook_mask;
             boardRpr.boards[rook_board] |= queen_side_rook_set;
@@ -148,6 +195,13 @@ namespace board
     void Chessboard::undo_move(Move move)
     {
         getEnPassant().pop();
+        if (move.isQueenCastling() || move.isKingCastling())
+        {
+            undo_castling(move);
+            setWhiteTurn(!isWhiteTurn());
+            return;
+        }
+        undo_update_castling();
         auto &rpr = getBoardRpr();
 
         auto dest = move.dest_pos_get();
@@ -208,7 +262,7 @@ namespace board
         for (auto i = moves.begin(); i != moves.end(); i++)
         {
             auto iCopy = *i;
-            do_move(*i);
+            do_move(iCopy);
             if (is_check())
                 moves.erase(i);
             undo_move(iCopy);
@@ -217,8 +271,8 @@ namespace board
 
         //add castling
 
-        auto king_castling = (isWhiteTurn() ? !white_king_rook_moved : !black_king_rook_moved) && !king_moved;
-        auto queen_castling = (isWhiteTurn() ? !white_queen_rook_moved : !black_queen_rook_moved) && !king_moved;
+        auto king_castling = (isWhiteTurn() ? !white_king_rook_moved && !white_king_moved: !black_king_rook_moved && !black_king_moved);
+        auto queen_castling = (isWhiteTurn() ? !white_queen_rook_moved && !white_king_moved: !black_queen_rook_moved && !black_king_moved);
         auto dest_castling = isWhiteTurn() ? Position(6) : Position(2);
         auto mask_king_side_occupied = isWhiteTurn() ? 0x60UL : 0x6000000000000000UL;
         auto mask_queen_side_occupied = isWhiteTurn() ? 0xeUL : 0xe00000000000000UL;
@@ -258,11 +312,12 @@ namespace board
     Chessboard::Chessboard()
     {
         white_turn_ = true;
-        white_king_rook_moved = false;
-        white_queen_rook_moved = false;
-        black_king_rook_moved = false;
-        black_queen_rook_moved = false;
-        king_moved = false;
+        white_king_rook_moved = 0;
+        white_queen_rook_moved = 0;
+        black_king_rook_moved = 0;
+        black_queen_rook_moved = 0;
+        white_king_moved = 0;
+        black_king_moved = 0;
         turn_ = 1;
         last_fifty_turn_ = 50;
         boardRpr = Chessboard_rpr();
@@ -273,11 +328,12 @@ namespace board
     Chessboard::Chessboard(std::string str)
     {
         white_turn_ = true;
-        white_king_rook_moved = false;
-        white_queen_rook_moved = false;
-        black_king_rook_moved = false;
-        black_queen_rook_moved = false;
-        king_moved = false;
+        white_king_rook_moved = 0;
+        white_queen_rook_moved = 0;
+        black_king_rook_moved = 0;
+        black_queen_rook_moved = 0;
+        white_king_moved = 0;
+        black_king_moved = 0;
         turn_ = 1;
         last_fifty_turn_ = 50;
         boardRpr = Chessboard_rpr(str);

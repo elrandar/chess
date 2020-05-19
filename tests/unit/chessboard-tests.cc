@@ -73,7 +73,9 @@ TEST(chessboard, do_move_undo_capture)
     chessboard.do_move(move);
     EXPECT_FALSE(chessboard.getBoardRpr().at(pos1).has_value());
     EXPECT_EQ(chessboard.getBoardRpr().at(pos2).value(), std::pair(PieceType::PAWN, Color::WHITE));
+    chessboard.getBoardRpr().print();
     chessboard.undo_move(move);
+    chessboard.getBoardRpr().print();
     EXPECT_TRUE(chessboard.getBoardRpr().at(pos1).has_value());
     EXPECT_EQ(chessboard.getBoardRpr().at(pos2).value(), std::pair(PieceType::ROOK, Color::BLACK));
 }
@@ -88,9 +90,7 @@ TEST(chessboard, do_move_undo_capture_promotion)
     auto move = Move(pos1, pos2, board::PieceType::PAWN);
     move.setCapture(PieceType::ROOK);
     move.setPromotion(PieceType::QUEEN);
-    chessboard.getBoardRpr().print();
     chessboard.do_move(move);
-    chessboard.getBoardRpr().print();
     EXPECT_FALSE(chessboard.getBoardRpr().at(pos1).has_value());
     EXPECT_EQ(chessboard.getBoardRpr().at(pos2).value(), std::pair(PieceType::QUEEN, Color::WHITE));
     chessboard.undo_move(move);
