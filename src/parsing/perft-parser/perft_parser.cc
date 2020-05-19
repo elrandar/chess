@@ -1,3 +1,4 @@
+#include <sstream>
 #include "perft_parser.hh"
 //Function from class FenRank
 
@@ -20,11 +21,11 @@ std::optional<std::pair<board::PieceType, board::Color>> FenRank::operator[](boa
 std::optional<std::pair<board::PieceType, board::Color>> FenObject::operator[](board::Position position)
 {
     int i = 0;
-    for (rank : ranks_)
+    for (auto rank : rank_)
     {
         if (static_cast<int>(position.rank_get()) == i)
         {
-            return pieces_[position.file_get()];
+            return rank.pieces_[position.file_get()];
         }
         i++;
     }
@@ -41,7 +42,7 @@ std::vector<char> FenObject::castling_get()
     return castling_;
 }
 
-board::Position FenObject::en_passant_target_get()
+std::optional<board::Position> FenObject::en_passant_target_get()
 {
     return en_passant_target_;
 }
@@ -61,10 +62,10 @@ int PerftObject::depth_get()
 ///////////////////////////
 
 //recupere chacun des rank sous forme de string
-void parse_ranks(std::string input, std::vector<std::string> vect)
+void parse_ranks(const std::string& input, std::vector<std::string> vect)
 {
     std::stringstream ss(input);
-    ss::string tmp;
+    std::string tmp;
     while (getline(ss,tmp,'/'))
     {
         vect.push_back(tmp);
@@ -110,6 +111,7 @@ std::pair<board::PieceType,board::Color> to_piece(char c)
 FenRank fromStr_to_FenRank(std::string vect)
 {
     int i = 0;
+    int j = 0;
     FenRank fenrank;
     std::vector<std::optional<std::pair<board::PieceType,board::Color>>> rtn;
     while (i < vect.size())
@@ -119,7 +121,7 @@ FenRank fromStr_to_FenRank(std::string vect)
             char check = vect.at(i)[j];
             if (!isdigit(check))
             {
-                rtn.push_back(char_to_piece(check));
+                rtn.push_back(std::nullopt);
             }
             else
             {
@@ -146,46 +148,46 @@ board::Position get_position(char file, char rank)
 {
     board::File file_;
     board::Rank rank_;
-    if (rank == 'a')
+    if (file == 'a')
     {
-        rank_ = board::File::A;
+        file_ = board::File::A;
     }
-    else if (rank == 'b')
+    else if (file == 'b')
     {
-        rank_ = board::File::B;
+        file_ = board::File::B;
     }
-    else if (rank == 'c')
+    else if (file == 'c')
     {
-        rank_ = board::File::C;
+        file_ = board::File::C;
     }
-    else if (rank == 'd')
+    else if (file == 'd')
     {
-        rank_ = board::File::D;
+        file_ = board::File::D;
     }
-    else if (rank == 'e')
+    else if (file == 'e')
     {
-        rank_ = board::File::E;
+        file_ = board::File::E;
     }
-    else if (rank == 'f')
+    else if (file == 'f')
     {
-        rank_ = board::File::F;
+        file_ = board::File::F;
     }
-    else if (rank == 'g')
+    else if (file == 'g')
     {
-        rank_ = board::File::G;
+        file_ = board::File::G;
     }
-    else if (rank == 'h')
+    else if (file == 'h')
     {
-        rank_ = board::File::H;
+        file_ = board::File::H;
     }
 
-    if (file == '3')
+    if (rank == '3')
     {
-        file_ = board::Rank::THREE;
+        rank_ = board::Rank::THREE;
     }
-    else if (file == '6')
+    else if (rank == '6')
     {
-        file_ = board::Rank::SIX;
+        rank_ = board::Rank::SIX;
     }
     return board::Position(file_,rank_);
 }
@@ -194,10 +196,10 @@ board::Position get_position(char file, char rank)
 PerftObject parse_perft(std::string input)
 {
     PerftObject perft;
-    stringstream ss(chaine);
+    std::stringstream ss(input);
     std::vector<std::string> vect;
     vect.reserve(7);
-    string sousChaine;
+    std::string sousChaine;
     while (getline(ss, sousChaine, ' '))
     {
         vect.push_back(sousChaine);
@@ -218,7 +220,7 @@ PerftObject parse_perft(std::string input)
 
 FenObject parse_fen(std::vector<std::string> splited_input)
 {
-    Color side_to_move;
+    board::Color side_to_move;
     int depth;
     std::vector<char> castling;
     std::optional<board::Position> en_passant_target;
@@ -254,7 +256,7 @@ FenObject parse_fen(std::vector<std::string> splited_input)
             castling.reserve(size);
             while (j < size)
             {
-                castling.push_back(to_parse.at(i)[j]);
+                castling.push_back(splited_input.at(i)[j]);
                 j++;
             }
         }
