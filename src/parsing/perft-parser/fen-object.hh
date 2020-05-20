@@ -15,11 +15,13 @@ namespace perft_parser
 
     public:
         explicit FenObject(std::string fenString);
-
         std::optional<std::pair<board::PieceType, board::Color>> operator[](board::Position position);
+
         board::Color side_to_move_get();
         std::vector<char> castling_get();
         std::optional<board::Position> en_passant_target_get();
+
+        void print();
     };
 }
 

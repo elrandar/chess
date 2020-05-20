@@ -1,6 +1,8 @@
 
 #include "fen-object.hh"
 #include <algorithm>
+#include <iostream>
+
 namespace perft_parser {
 
 
@@ -60,5 +62,27 @@ namespace perft_parser {
             en_passant_target_ = board::Position(enPassantTargetFile, enPassantTargetRank);
         } else
             en_passant_target_ = std::nullopt;
+    }
+
+    void FenObject::print() {
+
+        std::string out;
+        std::vector<char> chars {'Q', 'R', 'B', 'N', 'P', 'K', 'q', 'r', 'b', 'n', 'p', 'k'};
+
+        for (int i = 7; i >= 0; i--)
+        {
+            for (int j = 0; j < 8; j++)
+            {
+                auto piece = (*this)[board::Position(static_cast<board::File>(j), static_cast<board::Rank>(i))];
+                if (piece.has_value())
+                    out += chars.at(static_cast<int>(piece->first) + (piece->second == board::Color::WHITE ? 0 : 6));
+                else
+                    out += '.';
+                out += ' ';
+            }
+            out += '\n';
+        }
+        std::cout << out << '\n';
+
     }
 }

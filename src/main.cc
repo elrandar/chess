@@ -13,24 +13,8 @@ int main()
 
     using namespace board;
 
-    auto perft = perft_parser::parse_perft("rnbq1k1r/pp1Pbppp/2p5/8/2B5/8/PPP1NnPP/RNBQK2R w KQ - 1 8 1");
-    std::string out;
-    std::vector<char> chars {'Q', 'R', 'B', 'N', 'P', 'K', 'q', 'r', 'b', 'n', 'p', 'k'};
-
-    for (int i = 7; i >= 0; i--)
-    {
-        for (int j = 0; j < 8; j++)
-        {
-            auto piece = perft.fen_get()[Position(static_cast<File>(j), static_cast<Rank>(i))];
-            if (piece.has_value())
-                out += chars.at(static_cast<int>(piece->first) + (piece->second == Color::WHITE ? 0 : 6));
-            else
-                out += '.';
-            out += ' ';
-        }
-        out += '\n';
-    }
-    std::cout << out << '\n';
+    auto perft = perft_parser::parse_perft("r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 1");
+    perft.fen_get().print();
 
 
 //    Option option;

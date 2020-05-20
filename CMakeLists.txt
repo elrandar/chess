@@ -41,7 +41,7 @@ set(SRC_GTEST
         "tests/unit/magic-tests.cc"
         "tests/unit/option-tests.cc"
         "tests/unit/chessboard-tests.cc"
-
+        "tests/unit/perft-parsing-tests.cc"
 )
 
 # END SOURCES
