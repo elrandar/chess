@@ -266,17 +266,18 @@ namespace board
         auto keepList = std::vector<Move>();
         for (auto i = moves.begin(); i != moves.end(); i++)
         {
-            auto iCopy = *i;
-            do_move(iCopy); // changes the color
+            auto currentMove = *i;
+            do_move(currentMove); // changes the color
             setWhiteTurn(!isWhiteTurn()); // We want to check that the king from the color that did the move is in CHECK
             if (!is_check())
                 keepList.push_back(*i);
             setWhiteTurn(!isWhiteTurn());
-            undo_move(iCopy); // restore the color
+            undo_move(currentMove); // restore the color
         }
 
         //add castling moves to the vector
-        generate_castling(keepList);
+        if (!is_check())
+            generate_castling(keepList);
 
         return keepList;
     }
