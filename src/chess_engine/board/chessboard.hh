@@ -40,7 +40,7 @@ namespace board
 
         std::stack<BitBoard> & getEnPassant();
 
-        Position king_position();
+        std::optional<Position> king_position();
         bool isWhiteTurn() const;
         void setWhiteTurn(bool whiteTurn);
 

@@ -4,6 +4,7 @@
 #include "chess_engine/board/masks.hh"
 #include "chess_engine/board/magic.hh"
 #include "parsing/option.hh"
+#include <chrono>
 #include "parsing/perft-parser/perft-object.hh"
 #include "utility/utype.hh"
 
@@ -29,8 +30,12 @@ int main(int argc, char **argv)
     }
     else if (!option.getPerftPath().empty())
     {
+//        auto start = std::chrono::high_resolution_clock::now();
         int result = Perft::run_perft(option.getPerftPath());
-        std::cout << result << '\n';
+//        auto stop = std::chrono::high_resolution_clock::now();
+//        auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(stop - start);
+//        std::cout << result << '\n';
+//        std::cout << "It took : " << duration.count() << " ms\n";
     }
     else
     {

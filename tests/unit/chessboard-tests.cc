@@ -82,20 +82,14 @@ TEST_F(chessboard, do_move_undo_capture)
     auto pos2 = Position(File::A, Rank::EIGHT);
     auto move = Move(pos1, pos2, board::PieceType::PAWN);
     move.setCapture(PieceType::ROOK);
-    chessboard.getBoardRpr().print();
-    std::cout << "\n";
 
 
     chessboard.do_move(move);
-    chessboard.getBoardRpr().print();
-    std::cout << "\n";
     EXPECT_FALSE(chessboard.getBoardRpr().at(pos1).has_value());
     EXPECT_EQ(chessboard.getBoardRpr().at(pos2).value(), std::pair(PieceType::PAWN, Color::WHITE));
 
 
     chessboard.undo_move(move);
-    chessboard.getBoardRpr().print();
-    std::cout << "\n";
 
     EXPECT_TRUE(chessboard.getBoardRpr().at(pos1).has_value());
     EXPECT_EQ(chessboard.getBoardRpr().at(pos2).value(), std::pair(PieceType::ROOK, Color::BLACK));
@@ -115,7 +109,6 @@ TEST_F(chessboard, do_move_undo_capture_promotion)
     EXPECT_FALSE(chessboard.getBoardRpr().at(pos1).has_value());
     EXPECT_EQ(chessboard.getBoardRpr().at(pos2).value(), std::pair(PieceType::QUEEN, Color::WHITE));
     chessboard.undo_move(move);
-    chessboard.getBoardRpr().print();
     EXPECT_EQ(chessboard.getBoardRpr().at(pos1).value(), std::pair(PieceType::PAWN, Color::WHITE));
     EXPECT_EQ(chessboard.getBoardRpr().at(pos2).value(), std::pair(PieceType::ROOK, Color::BLACK));
 }
@@ -176,7 +169,6 @@ TEST_F(chessboard, castling_test_white_king_side)
 
     auto moves = chessboard.generate_legal_moves();
 
-    chessboard.getBoardRpr().print();
 
     for (auto move : moves)
     {
@@ -187,7 +179,6 @@ TEST_F(chessboard, castling_test_white_king_side)
         }
     }
 
-    chessboard.getBoardRpr().print();
     EXPECT_EQ(rpr.at(Position(5)).value(), (std::pair<PieceType, Color> (PieceType::ROOK, Color::WHITE)));
     EXPECT_EQ(rpr.at(Position(6)).value(), (std::pair<PieceType, Color> (PieceType::KING, Color::WHITE)));
 }
@@ -204,8 +195,6 @@ TEST_F(chessboard, castling_test_white_queen_side)
 
     auto moves = chessboard.generate_legal_moves();
 
-    chessboard.getBoardRpr().print();
-    std::cout << "\n";
 
     for (auto move : moves)
     {
@@ -216,7 +205,6 @@ TEST_F(chessboard, castling_test_white_queen_side)
         }
     }
 
-    chessboard.getBoardRpr().print();
     EXPECT_EQ(rpr.at(Position(3)).value(), (std::pair<PieceType, Color> (PieceType::ROOK, Color::WHITE)));
     EXPECT_EQ(rpr.at(Position(2)).value(), (std::pair<PieceType, Color> (PieceType::KING, Color::WHITE)));
 }
@@ -235,7 +223,6 @@ TEST_F(chessboard, castling_test_black_king_side)
 
     auto moves = chessboard.generate_legal_moves();
 
-    chessboard.getBoardRpr().print();
 
     for (auto move : moves)
     {
@@ -246,7 +233,6 @@ TEST_F(chessboard, castling_test_black_king_side)
         }
     }
 
-    chessboard.getBoardRpr().print();
     EXPECT_EQ(rpr.at(Position(61)).value(), (std::pair<PieceType, Color> (PieceType::ROOK, Color::BLACK)));
     EXPECT_EQ(rpr.at(Position(62)).value(), (std::pair<PieceType, Color> (PieceType::KING, Color::BLACK)));
 }
@@ -263,8 +249,6 @@ TEST_F(chessboard, castling_test_black_queen_side)
 
     auto moves = chessboard.generate_legal_moves();
 
-    chessboard.getBoardRpr().print();
-    std::cout << "\n";
 
     Move castlingMove = Move(Position(0), Position(0), board::PieceType::KING);
     for (auto move : moves)
@@ -277,8 +261,6 @@ TEST_F(chessboard, castling_test_black_queen_side)
         }
     }
 
-    chessboard.getBoardRpr().print();
-    std::cout << "\n";
     EXPECT_EQ(rpr.at(Position(59)).value(), (std::pair<PieceType, Color> (PieceType::ROOK, Color::BLACK)));
     EXPECT_EQ(rpr.at(Position(58)).value(), (std::pair<PieceType, Color> (PieceType::KING, Color::BLACK)));
 
@@ -289,6 +271,4 @@ TEST_F(chessboard, castling_test_black_queen_side)
     EXPECT_EQ(rpr.at(Position(56)).value(), (std::pair<PieceType, Color> (PieceType::ROOK, Color::BLACK)));
     EXPECT_EQ(rpr.at(Position(60)).value(), (std::pair<PieceType, Color> (PieceType::KING, Color::BLACK)));
 
-    chessboard.getBoardRpr().print();
-    std::cout << "\n";
 }

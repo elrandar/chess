@@ -367,9 +367,12 @@ namespace board
         return boardRpr.at(position);
     }
 
-    Position Chessboard::king_position() {
+    std::optional<Position> Chessboard::king_position() {
         BitBoard kingBoard = boardRpr.get(PieceType::KING, white_turn_ ? Color::WHITE : Color::BLACK);
-        return Position(BitboardOperations::bitScanForward(kingBoard));
+        if (kingBoard == 0)
+            return std::nullopt;
+        else
+            return Position(BitboardOperations::bitScanForward(kingBoard));
     }
 
     bool Chessboard::is_sq_attacked_by_color(int sq, Color color)
@@ -395,8 +398,11 @@ namespace board
 
 
     bool Chessboard::is_check() {
-        Position kingPos = king_position();
-        return is_sq_attacked_by_color(static_cast<int>(kingPos.file_get()) + 8 * static_cast<int>(kingPos.rank_get()),
+        auto kingPos = king_position();
+        if (!kingPos.has_value())
+            return false;
+        else
+            return is_sq_attacked_by_color(static_cast<int>(kingPos->file_get()) + 8 * static_cast<int>(kingPos->rank_get()),
                 isWhiteTurn() ? Color::BLACK : Color::WHITE);
     }
 

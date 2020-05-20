@@ -35,6 +35,8 @@ set(SRC_ENGINE
         "src/parsing/perft-parser/fen-rank.cc"
         "src/parsing/perft-parser/perft-object.cc"
         "src/perft.cc"
+        "src/chess_engine/ai/uci.cc"
+        "src/chess_engine/ai/evaluation.cc"
 )
 
 # Put your test files here
@@ -44,6 +46,7 @@ set(SRC_GTEST
         "tests/unit/option-tests.cc"
         "tests/unit/chessboard-tests.cc"
         "tests/unit/perft-parsing-tests.cc"
+        "tests/unit/evaluation-tests.cc"
 )
 
 # END SOURCES
