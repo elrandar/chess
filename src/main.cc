@@ -23,12 +23,9 @@ int main(int argc, char **argv)
     }
     else if (!option.getPgnPath().empty())
     {
-        if (!option.getListenersVector().empty())
-        {
-            auto chessboard = board::Chessboard();
-            auto big_boi = listener::ListenerManager(option.getListenersVector(), chessboard);
-            big_boi.run_pgn(option.getPgnPath());
-        }
+        auto chessboard = board::Chessboard();
+        auto listenerManager = listener::ListenerManager(option.getListenersVector(), chessboard);
+        listenerManager.run_pgn(option.getPgnPath());
     }
     else if (!option.getPerftPath().empty())
     {
