@@ -32,24 +32,3 @@ TEST_F(chessboard_rpr, at_blank_position)
     ASSERT_FALSE(piece.has_value());
 }
 
-TEST_F(chessboard_rpr, execute_move)
-{
-    using namespace board;
-    auto pos1 = Position(File::A, Rank::TWO);
-    auto pos2 = Position(File::A, Rank::FOUR);
-    rpr.execute_move(Move(pos1, pos2, PieceType::PAWN));
-
-    EXPECT_FALSE(rpr.at(pos1).has_value());
-    EXPECT_EQ(rpr.at(pos2).value(), std::pair(PieceType::PAWN, Color::WHITE));
-}
-
-TEST_F(chessboard_rpr, execute_move_capture)
-{
-    using namespace board;
-    auto pos1 = Position(File::A, Rank::TWO);
-    auto pos2 = Position(File::A, Rank::SEVEN);
-    rpr.execute_move(Move(pos1, pos2, PieceType::PAWN));
-
-    EXPECT_FALSE(rpr.at(pos1).has_value());
-    EXPECT_EQ(rpr.at(pos2).value(), std::pair(PieceType::PAWN, Color::WHITE));
-}

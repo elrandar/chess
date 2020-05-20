@@ -6,6 +6,11 @@
 
 namespace board::magic {
 
+        extern BitBoard BishopAttacks[0x12C0];
+        extern BitBoard RookAttacks[0x16200];
+        extern BitBoard *RookAttacksSquare[64];
+        extern BitBoard *BishopAttacksSquare[64];
+
         constexpr static unsigned RShift[64] = {
                 52, 53, 53, 53, 53, 53, 53, 52,
                 53, 54, 54, 53, 54, 54, 54, 53,
@@ -79,8 +84,12 @@ namespace board::magic {
                 0x007FB65AFABFB3B5ULL,
         };
 
+        void build_table();
+        void build_table_square(bool isARook, int i);
         BitBoard generate_blockboard(int index, BitBoard attackMask);
         BitBoard generate_attack_bishop(int index, BitBoard blockboard);
         BitBoard generate_attack_rook(int index, BitBoard blockboard);
+        BitBoard attack_bishop(BitBoard occ, int sq);
+        BitBoard attack_rook(BitBoard occ, int sq);
 
 }

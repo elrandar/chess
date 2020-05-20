@@ -14,6 +14,8 @@ namespace board
     {
     private:
     public:
+        Chessboard_rpr(std::string str);
+
         std::array<BitBoard, 12> boards;
         BitBoard enPassant;
         BitBoard occupied();
@@ -22,8 +24,6 @@ namespace board
         BitBoard get(PieceType pieceType, Color color);
         static std::string bitBoardPrint(BitBoard bitBoard);
         Chessboard_rpr();
-        Chessboard_rpr(Move move);
-        void execute_move(Move move);
         void print();
         std::optional<std::pair<PieceType, Color>> at(Position pos) const;
     };

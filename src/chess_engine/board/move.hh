@@ -17,17 +17,39 @@ namespace board
         bool king_castling_;
         bool queen_castling_;
         bool en_passant_;
-        bool capture_b_;
 
     public:
         Move(Position start, Position dest, PieceType pieceType);
         Move(Position start, Position dest, PieceType pieceType, PieceType capture);
+        Move(Position start, Position end, PieceType pieceType, std::optional<PieceType> promotion);
         PieceType piece_get();
         Position start_pos_get();
         Position dest_pos_get();
 
-        Move(Position start, Position end, PieceType pieceType, std::optional<PieceType> promotion, bool b);
+        void setKingCastling(bool kingCastling);
 
+        void setQueenCastling(bool queenCastling);
+
+        bool operator==(const Move &rhs) const;
+
+        bool operator!=(const Move &rhs) const;
+
+        void setCapture(const std::optional<PieceType> &capture);
+
+        bool isEnPassant() const;
+
+        void setEnPassant(bool enPassant);
+
+        bool isDoublePawnPush() const;
+
+        void setDoublePawnPush(bool doublePawnPush);
+
+        bool isKingCastling() const;
+
+        bool isQueenCastling() const;
+
+        const std::optional<PieceType> &getCapture() const;
         opt_piecetype_t get_promotion();
+        void setPromotion(const std::optional<PieceType> &promotion);
     };
 } // namespace board

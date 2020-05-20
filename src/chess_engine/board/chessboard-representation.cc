@@ -29,7 +29,7 @@ namespace board
         BitBoard white_king = 1UL << 4u;
         boards[5] = white_king;
 
-        BitBoard black_queen = (1UL << 59u) | 1UL << 17u;
+        BitBoard black_queen = (1UL << 59u);
         boards[6] = black_queen;
         BitBoard black_rook = 1UL << 56u | 1UL << 63u;
         boards[7] = black_rook;
@@ -44,11 +44,21 @@ namespace board
         boards[11] = black_king;
     }
 
-    Chessboard_rpr::Chessboard_rpr(Move move)
-        : Chessboard_rpr()
-    {
-        execute_move(move);
+    Chessboard_rpr::Chessboard_rpr(std::string str) {
+       if (str.empty())
+       {
+
+       }
+       boards = std::array<BitBoard, 12>();
+       for (int i = 0; i < 12; i++)
+       {
+           boards[i] = 0ul;
+       }
+       boards[1] = 1ul << 11;
+
+       boards[11] = 1ul << 59;
     }
+
 
     void Chessboard_rpr::print()
     {
@@ -75,28 +85,9 @@ namespace board
         }
         for (const auto& i : out)
             std::cout << i;
+        std::cout << "\n";
     }
 
-    void Chessboard_rpr::execute_move(Move move)
-    {
-        auto dest = move.dest_pos_get();
-        auto src = move.start_pos_get();
-
-        auto piece = this->at(src);
-        auto capture = this->at(dest);
-
-        unsigned int source_int = static_cast<int>(src.file_get()) + static_cast<int>(src.rank_get()) * 8;
-        unsigned int dest_int = static_cast<int>(dest.file_get()) + static_cast<int>(dest.rank_get()) * 8;
-
-        int board_index = static_cast<int>(piece->first) + (piece->second == Color::WHITE ? 0 : 6);
-
-        boards.at(board_index) = (boards.at(board_index) & ~(1UL << source_int)) | 1UL << dest_int;
-        if (capture.has_value())
-        {
-            int capture_board_index = static_cast<int>(capture->first) + (capture->second == Color::WHITE ? 0 : 6);
-            boards.at(capture_board_index) &= ~(1UL << dest_int);
-        }
-    }
 
     std::optional<std::pair<PieceType, Color>> Chessboard_rpr::at(Position pos) const {
         unsigned int pos_int = static_cast<int>(pos.file_get()) + static_cast<int>(pos.rank_get()) * 8;

@@ -1,9 +1,50 @@
 
+#include <bitset>
+#include <iostream>
 #include "magic.hh"
 #include "masks.hh"
 
 namespace board::magic
 {
+     BitBoard BishopAttacks[0x12C0];
+     BitBoard RookAttacks[0x16200];
+     BitBoard *RookAttacksSquare[64];
+     BitBoard *BishopAttacksSquare[64];
+
+    void build_table_square(bool isARook, int sq)
+    {
+        BitBoard *Masks = isARook ? Masks::rook_attack : Masks::bishop_attack;
+        const BitBoard *Magics = isARook ? RMagics : BMagics;
+        BitBoard **AttacksSquare = isARook ? RookAttacksSquare : BishopAttacksSquare;
+        BitBoard (*generate_attack)(int, BitBoard) = isARook ? generate_attack_rook : generate_attack_bishop;
+        const unsigned *Shift = isARook ? RShift : BShift;
+
+        const size_t tablesize = 1UL << (64 - Shift[sq]);
+        std::bitset<64> bigbit = Masks[sq];
+        auto nb_bbit = bigbit.count();
+        for (int i = 0; i < (1 << nb_bbit); i++)
+        {
+            BitBoard blockboard = generate_blockboard(i, Masks[sq]);
+            unsigned index = (blockboard * Magics[sq]) >> Shift[sq];
+            AttacksSquare[sq][index] = generate_attack(sq, blockboard);
+        }
+        if (sq < 63)
+            AttacksSquare[sq + 1] = AttacksSquare[sq] + tablesize;
+    }
+
+    void build_table()
+    {
+        RookAttacksSquare[0] = RookAttacks;
+        BishopAttacksSquare[0] = BishopAttacks;
+
+        for (int i = 0; i < 64; i++)
+        {
+            build_table_square(true, i);
+            build_table_square(false, i);
+        }
+    }
+
+
     BitBoard generate_blockboard(int index, BitBoard attackMask)
     {
         /* Start with a blockboard identical to the attackMask. */
@@ -25,6 +66,31 @@ namespace board::magic
         }
         return blockboard;
     }
+
+    BitBoard attack_rook(BitBoard occ, int sq)
+    {
+        auto mask = Masks::rook_attacks(sq);
+        auto magic = magic::RMagics[sq];
+        auto shift = magic::RShift[sq];
+
+
+        auto index = ((occ & mask) * magic) >> shift;
+
+        return magic::RookAttacksSquare[sq][index];
+    }
+
+
+    BitBoard attack_bishop(BitBoard occ, int sq)
+    {
+        auto mask = Masks::bishop_attacks(sq);
+        auto magic = magic::BMagics[sq];
+        auto shift = magic::BShift[sq];
+
+        auto index = ((occ & mask) * magic) >> shift;
+
+        return magic::BishopAttacksSquare[sq][index];
+    }
+
 
     BitBoard generate_attack_bishop(int index, BitBoard blockboard)
     {

@@ -2,6 +2,7 @@
 
 #include "listener/listener.hh"
 #include "chess_engine/board/chessboard.hh"
+#include "parsing/pgn-parser/pgn-move.hh"
 #include <string>
 #include <fstream>
 #include <utility>
@@ -19,22 +20,19 @@ namespace listener
         std::vector<void*> handlers;
 
     public:
-        ListenerManager(const std::vector<std::string>& files, board::Chessboard chessboard);
+        ListenerManager(const std::vector<std::string>& files, board::Chessboard &chessboard);
         ~ListenerManager() override;
 
         // Operator that has to be implemented for the ChessboardInterface
         opt_piece_t operator[](const board::Position &position) const override;
 
         // Functions used to run
-        bool run_pgn(std::string pgn_path);
+        bool run_pgn(const std::string& pgn_path);
         bool do_castling(board::Move move, board::Rank rank);
         void disqualify(board::Color color);
 
 
-        static std::vector<board::Move> pgn_to_moves(const std::string& file);
-        bool check_on_position(std::vector<board::Move> legal_moves, board::Position king_pos, board::Color color);
-        bool is_king_oncheck(board::Color color);
-        bool piece_can_move(std::vector<board::Move> legal_moves,board::PieceType piece, board::Color color);
+        static board::Move pgnMoveToMove(board::PgnMove pgnMove, board::Chessboard chessboard);
 
 
         // Wrapper Functions to act on all the listeners =============================================================
@@ -56,5 +54,7 @@ namespace listener
         void on_player_timeout(board::Color color);
         void on_player_disqualified(board::Color color);
         void on_draw();
+
+        static int is_pgn_move_castling(board::PgnMove pgnMove);
     };
 }
