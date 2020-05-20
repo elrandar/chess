@@ -115,6 +115,9 @@ TEST_F(chessboard, do_move_undo_capture_promotion)
 
 TEST_F(chessboard, is_move_valid_false)
 {
+    board::Masks::init();
+    board::BitboardOperations::init_ms1bTable();
+    board::magic::build_table();
     using namespace board;
     auto chessboard = Chessboard();
     auto pos1 = Position(File::A, Rank::TWO);

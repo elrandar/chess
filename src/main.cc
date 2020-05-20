@@ -30,12 +30,8 @@ int main(int argc, char **argv)
     }
     else if (!option.getPerftPath().empty())
     {
-//        auto start = std::chrono::high_resolution_clock::now();
         int result = Perft::run_perft(option.getPerftPath());
-//        auto stop = std::chrono::high_resolution_clock::now();
-//        auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(stop - start);
-//        std::cout << result << '\n';
-//        std::cout << "It took : " << duration.count() << " ms\n";
+        std::cout << result << '\n';
     }
     else
     {
