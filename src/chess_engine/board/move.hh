@@ -26,6 +26,8 @@ namespace board
         Position start_pos_get();
         Position dest_pos_get();
 
+        void print();
+
         void setKingCastling(bool kingCastling);
 
         void setQueenCastling(bool queenCastling);

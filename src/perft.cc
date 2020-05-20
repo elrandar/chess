@@ -5,6 +5,7 @@
 #include <istream>
 #include <fstream>
 #include <sstream>
+#include <iostream>
 
 int Perft::run_perft(std::string filePath) {
     // parse and get chessboard
@@ -32,7 +33,17 @@ int Perft::perft(board::Chessboard chessboard, int depth)
     moveList = chessboard.generate_legal_moves();
     for (auto move : moveList)
     {
+//        if (depth == 2)
+//        {
+//            move.print();
+//        }
+//        if (depth == 1)
+//        {
+//            std::cout << '\t';
+//            move.print();
+//        }
         chessboard.do_move(move);
+//        chessboard.getBoardRpr().print();
         nodes += perft(chessboard, depth - 1);
         chessboard.undo_move(move);
     }

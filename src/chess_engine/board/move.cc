@@ -1,3 +1,4 @@
+#include <iostream>
 #include "move.hh"
 
 namespace board
@@ -103,6 +104,11 @@ namespace board
 
     bool Move::operator!=(const Move &rhs) const {
         return !(rhs == *this);
+    }
+
+    void Move::print() {
+        std::cout << (char) ('a' + static_cast<int>(start_pos_.file_get())) << static_cast<int>(start_pos_get().rank_get()) + 1;
+        std::cout << (char) ('a' + static_cast<int>(dest_pos_.file_get())) << static_cast<int>(dest_pos_get().rank_get()) + 1<< '\n';
     }
 
 }

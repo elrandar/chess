@@ -179,7 +179,7 @@ namespace board
         auto rook_board = !isWhiteTurn() ? 1 : 7;
         auto king_side_rook_mask = !isWhiteTurn() ? ~(1UL << 5UL) : ~(1UL << 61UL);
         auto queen_side_rook_mask = !isWhiteTurn() ? ~(1UL << 3UL) : ~(1UL << 59UL);
-        auto king_side_rook_set = !isWhiteTurn() ? ~128UL : ~(1UL << 63UL);
+        auto king_side_rook_set = !isWhiteTurn() ? 128UL : (1UL << 63UL);
         auto queen_side_rook_set = !isWhiteTurn() ? 1UL : (1UL << 56UL);
 
         if (move.isKingCastling())
