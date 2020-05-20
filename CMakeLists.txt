@@ -30,6 +30,9 @@ set(SRC_ENGINE
         "src/parsing/pgn-parser/pgn-move.cc"
         "src/listener-manager.cc"
         "src/listener/listener-wrapper.cc"
+        "src/parsing/perft-parser/fen-object.cc"
+        "src/parsing/perft-parser/fen-rank.cc"
+        "src/parsing/perft-parser/perft-object.cc"
 )
 
 # Put your test files here

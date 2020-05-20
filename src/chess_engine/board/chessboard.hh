@@ -49,6 +49,6 @@ namespace board
         void setBlackQueenCastling(bool blackQueenCastling);
 
 
-
+        Position king_position();
     };
 }
