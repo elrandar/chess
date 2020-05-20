@@ -49,5 +49,8 @@ TEST_F(evaluation, count_pawns_1)
     auto thing = evaluation.count_pawns(board::Color::BLACK);
 
     EXPECT_EQ(thing, 4);
-
+    EXPECT_EQ(evaluation.BisolatedPawns, 4);
+    EXPECT_EQ(evaluation.BblockedPawns, 2);
+    EXPECT_EQ(evaluation.BdoubledPawns, 2);
 }
+

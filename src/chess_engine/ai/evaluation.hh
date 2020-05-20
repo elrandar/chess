@@ -5,7 +5,7 @@ namespace ai
 {
     using namespace board;
     class Evaluation {
-    private:
+    public:
         Chessboard &chessboard_;
         std::vector<Move> whiteMoves;
         std::vector<Move> blackMoves;
@@ -17,7 +17,6 @@ namespace ai
         int BblockedPawns;
         int BisolatedPawns;
 
-    public:
         explicit Evaluation(Chessboard &chessboard);
         float rate_chessboard(board::Color side);
         int count_pieces(PieceType pieceType, Color color);
