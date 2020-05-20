@@ -1,5 +1,6 @@
 #include "listener-manager.hh"
 #include <iostream>
+#include "perft.hh"
 #include "chess_engine/board/masks.hh"
 #include "chess_engine/board/magic.hh"
 #include "parsing/option.hh"
@@ -31,7 +32,8 @@ int main(int argc, char **argv)
     }
     else if (!option.getPerftPath().empty())
     {
-        // do perft stuff
+        int result = Perft::run_perft(option.getPerftPath());
+        std::cout << result << '\n';
     }
     else
     {

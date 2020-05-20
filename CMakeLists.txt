@@ -34,6 +34,7 @@ set(SRC_ENGINE
         "src/parsing/perft-parser/fen-object.cc"
         "src/parsing/perft-parser/fen-rank.cc"
         "src/parsing/perft-parser/perft-object.cc"
+        "src/perft.cc"
 )
 
 # Put your test files here
