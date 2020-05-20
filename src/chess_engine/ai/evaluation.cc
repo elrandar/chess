@@ -1,4 +1,5 @@
 #include "evaluation.hh"
+#include "../board/bitboard-operations.hh"
 
 namespace ai
 {
@@ -71,19 +72,20 @@ namespace ai
     int Evaluation::count_pawns(Color color)
     {
         auto remainingPieces = chessboard_.getBoardRpr().get(board::PieceType::PAWN, color);
+        auto alliedPawns = chessboard_.getBoardRpr().get(board::PieceType::PAWN, color);
         int count = 0;
 
         std::array<bool, 7> pawnOnFile = {false};
 
         while (remainingPieces != 0)
         {
-            uint8_t bitToUnset = BitboardOperations::bitScanForward(remainingPieces);
-            remainingPieces &= ~(1ul << bitToUnset);
+            uint8_t pawnSquare = BitboardOperations::bitScanForward(remainingPieces);
+            remainingPieces &= ~(1ul << pawnSquare);
 
             // bloked pawns
-            if (is_pawn_blocked(bitToUnset, color))
+            if (is_pawn_blocked(pawnSquare, color))
                 color == board::Color::WHITE ? WblockedPawns++ : BblockedPawns++;
-            auto fileNumber = bitToUnset % 8;
+            auto fileNumber = pawnSquare % 8;
 
             // doubled Pawns
             if (pawnOnFile.at(fileNumber))
@@ -92,18 +94,15 @@ namespace ai
                 pawnOnFile.at(fileNumber) = true;
 
             // isolated Pawns
-            if (fileNumber != 0 && fileNumber != 7) {
-                if (!pawnOnFile.at(fileNumber + 1) && !pawnOnFile.at(fileNumber - 1)) {
-                    color == board::Color::WHITE ? WisolatedPawns++ : BisolatedPawns;
-                }
-            }
-            else if (fileNumber == 0)
-            {
-                if (pawnOnFile.at(fileNumber + 1))
-                    color == board::Color::WHITE ? WisolatedPawns++ : BisolatedPawns;
-            }
-            else if (pawnOnFile.at(fileNumber - 1))
-                color == board::Color::WHITE ? WisolatedPawns++ : BisolatedPawns;
+            BitBoard adjFileMask =
+                    fileNumber == 0 ?
+                        BitboardOperations::arrFileMask[fileNumber + 1]
+                    : fileNumber == 7 ?
+                        BitboardOperations::arrFileMask[fileNumber - 1]
+                    : BitboardOperations::arrFileMask[fileNumber - 1] | BitboardOperations::arrFileMask[fileNumber + 1];
+
+            if (!(alliedPawns & adjFileMask))
+                color == board::Color::WHITE ? WisolatedPawns++ : BisolatedPawns++;
             count++;
         }
         return count;
