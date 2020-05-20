@@ -14,11 +14,18 @@ Option::Option()
 
 void Option::show_help()
 {
-    std::cerr << "Usage: " << std::endl;
-    std::cerr << "\t-h [ --help ]\t\tshow usage" << std::endl;
-    std::cerr << "\t--pgn arg\t\tpath to a PGN file" << std::endl;
-    std::cerr << "\t-l [ --listeners ] args\tlist of the paths of the listeners plugins" << std::endl;
-    std::cerr << "\t--perf arg\t\tpath to a perft file" << std::endl;
+    std::cout << "chessengine : A chess engine written in C++.\nRun with no arguments to enter IA mode.\n\n";
+    std::cout << "Usage:" << std::endl;
+    std::cout << "\tchessengine\n";
+    std::cout << "\tchessengine --pgn <pgn-file>\n";
+    std::cout << "\tchessengine --pgn <pgn-file> -l <listener-path>...\n";
+    std::cout << "\tchessengine --perft <perft-file>\n";
+
+    std::cout << "\nOptions:" << '\n';
+    std::cout << "\t-h --help\t\tShow this screen." << std::endl;
+    std::cout << "\t--pgn arg\t\tPath to a PGN file" << std::endl;
+    std::cout << "\t-l [ --listeners ] args\tList of the paths of the listeners plugins" << std::endl;
+    std::cout << "\t--perft arg\t\tPath to a perft file" << std::endl;
 }
 
 bool Option::parse_options(int argc, char **argv)
