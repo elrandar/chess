@@ -22,7 +22,7 @@ int main(int argc, char **argv)
     {
         option.show_help();
     }
-    else if (option.getPgnPath() != "")
+    else if (!option.getPgnPath().empty())
     {
         if (!option.getListenersVector().empty())
         {
@@ -30,7 +30,7 @@ int main(int argc, char **argv)
             big_boi.run_pgn(option.getPgnPath());
         }
     }
-    else if (option.getPerftPath() != "")
+    else if (!option.getPerftPath().empty())
     {
         // do perft stuff
     }

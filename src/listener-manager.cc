@@ -87,35 +87,6 @@ namespace listener
         // ======
         return move;
     }
-    //check si le roi est en echec
-    bool ListenerManager::check_on_position(std::vector<board::Move> legal_moves, board::Position king_pos, board::Color color)
-    {
-        for (auto move : legal_moves)
-        {
-            if (move.dest_pos_get() == king_pos)
-            {
-                auto pair = chessboard_[move.start_pos_get()];
-                if (pair->first != board::PieceType::KING && pair->second != color)
-                {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-    //check si le roi a un move possible dans les legal move
-    bool ListenerManager::piece_can_move(std::vector<board::Move> legal_moves,board::PieceType piece, board::Color color)
-    {
-        for (auto move: legal_moves)
-        {
-            if (chessboard_[move.start_pos_get()]->first == piece
-                && chessboard_[move.start_pos_get()]->second == color)
-            {
-                return true;
-            }
-        }
-        return false;
-    }
 
     bool ListenerManager::run_pgn(const std::string& pgn_path)
     {
