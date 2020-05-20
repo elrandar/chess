@@ -2,6 +2,7 @@
 #include "../../src/chess_engine/board/magic.hh"
 #include "../../src/chess_engine/board/masks.hh"
 #include <gtest/gtest.h>
+#include "../../src/parsing/perft-parser/perft-object.hh"
 
 
 class chessboard : public ::testing::Test {
@@ -147,8 +148,9 @@ TEST_F(chessboard, is_move_valid_true)
 TEST_F(chessboard, is_check_true)
 {
     using namespace board;
-    auto chessboard = Chessboard("");
-    chessboard.setWhiteTurn(false);
+    auto chessboard = Chessboard(
+            perft_parser::parse_fen(
+                    "4r3/8/8/8/8/8/4K3/8 w KQkq - 0"));
 
     ASSERT_TRUE(chessboard.is_check());
 }

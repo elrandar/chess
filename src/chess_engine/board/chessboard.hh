@@ -5,6 +5,7 @@
 #include "move.hh"
 #include "color.hh"
 #include "chessboard-representation.hh"
+#include "../../parsing/perft-parser/fen-object.hh"
 
 namespace board
 {
@@ -25,6 +26,7 @@ namespace board
 
     public:
         Chessboard();
+        explicit Chessboard(perft_parser::FenObject fenObject);
         std::vector<Move> generate_legal_moves();
         void do_move(Move &move);
         void undo_move(Move move);
@@ -41,16 +43,6 @@ namespace board
         Position king_position();
         bool isWhiteTurn() const;
         void setWhiteTurn(bool whiteTurn);
-        bool isWhiteKingCastling() const;
-        void setWhiteKingCastling(bool whiteKingCastling);
-        bool isWhiteQueenCastling() const;
-        void setWhiteQueenCastling(bool whiteQueenCastling);
-        bool isBlackKingCastling() const;
-        void setBlackKingCastling(bool blackKingCastling);
-        bool isBlackQueenCastling() const;
-        void setBlackQueenCastling(bool blackQueenCastling);
-
-        Chessboard(std::string str);
 
         bool is_sq_attacked_by_color(int sq, Color color);
 

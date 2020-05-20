@@ -16,8 +16,6 @@ int main(int argc, char **argv)
     Option option;
     option.parse_options(argc, argv);
 
-
-    auto chessboard = board::Chessboard();
     if (option.isHelp())
     {
         option.show_help();
@@ -26,6 +24,7 @@ int main(int argc, char **argv)
     {
         if (!option.getListenersVector().empty())
         {
+            auto chessboard = board::Chessboard();
             auto big_boi = listener::ListenerManager(option.getListenersVector(), chessboard);
             big_boi.run_pgn(option.getPgnPath());
         }

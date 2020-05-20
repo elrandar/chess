@@ -6,6 +6,7 @@
 #include "move.hh"
 #include "color.hh"
 #include "bitboard-operations.hh"
+#include "../../parsing/perft-parser/fen-object.hh"
 
 namespace board
 {
@@ -14,10 +15,9 @@ namespace board
     {
     private:
     public:
-        Chessboard_rpr(std::string str);
+        explicit Chessboard_rpr(perft_parser::FenObject fenObject);
 
-        std::array<BitBoard, 12> boards;
-        BitBoard enPassant;
+        std::array<BitBoard, 12> boards{};
         BitBoard occupied();
         BitBoard WhitePieces();
         BitBoard BlackPieces();
@@ -25,6 +25,6 @@ namespace board
         static std::string bitBoardPrint(BitBoard bitBoard);
         Chessboard_rpr();
         void print();
-        std::optional<std::pair<PieceType, Color>> at(Position pos) const;
+        [[nodiscard]] std::optional<std::pair<PieceType, Color>> at(Position pos) const;
     };
 }

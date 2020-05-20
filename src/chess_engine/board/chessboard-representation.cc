@@ -44,21 +44,6 @@ namespace board
         boards[11] = black_king;
     }
 
-    Chessboard_rpr::Chessboard_rpr(std::string str) {
-       if (str.empty())
-       {
-
-       }
-       boards = std::array<BitBoard, 12>();
-       for (int i = 0; i < 12; i++)
-       {
-           boards[i] = 0ul;
-       }
-       boards[1] = 1ul << 11;
-
-       boards[11] = 1ul << 59;
-    }
-
 
     void Chessboard_rpr::print()
     {
@@ -164,5 +149,23 @@ namespace board
 
     BitBoard Chessboard_rpr::get(PieceType pieceType, Color color) {
         return boards[static_cast<int>(pieceType) + static_cast<int>(color) * 6];
+    }
+
+    Chessboard_rpr::Chessboard_rpr(perft_parser::FenObject fenObject)
+    {
+        boards = std::array<BitBoard, 12>();
+        for (int i = 0; i < 12; i++)
+            boards.at(i) = 0ul;
+
+        for (uint8_t i = 0; i < 64; i++)
+        {
+            auto pieceSquare = fenObject[Position(i)];
+            if (pieceSquare.has_value())
+            {
+                int boardNumber = static_cast<int>(pieceSquare.value().first)
+                        + (pieceSquare.value().second == Color::WHITE ? 0 : 6);
+                boards.at(boardNumber) |= 1ul << i;
+            }
+        }
     }
 }

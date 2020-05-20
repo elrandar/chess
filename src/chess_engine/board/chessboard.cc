@@ -342,22 +342,6 @@ namespace board
         en_passant_.push(0ul);
     }
 
-    Chessboard::Chessboard(std::string str)
-    {
-        white_turn_ = true;
-        white_king_rook_moved = 0;
-        white_queen_rook_moved = 0;
-        black_king_rook_moved = 0;
-        black_queen_rook_moved = 0;
-        white_king_moved = 0;
-        black_king_moved = 0;
-        turn_ = 1;
-        last_fifty_turn_ = 50;
-        boardRpr = Chessboard_rpr(str);
-        en_passant_ = std::stack<BitBoard>();
-        en_passant_.push(0ul);
-    }
-
     Chessboard_rpr& Chessboard::getBoardRpr() {
         return boardRpr;
     }
@@ -368,38 +352,6 @@ namespace board
 
     void Chessboard::setWhiteTurn(bool whiteTurn) {
         white_turn_ = whiteTurn;
-    }
-
-    bool Chessboard::isWhiteKingCastling() const {
-        return white_king_rook_moved;
-    }
-
-    void Chessboard::setWhiteKingCastling(bool whiteKingCastling) {
-        white_king_rook_moved = whiteKingCastling;
-    }
-
-    bool Chessboard::isWhiteQueenCastling() const {
-        return white_queen_rook_moved;
-    }
-
-    void Chessboard::setWhiteQueenCastling(bool whiteQueenCastling) {
-        white_queen_rook_moved = whiteQueenCastling;
-    }
-
-    bool Chessboard::isBlackKingCastling() const {
-        return black_king_rook_moved;
-    }
-
-    void Chessboard::setBlackKingCastling(bool blackKingCastling) {
-        black_king_rook_moved = blackKingCastling;
-    }
-
-    bool Chessboard::isBlackQueenCastling() const {
-        return black_queen_rook_moved;
-    }
-
-    void Chessboard::setBlackQueenCastling(bool blackQueenCastling) {
-        black_queen_rook_moved = blackQueenCastling;
     }
 
     bool Chessboard::is_move_legal(Move move) {
@@ -461,6 +413,53 @@ namespace board
 
     bool Chessboard::is_draw() {
         return is_pat() || last_fifty_turn_ == 0;
+    }
+
+    Chessboard::Chessboard(perft_parser::FenObject fenObject)
+    {
+        boardRpr = Chessboard_rpr(fenObject);
+        white_turn_ = fenObject.side_to_move_get() == Color::WHITE;
+        turn_ = 1;
+        last_fifty_turn_ = 50;
+
+        // castling
+        white_king_moved = 1;
+        black_king_moved = 1;
+        white_queen_rook_moved = 1;
+        black_queen_rook_moved = 1;
+        white_king_rook_moved = 1;
+        black_king_rook_moved = 1;
+        for (char c : fenObject.castling_get())
+        {
+           if (c == 'K')
+           {
+               white_king_moved = 0;
+               white_king_rook_moved = 0;
+           } else if (c == 'k')
+           {
+               black_king_moved = 0;
+               black_king_rook_moved = 0;
+           } else if (c == 'Q')
+           {
+               white_king_moved = 0;
+               white_queen_rook_moved = 0;
+           } else if (c == 'q')
+           {
+               black_king_moved = 0;
+               black_queen_rook_moved = 0;
+           }
+        }
+
+        // en passant
+        en_passant_ = std::stack<BitBoard>();
+        if (fenObject.en_passant_target_get().has_value()) {
+            auto enPassantPos = fenObject.en_passant_target_get().value();
+            uint8_t enPassantSquare = static_cast<int>(enPassantPos.rank_get()) * 8
+                    + static_cast<int>(enPassantPos.file_get());
+            en_passant_.push(1ul << enPassantSquare);
+        }
+        else
+            en_passant_.push(0ul);
     }
 
 }
