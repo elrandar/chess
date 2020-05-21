@@ -10,6 +10,7 @@ Option::Option()
     pgn_path = "";
     perft_path = "";
     listeners_vector = std::vector<std::string>();
+    timeTest = false;
 }
 
 void Option::show_help()
@@ -33,6 +34,10 @@ bool Option::parse_options(int argc, char **argv)
     int i = 1;
     while (i < argc)
     {
+        if (!strcmp(argv[i], "--time-test"))
+        {
+           timeTest = true;
+        }
         if (!strcmp(argv[i],"-h") || !strcmp(argv[i],"--help"))
         {
             help = true;

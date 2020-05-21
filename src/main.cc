@@ -36,6 +36,17 @@ int main(int argc, char **argv)
         int result = Perft::run_perft(option.getPerftPath());
         std::cout << result << '\n';
     }
+    else if (option.timeTest)
+    {
+        auto start = std::chrono::high_resolution_clock::now();
+
+        auto cb = Chessboard();
+        std::cout << ai::search::findNextMove(cb).toString() << '\n';
+
+        auto stop = std::chrono::high_resolution_clock::now();
+        auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(stop - start);
+        std::cout << "\nIt took : " << duration.count() << " ms\n";
+    }
     else
     {
         auto ewan = ai::Ai();

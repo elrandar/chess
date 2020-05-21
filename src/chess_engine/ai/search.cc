@@ -62,7 +62,7 @@ namespace ai
 
     Move search::findNextMove(board::Chessboard chessboard)
     {
-        auto tree = build_tree(std::move(chessboard), 3);
+        auto tree = build_tree(std::move(chessboard), 4);
         float best_move_val = minMax(tree.node_, true);
         int i = 0;
         for (const auto& child : tree.node_->children)

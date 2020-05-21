@@ -13,8 +13,11 @@ private:
 
 public:
     Option();
+
+    bool timeTest;
+
     bool parse_options(int argc, char **argv);
-    void show_help();
+    static void show_help();
     const std::vector<std::string> &getListenersVector() const;
     const std::string &getPgnPath() const;
     const std::string &getPerftPath() const;
