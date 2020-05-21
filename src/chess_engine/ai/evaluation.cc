@@ -1,4 +1,5 @@
 #include "evaluation.hh"
+#include "../board/bitboard-operations.hh"
 
 namespace ai
 {
@@ -14,45 +15,37 @@ namespace ai
         BdoubledPawns = 0;
 
         chessboard_ = chessboard;
-        auto whiteTurn = chessboard_.isWhiteTurn();
-        chessboard.setWhiteTurn(true);
-        whiteMoves = chessboard_.generate_legal_moves();
-        chessboard.setWhiteTurn(false);
-        blackMoves = chessboard_.generate_legal_moves();
-        chessboard.setWhiteTurn(whiteTurn);
     }
 
     float Evaluation::rate_chessboard(Color side)
     {
-        int king_factor = 200;
-        int queen_factor = 9;
-        int rook_factor = 5;
-        int bishop_knight_factor = 3;
-        int pawn_factor = 1;
-        float double_blocked_isolated_pawn_factor = 0.5f;
-        float number_moves_factor = 0.1f;
+        double king_factor = 2000;
+        double queen_factor = 90;
+        double rook_factor = 50;
+        double bishop_knight_factor = 30;
+        double pawn_factor = 10;
+        double double_blocked_isolated_pawn_factor = 5;
 
-        float king_value = king_factor * (count_pieces(board::PieceType::KING, Color::WHITE)
+        double king_value = king_factor * (count_pieces(board::PieceType::KING, Color::WHITE)
                                 - count_pieces(board::PieceType::KING, board::Color::BLACK));
-        float queen_value = queen_factor * (count_pieces(board::PieceType::QUEEN, board::Color::WHITE)
+        double queen_value = queen_factor * (count_pieces(board::PieceType::QUEEN, board::Color::WHITE)
                                 - count_pieces(board::PieceType::QUEEN, board::Color::BLACK));
-        float rook_value = rook_factor * (count_pieces(board::PieceType::ROOK, board::Color::WHITE)
+        double rook_value = rook_factor * (count_pieces(board::PieceType::ROOK, board::Color::WHITE)
                                            - count_pieces(board::PieceType::ROOK, board::Color::BLACK));
-        float bishop_knight_value = bishop_knight_factor *
+        double bishop_knight_value = bishop_knight_factor *
                 (count_pieces(board::PieceType::ROOK, board::Color::WHITE)
                 - count_pieces(board::PieceType::ROOK, board::Color::BLACK)
                 + count_pieces(board::PieceType::KNIGHT, board::Color::WHITE)
                 - count_pieces(board::PieceType::KNIGHT, board::Color::BLACK));
-        float pawn_value = pawn_factor * (count_pawns(board::Color::WHITE) - count_pawns(board::Color::WHITE));
-        float dbi_value = double_blocked_isolated_pawn_factor * static_cast<float>(WdoubledPawns - BdoubledPawns
+        double pawn_value = pawn_factor * (count_pawns(board::Color::WHITE) - count_pawns(board::Color::WHITE));
+        double dbi_value = double_blocked_isolated_pawn_factor * (WdoubledPawns - BdoubledPawns
                 + WblockedPawns - BblockedPawns
                 + WisolatedPawns - WisolatedPawns);
-        float moves_value = number_moves_factor * static_cast<float>(whiteMoves.size() - blackMoves.size());
 
-        float sign = side == board::Color::WHITE ? 1 : -1;
+        double sign = side == board::Color::WHITE ? 1 : -1;
 
         return sign * (king_value + queen_value + rook_value +
-            bishop_knight_value + pawn_value + dbi_value + moves_value);
+            bishop_knight_value + pawn_value + dbi_value);
     }
 
     int Evaluation::count_pieces(PieceType pieceType, Color color)
@@ -71,19 +64,20 @@ namespace ai
     int Evaluation::count_pawns(Color color)
     {
         auto remainingPieces = chessboard_.getBoardRpr().get(board::PieceType::PAWN, color);
+        auto alliedPawns = chessboard_.getBoardRpr().get(board::PieceType::PAWN, color);
         int count = 0;
 
-        std::array<bool, 7> pawnOnFile = {false};
+        std::array<bool, 8> pawnOnFile = {false};
 
         while (remainingPieces != 0)
         {
-            uint8_t bitToUnset = BitboardOperations::bitScanForward(remainingPieces);
-            remainingPieces &= ~(1ul << bitToUnset);
+            uint8_t pawnSquare = BitboardOperations::bitScanForward(remainingPieces);
+            remainingPieces &= ~(1ul << pawnSquare);
 
             // bloked pawns
-            if (is_pawn_blocked(bitToUnset, color))
+            if (is_pawn_blocked(pawnSquare, color))
                 color == board::Color::WHITE ? WblockedPawns++ : BblockedPawns++;
-            auto fileNumber = bitToUnset % 8;
+            auto fileNumber = pawnSquare % 8;
 
             // doubled Pawns
             if (pawnOnFile.at(fileNumber))
@@ -92,18 +86,15 @@ namespace ai
                 pawnOnFile.at(fileNumber) = true;
 
             // isolated Pawns
-            if (fileNumber != 0 && fileNumber != 7) {
-                if (!pawnOnFile.at(fileNumber + 1) && !pawnOnFile.at(fileNumber - 1)) {
-                    color == board::Color::WHITE ? WisolatedPawns++ : BisolatedPawns;
-                }
-            }
-            else if (fileNumber == 0)
-            {
-                if (pawnOnFile.at(fileNumber + 1))
-                    color == board::Color::WHITE ? WisolatedPawns++ : BisolatedPawns;
-            }
-            else if (pawnOnFile.at(fileNumber - 1))
-                color == board::Color::WHITE ? WisolatedPawns++ : BisolatedPawns;
+            BitBoard adjFileMask =
+                    fileNumber == 0 ?
+                        BitboardOperations::arrFileMask[fileNumber + 1]
+                    : fileNumber == 7 ?
+                        BitboardOperations::arrFileMask[fileNumber - 1]
+                    : BitboardOperations::arrFileMask[fileNumber - 1] | BitboardOperations::arrFileMask[fileNumber + 1];
+
+            if (!(alliedPawns & adjFileMask))
+                color == board::Color::WHITE ? WisolatedPawns++ : BisolatedPawns++;
             count++;
         }
         return count;
@@ -111,13 +102,8 @@ namespace ai
 
     bool Evaluation::is_pawn_blocked(uint8_t pawnSquare, Color color)
     {
-        auto startPos = Position(pawnSquare);
-        for (auto move : color == board::Color::WHITE ? whiteMoves : blackMoves)
-        {
-            if (move.start_pos_get() == startPos)
-                return false;
-        }
-        return true;
+        auto pos = color == board::Color::WHITE ? pawnSquare + 8 : pawnSquare - 8;
+        return chessboard_.getBoardRpr().at(Position(pos)).has_value();
     }
 
 }

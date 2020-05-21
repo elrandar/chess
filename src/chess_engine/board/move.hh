@@ -10,7 +10,7 @@ namespace board
     private:
         Position start_pos_;
         Position dest_pos_;
-        PieceType piece_;
+        std::optional<PieceType> piece_;
         std::optional<PieceType> promotion_;
         std::optional<PieceType> capture_;
         bool double_pawn_push_;
@@ -19,6 +19,7 @@ namespace board
         bool en_passant_;
 
     public:
+        Move(Position start, Position dest);
         Move(Position start, Position dest, PieceType pieceType);
         Move(Position start, Position dest, PieceType pieceType, PieceType capture);
         Move(Position start, Position end, PieceType pieceType, std::optional<PieceType> promotion);
@@ -53,5 +54,7 @@ namespace board
         const std::optional<PieceType> &getCapture() const;
         opt_piecetype_t get_promotion();
         void setPromotion(const std::optional<PieceType> &promotion);
+
+        std::string toString();
     };
 } // namespace board

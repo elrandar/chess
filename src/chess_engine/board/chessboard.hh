@@ -55,5 +55,7 @@ namespace board
         void update_castling(Move &move);
 
         void generate_castling(std::vector<Move> &moves);
+
+        void getMatchingLegalMoveAndDo(Move move);
     };
 }

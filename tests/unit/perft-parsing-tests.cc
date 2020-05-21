@@ -1,5 +1,6 @@
 #include <gtest/gtest.h>
 #include "../../src/parsing/perft-parser/perft-object.hh"
+#include "../../src/chess_engine/board/chessboard.hh"
 
 TEST(perft_parsing, parsing_default_board) {
     auto object = perft_parser::parse_perft("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
@@ -29,11 +30,21 @@ TEST(perft_parsing, parsing_kiwipete) {
     auto object = perft_parser::parse_perft("r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R b KQkq - 1");
     auto vec = std::vector<char>({'K', 'Q', 'k', 'q'});
 
-    for (int i = 0; i < 63; i++)
-    {
-        auto fenObj = object.fen_get();
-        EXPECT_EQ(vec, fenObj.castling_get());
-        EXPECT_EQ(board::Color::BLACK, fenObj.side_to_move_get());
-        EXPECT_EQ(fenObj.en_passant_target_get(), std::nullopt);
-    }
+    auto fenObj = object.fen_get();
+    EXPECT_EQ(vec, fenObj.castling_get());
+    EXPECT_EQ(board::Color::BLACK, fenObj.side_to_move_get());
+    EXPECT_EQ(fenObj.en_passant_target_get(), std::nullopt);
+}
+
+TEST(perft_parsing, parsing_en_passant_set) {
+    using namespace board;
+    auto object = perft_parser::parse_perft("r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R b - a6 1");
+
+    EXPECT_TRUE(object.fen_get().en_passant_target_get().has_value());
+    EXPECT_EQ(object.fen_get().en_passant_target_get().value(),
+              board::Position(board::File::A, board::Rank::SIX));
+
+    auto chessboard = Chessboard(object.fen_get());
+
+    EXPECT_EQ(BitboardOperations::bitScanForward(chessboard.getEnPassant().top()), 40);
 }

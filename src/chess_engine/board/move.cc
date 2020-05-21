@@ -5,7 +5,7 @@ namespace board
 {
     PieceType Move::piece_get()
     {
-        return piece_;
+        return piece_.value();
     }
     Position Move::start_pos_get()
     {
@@ -109,6 +109,30 @@ namespace board
     void Move::print() {
         std::cout << (char) ('a' + static_cast<int>(start_pos_.file_get())) << static_cast<int>(start_pos_get().rank_get()) + 1;
         std::cout << (char) ('a' + static_cast<int>(dest_pos_.file_get())) << static_cast<int>(dest_pos_get().rank_get()) + 1<< '\n';
+    }
+
+    std::string Move::toString()
+    {
+        auto out = std::string();
+        out.push_back(('a' + static_cast<int>(start_pos_.file_get())));
+        out.push_back('0' + static_cast<int>(start_pos_get().rank_get()) + 1);
+        out.push_back(('a' + static_cast<int>(dest_pos_.file_get())));
+        out.push_back('0' + static_cast<int>(dest_pos_get().rank_get()) + 1);
+        if (promotion_.has_value()) {
+            std::array<char, 4> promotionPieces = {'q', 'r', 'b', 'n'};
+            out.push_back(promotionPieces.at(static_cast<int>(promotion_.value())));
+        }
+        return out;
+    }
+
+    Move::Move(Position start, Position dest) : start_pos_(start), dest_pos_(dest) {
+        piece_ = std::nullopt;
+        promotion_= std::nullopt;
+        capture_ = std::nullopt;
+        double_pawn_push_ = false;
+        king_castling_ = false;
+        queen_castling_ = false;
+        en_passant_ = false;
     }
 
 }

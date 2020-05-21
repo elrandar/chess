@@ -7,6 +7,9 @@
 #include <chrono>
 #include "parsing/perft-parser/perft-object.hh"
 #include "utility/utype.hh"
+#include "chess_engine/ai/search.hh"
+#include "chess_engine/ai/uci.hh"
+#include "chess_engine/ai/ai.hh"
 
 int main(int argc, char **argv)
 {
@@ -35,7 +38,8 @@ int main(int argc, char **argv)
     }
     else
     {
-        // enter IA mode
+        auto ewan = ai::Ai();
+        ewan.run();
     }
     return 0;
 }
