@@ -4,7 +4,7 @@
 # set(MYVAR "val1" "val2") creates a list
 
 set(OPT_FLAGS
-    ""
+    "-O2"
 )
 
 # END OPTIMIZATION FLAGS
