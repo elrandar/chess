@@ -18,9 +18,13 @@ namespace board
         explicit Chessboard_rpr(perft_parser::FenObject fenObject);
 
         std::array<BitBoard, 12> boards{};
-        BitBoard occupied();
-        BitBoard WhitePieces();
-        BitBoard BlackPieces();
+        BitBoard occupied;
+        BitBoard WhitePieces;
+        BitBoard BlackPieces;
+        BitBoard computeOccupied();
+        BitBoard computeWhitePieces();
+        BitBoard computeBlackPieces();
+        void update();
         BitBoard get(PieceType pieceType, Color color);
         static std::string bitBoardPrint(BitBoard bitBoard);
         Chessboard_rpr();

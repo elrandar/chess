@@ -68,8 +68,8 @@ namespace board
                                                         BitBoard en_passant) {
         using bo = BitboardOperations;
 
-        BitBoard eligibleSquares = ~boardRpr.occupied();
-        BitBoard enemyPieces = color == Color::WHITE ? boardRpr.BlackPieces() : boardRpr.WhitePieces();
+        BitBoard eligibleSquares = ~boardRpr.occupied;
+        BitBoard enemyPieces = color == Color::WHITE ? boardRpr.BlackPieces : boardRpr.WhitePieces;
         BitBoard pawns = boardRpr.get(PieceType::PAWN, color);
 
 
@@ -125,8 +125,8 @@ namespace board
     {
         // Get the BitBoard containing the kings
         BitBoard remainingPieces = boardRpr.get(pieceType, color);
-        BitBoard eligibleSquares = color == Color::WHITE ? ~boardRpr.WhitePieces() : ~boardRpr.BlackPieces();
-        BitBoard enemyPieces = color == Color::WHITE ? boardRpr.BlackPieces() : boardRpr.WhitePieces();
+        BitBoard eligibleSquares = color == Color::WHITE ? ~boardRpr.WhitePieces : ~boardRpr.BlackPieces;
+        BitBoard enemyPieces = color == Color::WHITE ? boardRpr.BlackPieces : boardRpr.WhitePieces;
         // While there still are kings that have their moves to be generated
         while (remainingPieces != 0)
         {
@@ -181,8 +181,8 @@ namespace board
     {
         BitBoard remainingPieces = isQueen ? chessboardRpr.get(PieceType::QUEEN, color) :
                                             chessboardRpr.get(pieceType, color);
-        BitBoard eligibleSquares = color == Color::WHITE ? ~chessboardRpr.WhitePieces() : ~chessboardRpr.BlackPieces();
-        BitBoard enemyPieces = color == Color::WHITE ? chessboardRpr.BlackPieces() : chessboardRpr.WhitePieces();
+        BitBoard eligibleSquares = color == Color::WHITE ? ~chessboardRpr.WhitePieces : ~chessboardRpr.BlackPieces;
+        BitBoard enemyPieces = color == Color::WHITE ? chessboardRpr.BlackPieces : chessboardRpr.WhitePieces;
         // While there still are pieces that have their moves to be generated
         while (remainingPieces != 0)
         {
@@ -205,7 +205,7 @@ namespace board
                 shift = magic::RShift[pieceCell];
             }
 
-            auto index = ((chessboardRpr.occupied() & mask) * magic) >> shift;
+            auto index = ((chessboardRpr.occupied & mask) * magic) >> shift;
 
             BitBoard generatedMoves;
             if (pieceType == PieceType::BISHOP)

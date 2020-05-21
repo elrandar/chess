@@ -1,5 +1,6 @@
 
 #include <strings.h>
+#include <list>
 #include <iostream>
 #include "masks.hh"
 #include "chessboard.hh"
@@ -127,6 +128,8 @@ namespace board
             update_castling(move);
             en_passant_.push(0ul);
             setWhiteTurn(!isWhiteTurn());
+            // recompute BitBoards
+            getBoardRpr().update();
             return;
         }
         auto &rpr = getBoardRpr();
@@ -167,6 +170,8 @@ namespace board
             en_passant_.push(isWhiteTurn() ? 1ul << (dest_int - 8) : 1ul << (dest_int + 8));
         } else
             en_passant_.push(0ul);
+        // recompute BitBoards
+        rpr.update();
         setWhiteTurn(!isWhiteTurn());
     }
 
@@ -204,6 +209,8 @@ namespace board
         {
             undo_castling(move);
             setWhiteTurn(!isWhiteTurn());
+            // recompute BitBoards
+            getBoardRpr().update();
             return;
         }
         undo_update_castling();
@@ -239,40 +246,36 @@ namespace board
                 rpr.boards.at(capture_board_index) |= 1UL << dest_int;
         }
         setWhiteTurn(!isWhiteTurn());
+        // recompute BitBoards
+        rpr.update();
     }
 
     std::vector<Move> Chessboard::generate_legal_moves()
     {
-        auto moves = std::vector<Move>();
+        std::array<std::vector<Move>, 6> pieceMoves;
 
-        std::vector<std::vector<Move>> pieceMoves;
+        pieceMoves.at(0) = (Rule::generate_pawn_moves(*this));
+        pieceMoves.at(1) = (Rule::generate_king_moves(*this));
+        pieceMoves.at(2) = (Rule::generate_bishop_moves(*this));
+        pieceMoves.at(3) = (Rule::generate_rook_moves(*this));
+        pieceMoves.at(4) = (Rule::generate_queen_moves(*this));
+        pieceMoves.at(5) = (Rule::generate_knight_moves(*this));
 
-        pieceMoves.push_back(Rule::generate_pawn_moves(*this));
-        //std::cout << "There are " << pieceMoves.at(0).size() << " pawn moves\n";
-        pieceMoves.push_back(Rule::generate_king_moves(*this));
-//            std::cout << "There are " << pieceMoves.at(1).size() << " king moves\n";
-        pieceMoves.push_back(Rule::generate_bishop_moves(*this));
-//            std::cout << "There are " << pieceMoves.at(2).size() << " bishop moves\n";
-        pieceMoves.push_back(Rule::generate_rook_moves(*this));
-//            std::cout << "There are " << pieceMoves.at(3).size() << " rook moves\n";
-        pieceMoves.push_back(Rule::generate_queen_moves(*this));
-//            std::cout << "There are " << pieceMoves.at(4).size() << " queen moves\n";
-        pieceMoves.push_back(Rule::generate_knight_moves(*this));
-//            std::cout << "There are " << pieceMoves.at(5).size() << " knight moves\n";
-
-        for (auto moveVector : pieceMoves)
-            moves.insert(moves.begin(), moveVector.begin(), moveVector.end());
 
         auto keepList = std::vector<Move>();
-        for (auto i = moves.begin(); i != moves.end(); i++)
+        keepList.reserve(20);
+
+        for (const auto& moveVector : pieceMoves)
         {
-            auto currentMove = *i;
-            do_move(currentMove); // changes the color
-            setWhiteTurn(!isWhiteTurn()); // We want to check that the king from the color that did the move is in CHECK
-            if (!is_check())
-                keepList.push_back(*i);
-            setWhiteTurn(!isWhiteTurn());
-            undo_move(currentMove); // restore the color
+            for (auto move : moveVector)
+            {
+                do_move(move); // changes the color
+                setWhiteTurn(!isWhiteTurn()); // We want to check that the king from the color that did the move is in CHECK
+                if (!is_check())
+                    keepList.push_back(move);
+                setWhiteTurn(!isWhiteTurn());
+                undo_move(move); // restore the color
+            }
         }
 
         //add castling moves to the vector
@@ -297,7 +300,7 @@ namespace board
 
         if (king_castling)
         {
-            if ((boardRpr.occupied() & mask_king_side_occupied) == 0UL)
+            if ((boardRpr.occupied & mask_king_side_occupied) == 0UL)
             {
                 if (!is_sq_attacked_by_color(index_king_side, attacker_color)
                     && !is_sq_attacked_by_color(index_king_side + 1 , attacker_color))
@@ -311,7 +314,7 @@ namespace board
         }
         if (queen_castling)
         {
-            if ((boardRpr.occupied() & mask_queen_side_occupied) == 0UL)
+            if ((boardRpr.occupied & mask_queen_side_occupied) == 0UL)
             {
                 if (!is_sq_attacked_by_color(index_queen_side, attacker_color)
                     && !is_sq_attacked_by_color(index_queen_side + 1 , attacker_color))
@@ -389,9 +392,9 @@ namespace board
             return true;
         if (Masks::king_attacks(sq) & king)
             return true;
-        if (magic::attack_bishop(boardRpr.occupied(), sq) & bishop_queens)
+        if (magic::attack_bishop(boardRpr.occupied, sq) & bishop_queens)
             return true;
-        if (magic::attack_rook(boardRpr.occupied(), sq) & rook_queens)
+        if (magic::attack_rook(boardRpr.occupied, sq) & rook_queens)
             return true;
         return false;
     }

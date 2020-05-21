@@ -42,6 +42,10 @@ namespace board
         boards[10] = black_pawn;
         BitBoard black_king = 1UL << 60u;
         boards[11] = black_king;
+
+        occupied = computeOccupied();
+        BlackPieces = computeBlackPieces();
+        WhitePieces = computeWhitePieces();
     }
 
 
@@ -89,7 +93,7 @@ namespace board
         return std::nullopt;
     }
 
-    BitBoard Chessboard_rpr::occupied() {
+    BitBoard Chessboard_rpr::computeOccupied() {
         BitBoard res = 0UL;
         for (auto bitboard : boards)
         {
@@ -98,7 +102,7 @@ namespace board
         return res;
     }
 
-    BitBoard Chessboard_rpr::WhitePieces()
+    BitBoard Chessboard_rpr::computeWhitePieces()
     {
         BitBoard res = 0UL;
         for (int i = 0; i < 6; i++)
@@ -108,7 +112,7 @@ namespace board
         return res;
     }
 
-    BitBoard Chessboard_rpr::BlackPieces()
+    BitBoard Chessboard_rpr::computeBlackPieces()
     {
         BitBoard res = 0UL;
         for (int i = 6; i < 12; i++)
@@ -167,5 +171,14 @@ namespace board
                 boards.at(boardNumber) |= 1ul << i;
             }
         }
+        occupied = computeOccupied();
+        BlackPieces = computeBlackPieces();
+        WhitePieces = computeWhitePieces();
+    }
+
+    void Chessboard_rpr::update() {
+        occupied = computeOccupied();
+        WhitePieces = computeWhitePieces();
+        BlackPieces = computeBlackPieces();
     }
 }
