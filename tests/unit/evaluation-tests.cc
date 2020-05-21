@@ -71,3 +71,21 @@ TEST_F(evaluation, count_pawns_2)
     EXPECT_EQ(evaluation.WblockedPawns, 1);
     EXPECT_EQ(evaluation.WdoubledPawns, 2);
 }
+
+TEST_F(evaluation, rating_1)
+{
+    using namespace board;
+    using namespace ai;
+    auto board = Chessboard(perft_parser::parse_fen(
+            "rnbq3r/pB1pp1bN/6p1/5N2/2PP4/6P1/PP2PP1P/R1BQK2R b KQ - 4 5"));
+    auto board2 = Chessboard();
+
+    auto evaluation = Evaluation(board);
+    auto evalBoardOne = evaluation.rate_chessboard(board::Color::WHITE);
+    auto evaluation2 = Evaluation(board2);
+    auto evalBoardTwo = evaluation2.rate_chessboard(board::Color::WHITE);
+    EXPECT_EQ(evalBoardTwo, 0);
+    EXPECT_GT(evalBoardOne, evalBoardTwo);
+
+
+}

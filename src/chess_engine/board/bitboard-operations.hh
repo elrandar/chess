@@ -18,6 +18,8 @@ namespace board
     public:
         static const BitBoard rank4 = 0x00000000FF000000;
         static const BitBoard rank5 = 0x000000FF00000000;
+        static const BitBoard rank3 = 0xff0000;
+        static const BitBoard rank6 = 0xff0000000000;
         static BitBoard eastOne(BitBoard b);
         static BitBoard nortOne(BitBoard b);
         static BitBoard soutOne(BitBoard b);

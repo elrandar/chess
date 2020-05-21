@@ -37,7 +37,9 @@ set(SRC_ENGINE
         "src/perft.cc"
         "src/chess_engine/ai/uci.cc"
         "src/chess_engine/ai/evaluation.cc"
-)
+        "src/chess_engine/ai/search.cc"
+        "src/chess_engine/ai/gtree.cc"
+        )
 
 # Put your test files here
 set(SRC_GTEST
@@ -48,6 +50,7 @@ set(SRC_GTEST
         "tests/unit/perft-parsing-tests.cc"
         "tests/unit/evaluation-tests.cc"
         "tests/unit/move-generation-tests.cc"
+        "tests/unit/search-tests.cc"
 )
 
 # END SOURCES

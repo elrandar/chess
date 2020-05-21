@@ -7,8 +7,6 @@ namespace ai
     class Evaluation {
     public:
         Chessboard &chessboard_;
-        std::vector<Move> whiteMoves;
-        std::vector<Move> blackMoves;
 
         int WdoubledPawns;
         int WblockedPawns;

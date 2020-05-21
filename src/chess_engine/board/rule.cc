@@ -96,7 +96,8 @@ namespace board
             }
 
             attackMoves = Masks::pawn_attacks(color, pieceCell) & enemyPieces;
-            auto enPassantattackMoves = Masks::pawn_attacks(color, pieceCell) & en_passant;
+            auto enPassantRank = color == Color::WHITE ? BitboardOperations::rank6 : BitboardOperations::rank3;
+            auto enPassantattackMoves = Masks::pawn_attacks(color, pieceCell) & en_passant & enPassantRank;
 
             bitboard_to_moves(pieceCell, pushMoves, attackMoves, PieceType::PAWN, color, moves, boardRpr, false);
             bitboard_to_moves(pieceCell, doublePushMoves, enPassantattackMoves, PieceType::PAWN, color, moves, boardRpr, true);

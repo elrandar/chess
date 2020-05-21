@@ -7,6 +7,7 @@
 #include <chrono>
 #include "parsing/perft-parser/perft-object.hh"
 #include "utility/utype.hh"
+#include "chess_engine/ai/search.hh"
 
 int main(int argc, char **argv)
 {
@@ -30,16 +31,19 @@ int main(int argc, char **argv)
     }
     else if (!option.getPerftPath().empty())
     {
-//        auto start = std::chrono::high_resolution_clock::now();
         int result = Perft::run_perft(option.getPerftPath());
-//        auto stop = std::chrono::high_resolution_clock::now();
-//        auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(stop - start);
-//        std::cout << result << '\n';
-//        std::cout << "It took : " << duration.count() << " ms\n";
+        std::cout << result << '\n';
     }
     else
     {
-        // enter IA mode
+        board::Chessboard cb = board::Chessboard(perft_parser::parse_fen("4kb1r/1Np2R2/r2P2n1/1p2nP2/p1P1p1p1/1Q1KP3/P3P1PP/2B2BNR w - - 0 1"));
+        auto start = std::chrono::high_resolution_clock::now();
+
+        ai::search::findNextMove(cb).print();
+
+        auto stop = std::chrono::high_resolution_clock::now();
+        auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(stop - start);
+        std::cout << " It took : " << duration.count() << " ms\n";
     }
     return 0;
 }
