@@ -39,6 +39,7 @@ set(SRC_ENGINE
         "src/chess_engine/ai/evaluation.cc"
         "src/chess_engine/ai/search.cc"
         "src/chess_engine/ai/gtree.cc"
+        "src/chess_engine/ai/ai.cc"
         )
 
 # Put your test files here
@@ -51,6 +52,7 @@ set(SRC_GTEST
         "tests/unit/evaluation-tests.cc"
         "tests/unit/move-generation-tests.cc"
         "tests/unit/search-tests.cc"
+        "tests/unit/ai-tests.cc"
 )
 
 # END SOURCES

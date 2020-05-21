@@ -8,6 +8,7 @@
 #include "parsing/perft-parser/perft-object.hh"
 #include "utility/utype.hh"
 #include "chess_engine/ai/search.hh"
+#include "chess_engine/ai/uci.hh"
 
 int main(int argc, char **argv)
 {
@@ -36,14 +37,16 @@ int main(int argc, char **argv)
     }
     else
     {
-        board::Chessboard cb = board::Chessboard(perft_parser::parse_fen("4kb1r/1Np2R2/r2P2n1/1p2nP2/p1P1p1p1/1Q1KP3/P3P1PP/2B2BNR w - - 0 1"));
-        auto start = std::chrono::high_resolution_clock::now();
-
-        ai::search::findNextMove(cb).print();
-
-        auto stop = std::chrono::high_resolution_clock::now();
-        auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(stop - start);
-        std::cout << " It took : " << duration.count() << " ms\n";
+        ai::init("E-won McGregor");
+        board::Chessboard cb = board::Chessboard();
+        while (!cb.is_checkmate())
+        {
+            std::string board = ai::get_board();
+            auto boardFen = perft_parser::parse_fen(board);
+            cb = board::Chessboard(boardFen);
+            auto move = ai::search::findNextMove(cb);
+            ai::play_move(move.toString());
+        }
     }
     return 0;
 }
