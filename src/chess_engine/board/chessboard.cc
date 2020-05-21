@@ -469,4 +469,19 @@ namespace board
             en_passant_.push(0ul);
     }
 
+    void Chessboard::getMatchingLegalMoveAndDo(Move move) {
+        std::vector<Move> legalMoves = generate_legal_moves();
+
+        for (auto legalMove : legalMoves)
+        {
+            if (legalMove.get_promotion() == move.get_promotion()
+            && legalMove.start_pos_get() == move.start_pos_get()
+            && legalMove.dest_pos_get() == move.dest_pos_get())
+            {
+                do_move(legalMove);
+                return;
+            }
+        }
+    }
+
 }

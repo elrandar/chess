@@ -16,6 +16,8 @@ void ai::Ai::run() {
 
         update_board(board);
 
+        print_board();
+
         board::Move move = ai::search::findNextMove(chessboard);
 
         ai::play_move(move.toString());
@@ -40,31 +42,44 @@ void ai::Ai::update_board(const std::string& boardString) {
         std::string fenStr;
         size_t firstMovePos;
         if ((firstMovePos = boardString.find("moves")) != std::string::npos)
-            fenStr = boardString.substr(nextSpacePos + 5, firstMovePos - 1);
+            fenStr = boardString.substr(nextSpacePos + 1, firstMovePos - 1);
         else
-            fenStr = boardString.substr(nextSpacePos + 5);
+            fenStr = boardString.substr(nextSpacePos + 1);
         auto fenObj = perft_parser::parse_fen(fenStr);
         chessboard = board::Chessboard(fenObj);
     }
 
-    auto vec = std::vector<board::Move>();
 
     size_t cursor = 0;
-    while ((cursor = boardString.find("moves", cursor)) != std::string::npos)
-    {
-        cursor += 6;
-        auto srcFile = static_cast<board::File>(boardString.at(cursor) - 'a');
-        cursor++;
-        auto srcRank = static_cast<board::Rank>(boardString.at(cursor) - '0' - 1);
-        cursor++;
-        auto dstFile = static_cast<board::File>(boardString.at(cursor) - 'a');
-        cursor++;
-        auto dstRank = static_cast<board::Rank>(boardString.at(cursor) - '0' - 1);
-        auto move = board::Move(board::Position(srcFile, srcRank),
-                                board::Position(dstFile, dstRank));
-        vec.push_back(move);
+    if ((cursor = boardString.find("moves", cursor)) != std::string::npos) {
+
+        auto vec = std::vector<board::Move>();
+
+        while ((cursor = boardString.find(' ', cursor)) != std::string::npos) {
+            cursor++;
+            auto srcFile = static_cast<board::File>(boardString.at(cursor) - 'a');
+            cursor++;
+            auto srcRank = static_cast<board::Rank>(boardString.at(cursor) - '0' - 1);
+            cursor++;
+            auto dstFile = static_cast<board::File>(boardString.at(cursor) - 'a');
+            cursor++;
+            auto dstRank = static_cast<board::Rank>(boardString.at(cursor) - '0' - 1);
+            cursor++;
+            auto move = board::Move(board::Position(srcFile, srcRank),
+                                    board::Position(dstFile, dstRank));
+            if (cursor != boardString.size() && boardString.at(cursor) != ' ') {
+                auto promotionPiece = board::char_to_piece(toupper(boardString.at(cursor)));
+                move.setPromotion(promotionPiece);
+            }
+            vec.push_back(move);
+        }
+        for (auto move : vec)
+            chessboard.getMatchingLegalMoveAndDo(move);
     }
-    std::cout << "mais ptn\n";
+}
+
+void ai::Ai::print_board() {
+    chessboard.getBoardRpr().print();
 }
 
 

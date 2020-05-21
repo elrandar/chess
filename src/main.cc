@@ -9,6 +9,7 @@
 #include "utility/utype.hh"
 #include "chess_engine/ai/search.hh"
 #include "chess_engine/ai/uci.hh"
+#include "chess_engine/ai/ai.hh"
 
 int main(int argc, char **argv)
 {
@@ -37,16 +38,8 @@ int main(int argc, char **argv)
     }
     else
     {
-        ai::init("E-won McGregor");
-        board::Chessboard cb = board::Chessboard();
-        while (!cb.is_checkmate())
-        {
-            std::string board = ai::get_board();
-            auto boardFen = perft_parser::parse_fen(board);
-            cb = board::Chessboard(boardFen);
-            auto move = ai::search::findNextMove(cb);
-            ai::play_move(move.toString());
-        }
+        auto ewan = ai::Ai();
+        ewan.run();
     }
     return 0;
 }

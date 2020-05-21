@@ -118,6 +118,10 @@ namespace board
         out.push_back('0' + static_cast<int>(start_pos_get().rank_get()) + 1);
         out.push_back(('a' + static_cast<int>(dest_pos_.file_get())));
         out.push_back('0' + static_cast<int>(dest_pos_get().rank_get()) + 1);
+        if (promotion_.has_value()) {
+            std::array<char, 4> promotionPieces = {'q', 'r', 'b', 'n'};
+            out.push_back(promotionPieces.at(static_cast<int>(promotion_.value())));
+        }
         return out;
     }
 
