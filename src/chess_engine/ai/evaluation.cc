@@ -75,7 +75,7 @@ namespace ai
         auto alliedPawns = chessboard_.getBoardRpr().get(board::PieceType::PAWN, color);
         int count = 0;
 
-        std::array<bool, 7> pawnOnFile = {false};
+        std::array<bool, 8> pawnOnFile = {false};
 
         while (remainingPieces != 0)
         {
