@@ -15,8 +15,8 @@ namespace ai
         int BblockedPawns;
         int BisolatedPawns;
 
-        bool iAmCheckmated;
-        bool opponentIsCheckmated;
+        bool whiteIsCheckmated;
+        bool blackIsCheckmated;
 
         explicit Evaluation(Chessboard &chessboard);
         float rate_chessboard(board::Color side);

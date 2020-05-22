@@ -14,8 +14,8 @@ namespace ai
         BblockedPawns = 0;
         BdoubledPawns = 0;
 
-        iAmCheckmated = false;
-        opponentIsCheckmated = false;
+        whiteIsCheckmated = false;
+        blackIsCheckmated = false;
 
         chessboard_ = chessboard;
     }
@@ -29,7 +29,7 @@ namespace ai
         double pawn_factor = 10;
         double double_blocked_isolated_pawn_factor = 5;
 
-        double king_value = checkmate_factor * (opponentIsCheckmated - iAmCheckmated);
+        double king_value = checkmate_factor * (blackIsCheckmated - whiteIsCheckmated);
         double queen_value = queen_factor * (count_pieces(board::PieceType::QUEEN, board::Color::WHITE)
                                 - count_pieces(board::PieceType::QUEEN, board::Color::BLACK));
         double rook_value = rook_factor * (count_pieces(board::PieceType::ROOK, board::Color::WHITE)

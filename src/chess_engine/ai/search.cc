@@ -17,11 +17,10 @@ namespace ai
         if (depth == 0 || checkmated)
         {
             auto evaluation = Evaluation(chessboard);
-            if (checkmated && currentColor == myColor)
-                evaluation.iAmCheckmated = true;
-            else if (checkmated && currentColor != myColor)
-                evaluation.opponentIsCheckmated = true;
-
+            if (checkmated && currentColor == board::Color::WHITE)
+                evaluation.whiteIsCheckmated = true;
+            else if (checkmated && currentColor == board::Color::BLACK)
+                evaluation.blackIsCheckmated = true;
             tree->value_ = evaluation.rate_chessboard(myColor);
             return tree;
         }
