@@ -263,7 +263,7 @@ namespace board
 
 
         auto keepList = std::vector<Move>();
-        keepList.reserve(20);
+        keepList.reserve(100);
 
         for (const auto& moveVector : pieceMoves)
         {

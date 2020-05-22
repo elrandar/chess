@@ -110,6 +110,7 @@ namespace board
     {
         Chessboard_rpr rpr = board.getBoardRpr();
         auto moves = std::vector<Move>();
+        moves.reserve(20);
 
         if (board.isWhiteTurn())
             generate_pawn_moves_color(rpr, Color::WHITE, moves, board.getEnPassant().top());
@@ -148,6 +149,7 @@ namespace board
     std::vector<Move> Rule::generate_king_moves(Chessboard &board) {
         auto boardRpr = board.getBoardRpr();
         auto moves = std::vector<Move>();
+        moves.reserve(9);
         if (board. isWhiteTurn())
             generate_knight_king_moves_color(PieceType::KING, Color::WHITE, boardRpr, moves);
         else
@@ -158,6 +160,7 @@ namespace board
     std::vector<Move> Rule::generate_knight_moves(Chessboard &board) {
         auto boardRpr = board.getBoardRpr();
         auto moves = std::vector<Move>();
+        moves.reserve(8);
         if (board.isWhiteTurn())
             generate_knight_king_moves_color(PieceType::KNIGHT, Color::WHITE, boardRpr, moves);
         else
@@ -168,6 +171,7 @@ namespace board
     std::vector<Move> Rule::generate_bishop_moves(Chessboard &board) {
         auto boardRpr = board.getBoardRpr();
         auto moves = std::vector<Move>();
+        moves.reserve(50);
         if (board.isWhiteTurn())
             generate_bishop_rook_moves_color(boardRpr, Color::WHITE, PieceType::BISHOP, moves, false);
         else
@@ -225,6 +229,7 @@ namespace board
     std::vector<Move> Rule::generate_rook_moves(Chessboard &board) {
         auto boardRpr = board.getBoardRpr();
         auto moves = std::vector<Move>();
+        moves.reserve(50);
         if (board.isWhiteTurn())
             generate_bishop_rook_moves_color(boardRpr, Color::WHITE, PieceType::ROOK, moves, false);
         else
@@ -235,6 +240,7 @@ namespace board
     std::vector<Move> Rule::generate_queen_moves(Chessboard &board) {
         auto boardRpr = board.getBoardRpr();
         auto moves = std::vector<Move>();
+        moves.reserve(50);
         if (board.isWhiteTurn())
         {
             generate_bishop_rook_moves_color(boardRpr, Color::WHITE, PieceType::ROOK, moves, true);

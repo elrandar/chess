@@ -14,5 +14,6 @@ namespace ai
         void run();
         void update_board(const std::string& boardString);
         void print_board();
+        static board::Color ai_color;
     };
 }
