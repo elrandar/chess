@@ -60,10 +60,11 @@ namespace ai
             int rawRank = bitToUnset / 8;
             int file = bitToUnset % 8;
             int rank = color == Color::WHITE ? 7 - rawRank : rawRank;
+            int end_game_king = pieceType == board::PieceType::KING && is_end_game() ? 1 : 0;
 
             remainingPieces &= ~(1ul << bitToUnset);
 
-            count += pieceValue + tables[static_cast<int>(pieceType)][rank][file];
+            count += pieceValue + tables[static_cast<int>(pieceType) + end_game_king][rank][file];
         }
         return count;
     }
@@ -119,4 +120,36 @@ namespace ai
         return chessboard_.getBoardRpr().at(Position(pos)).has_value();
     }
 
+    bool Evaluation::is_end_game() //we're in the end game now.
+    {
+        auto &rpr = chessboard_.getBoardRpr();
+        if (!rpr.get(board::PieceType::QUEEN, board::Color::WHITE)
+            && !rpr.get(board::PieceType::QUEEN, board::Color::BLACK)) {
+            return true;
+        }
+        else if (rpr.get(board::PieceType::QUEEN, board::Color::WHITE) &&rpr.get(board::PieceType::QUEEN, board::Color::BLACK))
+        {
+            return check_has_qmp(rpr, board::Color::WHITE) && check_has_qmp(rpr, board::Color::BLACK);
+        }
+        else if (rpr.get(board::PieceType::QUEEN, board::Color::WHITE))
+        {
+            return check_has_qmp(rpr, board::Color::WHITE);
+        }
+        else if (rpr.get(board::PieceType::QUEEN, board::Color::BLACK))
+        {
+            return check_has_qmp(rpr, board::Color::BLACK);
+        }
+        return false;
+    }
+
+    bool Evaluation::check_has_qmp(Chessboard_rpr &rpr, Color color) const {
+        auto wp_knight = rpr.get(PieceType::KNIGHT, color);
+        auto wp_bishop = rpr.get(PieceType::BISHOP, color);
+        auto wp_rook = rpr.get(PieceType::ROOK, color);
+        auto toUnsetBishop = BitboardOperations::bitScanForward(wp_bishop);
+        auto toUnsetKnight = BitboardOperations::bitScanForward(wp_knight);
+        wp_knight &= ~(1UL << toUnsetKnight);
+        wp_bishop &= ~(1UL << toUnsetBishop);
+        return !wp_rook && ((toUnsetBishop == -1 && !wp_knight) || (!wp_bishop && toUnsetKnight == -1));
+    }
 }

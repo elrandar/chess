@@ -6,7 +6,7 @@ namespace ai
     using namespace board;
     class Evaluation {
     public:
-        static constexpr double tables[6][8][8]{
+        static constexpr double tables[7][8][8]{
 
         {//queen
                 {-20,-10,-10, -5, -5,-10,-10,-20},
@@ -67,6 +67,16 @@ namespace ai
             {-10,-20,-20,-20,-20,-20,-20,-10},
             {20, 20,  0,  0,  0,  0, 20, 20},
             {20, 30, 10,  0,  0, 10, 30, 20}
+        },
+        {//king E N D G A M E
+            {-50,-40,-30,-20,-20,-30,-40,-50},
+            {-30,-20,-10,  0,  0,-10,-20,-30},
+            {-30,-10, 20, 30, 30, 20,-10,-30},
+            {-30,-10, 30, 40, 40, 30,-10,-30},
+            {-30,-10, 30, 40, 40, 30,-10,-30},
+            {-30,-10, 20, 30, 30, 20,-10,-30},
+            {-30,-30,  0,  0,  0,  0,-30,-30},
+            {-50,-30,-30,-30,-30,-30,-30,-50}
         }
     };
 
@@ -91,6 +101,10 @@ namespace ai
         bool is_pawn_blocked(uint8_t pawnSquare, Color color);
 
         double evaluate_king();
+
+        bool is_end_game();
+
+        bool check_has_qmp(Chessboard_rpr &rpr, Color color) const;
     };
 }
 

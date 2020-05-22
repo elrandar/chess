@@ -254,12 +254,12 @@ namespace board
     {
         std::array<std::vector<Move>, 6> pieceMoves;
 
-        pieceMoves.at(0) = (Rule::generate_pawn_moves(*this));
-        pieceMoves.at(1) = (Rule::generate_king_moves(*this));
+        pieceMoves.at(0) = (Rule::generate_queen_moves(*this));
+        pieceMoves.at(1) = (Rule::generate_rook_moves(*this));
         pieceMoves.at(2) = (Rule::generate_bishop_moves(*this));
-        pieceMoves.at(3) = (Rule::generate_rook_moves(*this));
-        pieceMoves.at(4) = (Rule::generate_queen_moves(*this));
-        pieceMoves.at(5) = (Rule::generate_knight_moves(*this));
+        pieceMoves.at(3) = (Rule::generate_knight_moves(*this));
+        pieceMoves.at(4) = (Rule::generate_pawn_moves(*this));
+        pieceMoves.at(5) = (Rule::generate_king_moves(*this));
 
 
         auto keepList = std::vector<Move>();
