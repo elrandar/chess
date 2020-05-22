@@ -85,10 +85,10 @@ namespace ai
         }
     }
 
-    Move search::findNextMove(board::Chessboard chessboard)
+    Move search::findNextMove(board::Chessboard chessboard, int depth)
     {
         auto colorToMaximize = chessboard.isWhiteTurn() ? Color::WHITE : Color::BLACK;
-        auto tree = build_tree(std::move(chessboard), 4, colorToMaximize);
+        auto tree = build_tree(std::move(chessboard), depth, colorToMaximize);
         float best_move_val = minMax(tree.node_, true);
 
         Node bestNode = Node(best_move_val, "                                                                                                                                                                                                                  ",

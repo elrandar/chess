@@ -491,4 +491,8 @@ namespace board
         }
     }
 
+    void Chessboard::print() {
+        boardRpr.print();
+    }
+
 }

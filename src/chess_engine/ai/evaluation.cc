@@ -39,10 +39,10 @@ namespace ai
                 - count_pieces(board::PieceType::ROOK, board::Color::BLACK)
                 + count_pieces(board::PieceType::KNIGHT, board::Color::WHITE)
                 - count_pieces(board::PieceType::KNIGHT, board::Color::BLACK));
-        double pawn_value = pawn_factor * (count_pawns(board::Color::WHITE) - count_pawns(board::Color::WHITE));
+        double pawn_value = pawn_factor * (count_pawns(board::Color::WHITE) - count_pawns(board::Color::BLACK));
         double dbi_value = double_blocked_isolated_pawn_factor * (WdoubledPawns - BdoubledPawns
                 + WblockedPawns - BblockedPawns
-                + WisolatedPawns - WisolatedPawns);
+                + WisolatedPawns - BisolatedPawns);
 
         double sign = side == board::Color::WHITE ? 1 : -1;
 

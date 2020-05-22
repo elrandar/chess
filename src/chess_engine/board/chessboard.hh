@@ -59,5 +59,7 @@ namespace board
         void getMatchingLegalMoveAndDo(Move move);
 
         bool is_checkmate(const std::vector<Move>& moves);
+
+        void print();
     };
 }

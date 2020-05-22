@@ -41,7 +41,7 @@ int main(int argc, char **argv)
         auto start = std::chrono::high_resolution_clock::now();
 
         auto cb = Chessboard();
-        std::cout << ai::search::findNextMove(cb).toString() << '\n';
+        std::cout << ai::search::findNextMove(cb, 4).toString() << '\n';
 
         auto stop = std::chrono::high_resolution_clock::now();
         auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(stop - start);

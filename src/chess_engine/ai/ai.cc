@@ -18,7 +18,7 @@ void ai::Ai::run() {
 
         print_board();
 
-        board::Move move = ai::search::findNextMove(chessboard);
+        board::Move move = ai::search::findNextMove(chessboard, 4);
 
         ai::play_move(move.toString());
     }

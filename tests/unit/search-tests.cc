@@ -14,18 +14,13 @@ protected:
     }
 };
 
-TEST_F(search, build_basic_tree)
+TEST_F(search, eat_that_rook)
 {
 
     auto obj = perft_parser::parse_fen("k7/8/4N3/8/8/2p5/3R2K1/8 b - - 0 1");
     board::Chessboard cb = board::Chessboard(obj);
-    auto tree = ai::search::findNextMove(cb);
+    cb.print();
+    auto move = ai::search::findNextMove(cb, 2);
 
-
-
-//    board::Chessboard cb2 = board::Chessboard();
-//    cb2.getMatchingLegalMoveAndDo(board::Move(9, 17));
-//    auto tree2 = ai::search::findNextMove(cb2);
-
-    std::cout << tree.toString() << " "; //<< tree2.toString();
+    ASSERT_EQ(move.toString(), "c3d2");
 }

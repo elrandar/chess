@@ -2,6 +2,7 @@
 #include "gtree.hh"
 #include "../board/chessboard.hh"
 #include "../board/color.hh"
+#include "../board/move.hh"
 
 namespace ai::search
 {
@@ -10,5 +11,5 @@ namespace ai::search
 
     float minMax(const std::shared_ptr<Node>& tree, bool maximizing);
 
-    board::Move findNextMove(board::Chessboard chessboard);
+    board::Move findNextMove(board::Chessboard chessboard, int depth);
 }
