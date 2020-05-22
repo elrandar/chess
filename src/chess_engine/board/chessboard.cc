@@ -300,7 +300,9 @@ namespace board
 
         if (king_castling)
         {
-            if ((boardRpr.occupied & mask_king_side_occupied) == 0UL)
+            auto rookIsAlive = isWhiteTurn() ? boardRpr.get(PieceType::ROOK, Color::WHITE) & (1ul << 7)
+                                             : boardRpr.get(PieceType::ROOK, Color::BLACK) & (1ul << 63);
+            if (rookIsAlive != 0 && (boardRpr.occupied & mask_king_side_occupied) == 0UL)
             {
                 if (!is_sq_attacked_by_color(index_king_side, attacker_color)
                     && !is_sq_attacked_by_color(index_king_side + 1 , attacker_color))
@@ -308,13 +310,15 @@ namespace board
                     auto castling = Move(src_castling, dest_king_castling, PieceType::KING);
                     castling.setKingCastling(true);
                     moves.push_back(castling);
-//                    std::cout << "king castling possible !\n";
                 }
             }
         }
         if (queen_castling)
         {
-            if ((boardRpr.occupied & mask_queen_side_occupied) == 0UL)
+            auto rookIsAlive = isWhiteTurn() ? boardRpr.get(PieceType::ROOK, Color::WHITE) & (1ul << 0)
+                                             : boardRpr.get(PieceType::ROOK, Color::BLACK) & (1ul << 56);
+
+            if (rookIsAlive != 0 && (boardRpr.occupied & mask_queen_side_occupied) == 0UL)
             {
                 if (!is_sq_attacked_by_color(index_queen_side, attacker_color)
                     && !is_sq_attacked_by_color(index_queen_side + 1 , attacker_color))
@@ -322,7 +326,6 @@ namespace board
                     auto castling = Move(src_castling, dest_queen_castling, PieceType::KING);
                     castling.setQueenCastling(true);
                     moves.push_back(castling);
-//                    std::cout << "queen castling possible !\n";
                 }
             }
         }
