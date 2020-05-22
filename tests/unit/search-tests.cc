@@ -17,7 +17,13 @@ TEST_F(search, build_basic_tree)
 {
 
     board::Chessboard cb = board::Chessboard();
-    auto tree = ai::search::build_node(cb, 2);
+    auto tree = ai::search::findNextMove(cb);
 
-    std::cout << "lol\n";
+
+
+    board::Chessboard cb2 = board::Chessboard();
+    cb2.getMatchingLegalMoveAndDo(board::Move(9, 17));
+    auto tree2 = ai::search::findNextMove(cb2);
+
+    std::cout << tree.toString() << " " << tree2.toString();
 }

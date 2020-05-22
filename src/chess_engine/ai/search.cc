@@ -4,9 +4,8 @@
 #include <utility>
 namespace ai
 {
-    std::shared_ptr<Node> search::build_node(board::Chessboard chessboard, int depth)
+    std::shared_ptr<Node> search::build_node(board::Chessboard chessboard, int depth, Color myColor)
     {
-        Color side = chessboard.isWhiteTurn() ? Color::WHITE : Color::BLACK;
 
         auto moveList = chessboard.generate_legal_moves();
 
@@ -15,22 +14,22 @@ namespace ai
         if (depth == 0)
         {
             auto evaluation = Evaluation(chessboard);
-            tree->value_ = evaluation.rate_chessboard(side);
+            tree->value_ = evaluation.rate_chessboard(myColor);
             return tree;
         }
 
         for (auto move : moveList)
         {
             chessboard.do_move(move);
-            tree->children.push_back(build_node(chessboard, depth - 1));
+            tree->children.push_back(build_node(chessboard, depth - 1, myColor));
             chessboard.undo_move(move);
         }
         return tree;
     }
 
-    Gtree search::build_tree(board::Chessboard chessboard, int depth)
+    Gtree search::build_tree(board::Chessboard chessboard, int depth, Color myColor)
     {
-        std::shared_ptr<Node> node = build_node(chessboard, depth);
+        std::shared_ptr<Node> node = build_node(chessboard, depth, myColor);
         auto moves = chessboard.generate_legal_moves();
         Gtree tree = Gtree();
         tree.node_ = std::move(node);
@@ -62,7 +61,8 @@ namespace ai
 
     Move search::findNextMove(board::Chessboard chessboard)
     {
-        auto tree = build_tree(std::move(chessboard), 4);
+        auto colorToMaximize = chessboard.isWhiteTurn() ? Color::WHITE : Color::BLACK;
+        auto tree = build_tree(std::move(chessboard), 4, colorToMaximize);
         float best_move_val = minMax(tree.node_, true);
         int i = 0;
         for (const auto& child : tree.node_->children)
