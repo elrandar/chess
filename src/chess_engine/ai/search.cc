@@ -4,16 +4,24 @@
 #include <utility>
 namespace ai
 {
-    std::shared_ptr<Node> search::build_node(board::Chessboard chessboard, int depth, Color myColor)
+    std::shared_ptr<Node> search::build_node(board::Chessboard chessboard, int depth, Color myColor,
+                                             const std::string& moveThatGotMeHere)
     {
-
+        auto currentColor = chessboard.isWhiteTurn() ? Color::WHITE : Color::BLACK;
         auto moveList = chessboard.generate_legal_moves();
 
-        auto tree = std::make_shared<Node>();
+        auto tree = std::make_shared<Node>(moveThatGotMeHere, currentColor);
 
-        if (depth == 0)
+        auto checkmated = chessboard.is_checkmate(moveList);
+
+        if (depth == 0 || checkmated)
         {
             auto evaluation = Evaluation(chessboard);
+            if (checkmated && currentColor == myColor)
+                evaluation.iAmCheckmated = true;
+            else if (checkmated && currentColor != myColor)
+                evaluation.opponentIsCheckmated = true;
+
             tree->value_ = evaluation.rate_chessboard(myColor);
             return tree;
         }
@@ -21,7 +29,9 @@ namespace ai
         for (auto move : moveList)
         {
             chessboard.do_move(move);
-            tree->children.push_back(build_node(chessboard, depth - 1, myColor));
+            tree->children.push_back(build_node(chessboard, depth - 1, myColor,
+                                moveThatGotMeHere + '/' + move.toString()));
+
             chessboard.undo_move(move);
         }
         return tree;
@@ -29,7 +39,7 @@ namespace ai
 
     Gtree search::build_tree(board::Chessboard chessboard, int depth, Color myColor)
     {
-        std::shared_ptr<Node> node = build_node(chessboard, depth, myColor);
+        std::shared_ptr<Node> node = build_node(chessboard, depth, myColor, "start");
         auto moves = chessboard.generate_legal_moves();
         Gtree tree = Gtree();
         tree.node_ = std::move(node);
@@ -44,17 +54,29 @@ namespace ai
         if (maximizing)
         {
             float value = - std::numeric_limits<float>::max();
-            for (const auto& child : tree->children)
+            size_t value_index = 0;
+            size_t i = 0;
+            for (const auto& child : tree->children) {
                 value = std::max(value, minMax(child, false));
+                value_index = i;
+                i++;
+            }
             tree->value_ = value;
+            tree->move_ = tree->children[value_index]->move_;
             return value;
         }
         else
         {
             float value = std::numeric_limits<float>::max();
-            for (const auto& child : tree->children)
+            size_t value_index = 0;
+            size_t i = 0;
+            for (const auto& child : tree->children) {
                 value = std::min(value, minMax(child, true));
+                value_index = i;
+                i++;
+            }
             tree->value_ = value;
+            tree->move_ = tree->children[value_index]->move_;
             return value;
         }
     }
@@ -64,13 +86,21 @@ namespace ai
         auto colorToMaximize = chessboard.isWhiteTurn() ? Color::WHITE : Color::BLACK;
         auto tree = build_tree(std::move(chessboard), 4, colorToMaximize);
         float best_move_val = minMax(tree.node_, true);
+
+        Node bestNode = Node(best_move_val, "                                                                                                                                                                                                                  ",
+                board::Color::WHITE);
+        Move bestNodeMove = Move(0,0);
+
         int i = 0;
         for (const auto& child : tree.node_->children)
         {
-            if (child->value_ == best_move_val)
-                return tree.moves_[i];
+            if (child->value_ == best_move_val && child->move_.size() < bestNode.move_.size())
+            {
+                bestNode = *child;
+                bestNodeMove = tree.moves_[i];
+            }
             i++;
         }
-        return Move(1, 2, board::PieceType::ROOK);
+        return bestNodeMove;
     }
 }

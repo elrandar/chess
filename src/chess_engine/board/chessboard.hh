@@ -57,5 +57,7 @@ namespace board
         void generate_castling(std::vector<Move> &moves);
 
         void getMatchingLegalMoveAndDo(Move move);
+
+        bool is_checkmate(const std::vector<Move>& moves);
     };
 }

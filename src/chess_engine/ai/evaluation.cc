@@ -14,20 +14,22 @@ namespace ai
         BblockedPawns = 0;
         BdoubledPawns = 0;
 
+        iAmCheckmated = false;
+        opponentIsCheckmated = false;
+
         chessboard_ = chessboard;
     }
 
     float Evaluation::rate_chessboard(Color side)
     {
-        double king_factor = 2000;
+        double checkmate_factor = 2000;
         double queen_factor = 90;
         double rook_factor = 50;
         double bishop_knight_factor = 30;
         double pawn_factor = 10;
         double double_blocked_isolated_pawn_factor = 5;
 
-        double king_value = king_factor * (count_pieces(board::PieceType::KING, Color::WHITE)
-                                - count_pieces(board::PieceType::KING, board::Color::BLACK));
+        double king_value = checkmate_factor * (opponentIsCheckmated - iAmCheckmated);
         double queen_value = queen_factor * (count_pieces(board::PieceType::QUEEN, board::Color::WHITE)
                                 - count_pieces(board::PieceType::QUEEN, board::Color::BLACK));
         double rook_value = rook_factor * (count_pieces(board::PieceType::ROOK, board::Color::WHITE)

@@ -421,6 +421,10 @@ namespace board
         return is_check() && generate_legal_moves().empty();
     }
 
+    bool Chessboard::is_checkmate(const std::vector<Move>& moves) {
+        return is_check() && moves.empty();
+    }
+
     bool Chessboard::is_draw() {
         return is_pat() || last_fifty_turn_ == 0;
     }
