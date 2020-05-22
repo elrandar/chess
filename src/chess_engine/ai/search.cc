@@ -52,7 +52,7 @@ namespace ai
             return tree->value_;
         if (maximizing)
         {
-            float value = - std::numeric_limits<float>::max();
+            float value = - std::numeric_limits<float>::infinity();
             size_t value_index = 0;
             size_t i = 0;
             for (const auto& child : tree->children) {
@@ -68,7 +68,7 @@ namespace ai
         }
         else
         {
-            float value = std::numeric_limits<float>::max();
+            float value = std::numeric_limits<float>::infinity();
             size_t value_index = 0;
             size_t i = 0;
             for (const auto& child : tree->children) {

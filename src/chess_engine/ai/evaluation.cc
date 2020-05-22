@@ -20,54 +20,59 @@ namespace ai
         chessboard_ = chessboard;
     }
 
-    float Evaluation::rate_chessboard(Color side)
+    double Evaluation::rate_chessboard(Color side)
     {
-        double checkmate_factor = 2000;
-        double queen_factor = 90;
-        double rook_factor = 50;
-        double bishop_knight_factor = 30;
-        double pawn_factor = 10;
+        double checkmate_factor = 20000;
+        double queen_factor = 900;
+        double rook_factor = 500;
+        double knight_factor = 320;
+        double bishop_factor = 330;
         double double_blocked_isolated_pawn_factor = 5;
 
-        double king_value = checkmate_factor * (blackIsCheckmated - whiteIsCheckmated);
-        double queen_value = queen_factor * (count_pieces(board::PieceType::QUEEN, board::Color::WHITE)
-                                - count_pieces(board::PieceType::QUEEN, board::Color::BLACK));
-        double rook_value = rook_factor * (count_pieces(board::PieceType::ROOK, board::Color::WHITE)
-                                           - count_pieces(board::PieceType::ROOK, board::Color::BLACK));
-        double bishop_knight_value = bishop_knight_factor *
-                (count_pieces(board::PieceType::ROOK, board::Color::WHITE)
-                - count_pieces(board::PieceType::ROOK, board::Color::BLACK)
-                + count_pieces(board::PieceType::KNIGHT, board::Color::WHITE)
-                - count_pieces(board::PieceType::KNIGHT, board::Color::BLACK));
-        double pawn_value = pawn_factor * (count_pawns(board::Color::WHITE) - count_pawns(board::Color::BLACK));
+        double checkmate_value = checkmate_factor * (blackIsCheckmated - whiteIsCheckmated);
+        double king_value = count_pieces(PieceType::KING, board::Color::WHITE, 0) - count_pieces(PieceType::KING, board::Color::BLACK, 0);
+        double queen_value = count_pieces(board::PieceType::QUEEN, board::Color::WHITE, queen_factor)
+                                - count_pieces(board::PieceType::QUEEN, board::Color::BLACK, queen_factor);
+        double rook_value = count_pieces(board::PieceType::ROOK, board::Color::WHITE, rook_factor)
+                                           - count_pieces(board::PieceType::ROOK, board::Color::BLACK, rook_factor);
+        double knight_value = count_pieces(board::PieceType::KNIGHT, board::Color::WHITE, knight_factor)
+                - count_pieces(board::PieceType::KNIGHT, board::Color::BLACK, knight_factor);
+        double bishop_value = count_pieces(board::PieceType::BISHOP, board::Color::WHITE, bishop_factor)
+                               - count_pieces(board::PieceType::BISHOP, board::Color::BLACK, bishop_factor);
+        double pawn_value = count_pawns(board::Color::WHITE) - count_pawns(board::Color::BLACK);
         double dbi_value = double_blocked_isolated_pawn_factor * (WdoubledPawns - BdoubledPawns
                 + WblockedPawns - BblockedPawns
                 + WisolatedPawns - BisolatedPawns);
 
         double sign = side == board::Color::WHITE ? 1 : -1;
 
-        return sign * (king_value + queen_value + rook_value +
-            bishop_knight_value + pawn_value + dbi_value);
+        return sign * (checkmate_value + queen_value + rook_value +
+            bishop_value + knight_value + pawn_value + dbi_value + king_value);
     }
 
-    int Evaluation::count_pieces(PieceType pieceType, Color color)
+    double Evaluation::count_pieces(PieceType pieceType, Color color, double pieceValue)
     {
         auto remainingPieces = chessboard_.getBoardRpr().get(pieceType, color);
-        int count = 0;
+        double count = 0;
         while (remainingPieces != 0)
         {
             uint8_t bitToUnset = BitboardOperations::bitScanForward(remainingPieces);
+            int rawRank = bitToUnset / 8;
+            int file = bitToUnset % 8;
+            int rank = color == Color::WHITE ? 7 - rawRank : rawRank;
+
             remainingPieces &= ~(1ul << bitToUnset);
-            count++;
+
+            count += pieceValue + tables[static_cast<int>(pieceType)][rank][file];
         }
         return count;
     }
 
-    int Evaluation::count_pawns(Color color)
+    double Evaluation::count_pawns(Color color)
     {
         auto remainingPieces = chessboard_.getBoardRpr().get(board::PieceType::PAWN, color);
         auto alliedPawns = chessboard_.getBoardRpr().get(board::PieceType::PAWN, color);
-        int count = 0;
+        double count = 0;
 
         std::array<bool, 8> pawnOnFile = {false};
 
@@ -97,6 +102,12 @@ namespace ai
 
             if (!(alliedPawns & adjFileMask))
                 color == board::Color::WHITE ? WisolatedPawns++ : BisolatedPawns++;
+
+            int rawRank = pawnSquare / 8;
+            int file = pawnSquare % 8;
+            int rank = color == Color::WHITE ? 7 - rawRank : rawRank;
+            count += 100 + tables[static_cast<int>(PieceType::PAWN)][rank][file];
+
             count++;
         }
         return count;
