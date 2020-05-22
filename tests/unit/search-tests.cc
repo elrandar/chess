@@ -17,8 +17,8 @@ protected:
 TEST_F(search, build_basic_tree)
 {
 
-    perft_parser::parse_fen("k7/8/4N3/8/8/8/3R2K1/1Rp5 b - - 0 1");
-    board::Chessboard cb = board::Chessboard();
+    auto obj = perft_parser::parse_fen("k7/8/4N3/8/8/2p5/3R2K1/8 b - - 0 1");
+    board::Chessboard cb = board::Chessboard(obj);
     auto tree = ai::search::findNextMove(cb);
 
 

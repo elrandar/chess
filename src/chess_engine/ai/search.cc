@@ -57,8 +57,10 @@ namespace ai
             size_t value_index = 0;
             size_t i = 0;
             for (const auto& child : tree->children) {
+                auto oldValue = value;
                 value = std::max(value, minMax(child, false));
-                value_index = i;
+                if (oldValue != value)
+                    value_index = i;
                 i++;
             }
             tree->value_ = value;
@@ -71,8 +73,10 @@ namespace ai
             size_t value_index = 0;
             size_t i = 0;
             for (const auto& child : tree->children) {
+                auto oldValue = value;
                 value = std::min(value, minMax(child, true));
-                value_index = i;
+                if (oldValue != value)
+                    value_index = i;
                 i++;
             }
             tree->value_ = value;
