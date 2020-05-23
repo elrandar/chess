@@ -49,18 +49,16 @@ namespace board
         report_ = report;
     }
 
-    bool PgnMove::operator==(const PgnMove &rhs) const {
-        return start_ == rhs.start_ &&
-               end_ == rhs.end_ &&
-               piece_ == rhs.piece_ &&
-               promotion_ == rhs.promotion_ &&
-               capture_ == rhs.capture_ &&
-               report_ == rhs.report_;
+    bool PgnMove::operator==(const PgnMove& rhs) const
+    {
+        return start_ == rhs.start_ && end_ == rhs.end_ && piece_ == rhs.piece_
+            && promotion_ == rhs.promotion_ && capture_ == rhs.capture_
+            && report_ == rhs.report_;
     }
 
-    bool PgnMove::operator!=(const PgnMove &rhs) const {
+    bool PgnMove::operator!=(const PgnMove& rhs) const
+    {
         return !(rhs == *this);
     }
-
 
 } // namespace board

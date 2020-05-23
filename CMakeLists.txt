@@ -40,6 +40,7 @@ set(SRC_ENGINE
         "src/chess_engine/ai/search.cc"
         "src/chess_engine/ai/gtree.cc"
         "src/chess_engine/ai/ai.cc"
+        "src/chess_engine/board/zobrist.cc"
         )
 
 # Put your test files here
@@ -53,6 +54,7 @@ set(SRC_GTEST
         "tests/unit/move-generation-tests.cc"
         "tests/unit/search-tests.cc"
         "tests/unit/ai-tests.cc"
+        "tests/unit/hashing-tests.cc"
 )
 
 # END SOURCES
@@ -60,7 +62,7 @@ set(SRC_GTEST
 # COVERAGE FLAGS
 
 set(COV_FLAGS
-        "--coverage"
+        ""
 )
 
 # END COVERAGE FLAGS

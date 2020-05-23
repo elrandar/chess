@@ -1,11 +1,11 @@
 #include "pgn-parser.hh"
 
 #include <fstream>
-#include <regex>
 #include <iostream>
+#include <regex>
 
-#include "pgn-exception.hh"
 #include "../../chess_engine/board/position.hh"
+#include "pgn-exception.hh"
 
 namespace pgn_parser
 {
@@ -191,8 +191,7 @@ namespace pgn_parser
                 std::cerr << parse_error.what() << '\n';
                 std::exit(1);
             }
-        }
-        else
+        } else
         {
             auto iter = word.cbegin();
             /* get the moving piece type and incrementing pointer */

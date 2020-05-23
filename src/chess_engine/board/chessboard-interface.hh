@@ -2,8 +2,8 @@
 
 #include <optional>
 
-#include "piece-type.hh"
 #include "color.hh"
+#include "piece-type.hh"
 #include "position.hh"
 
 namespace board

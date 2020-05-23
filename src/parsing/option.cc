@@ -1,8 +1,7 @@
-#include <cstring>
-#include <iostream>
 #include "option.hh"
 
-
+#include <cstring>
+#include <iostream>
 
 Option::Option()
 {
@@ -15,7 +14,8 @@ Option::Option()
 
 void Option::show_help()
 {
-    std::cout << "chessengine : A chess engine written in C++.\nRun with no arguments to enter IA mode.\n\n";
+    std::cout << "chessengine : A chess engine written in C++.\nRun with no "
+                 "arguments to enter IA mode.\n\n";
     std::cout << "Usage:" << std::endl;
     std::cout << "\tchessengine\n";
     std::cout << "\tchessengine --pgn <pgn-file>\n";
@@ -25,24 +25,25 @@ void Option::show_help()
     std::cout << "\nOptions:" << '\n';
     std::cout << "\t-h --help\t\tShow this screen." << std::endl;
     std::cout << "\t--pgn arg\t\tPath to a PGN file" << std::endl;
-    std::cout << "\t-l [ --listeners ] args\tList of the paths of the listeners plugins" << std::endl;
+    std::cout << "\t-l [ --listeners ] args\tList of the paths of the "
+                 "listeners plugins"
+              << std::endl;
     std::cout << "\t--perft arg\t\tPath to a perft file" << std::endl;
 }
 
-bool Option::parse_options(int argc, char **argv)
+bool Option::parse_options(int argc, char** argv)
 {
     int i = 1;
     while (i < argc)
     {
         if (!strcmp(argv[i], "--time-test"))
         {
-           timeTest = true;
+            timeTest = true;
         }
-        if (!strcmp(argv[i],"-h") || !strcmp(argv[i],"--help"))
+        if (!strcmp(argv[i], "-h") || !strcmp(argv[i], "--help"))
         {
             help = true;
-        }
-        else if (!strcmp(argv[i],"--pgn"))
+        } else if (!strcmp(argv[i], "--pgn"))
         {
             i++;
             if (i == argc)
@@ -50,8 +51,7 @@ bool Option::parse_options(int argc, char **argv)
                 return false;
             }
             pgn_path = std::string(argv[i]);
-        }
-        else if (!strcmp(argv[i],"-l") || !strcmp(argv[i],"--listeners"))
+        } else if (!strcmp(argv[i], "-l") || !strcmp(argv[i], "--listeners"))
         {
             i++;
             if (i == argc)
@@ -64,8 +64,7 @@ bool Option::parse_options(int argc, char **argv)
                 listeners_vector.push_back(tmp);
                 i++;
             }
-        }
-        else if (!strcmp(argv[i],"--perft"))
+        } else if (!strcmp(argv[i], "--perft"))
         {
             i++;
             if (i == argc)
@@ -79,14 +78,17 @@ bool Option::parse_options(int argc, char **argv)
     return true;
 }
 
-const std::vector<std::string> &Option::getListenersVector() const {
+const std::vector<std::string>& Option::getListenersVector() const
+{
     return listeners_vector;
 }
 
-const std::string &Option::getPgnPath() const {
+const std::string& Option::getPgnPath() const
+{
     return pgn_path;
 }
 
-const std::string &Option::getPerftPath() const {
+const std::string& Option::getPerftPath() const
+{
     return perft_path;
 }

@@ -1,12 +1,12 @@
 #pragma once
 
-
 #include "bitboard-operations.hh"
 #include "color.hh"
 
 namespace board
 {
-    class Masks {
+    class Masks
+    {
     public:
         enum rook_direction
         {
@@ -32,7 +32,7 @@ namespace board
         static BitBoard rook_attack[64];
         static BitBoard bishop_attack[64];
 
-        //used for classical attack generation
+        // used for classical attack generation
         static BitBoard rook_attack_rays[4][64];
         static BitBoard bishop_attack_rays[4][64];
 
@@ -44,7 +44,7 @@ namespace board
         static void computeRookRayAttacks();
 
         static void computeBishopAttacks();
-        static  void computeBishopRayAttacks();
+        static void computeBishopRayAttacks();
 
         static void init();
         static BitBoard king_attacks(int position);
@@ -53,6 +53,4 @@ namespace board
         static BitBoard bishop_attacks(int i);
         static BitBoard pawn_attacks(Color color, int i);
     };
-}
-
-
+} // namespace board

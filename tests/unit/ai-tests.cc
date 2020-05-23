@@ -1,9 +1,11 @@
+#include <gtest/gtest.h>
+
 #include "../../src/chess_engine/ai/ai.hh"
 #include "../../src/chess_engine/board/magic.hh"
 #include "../../src/chess_engine/board/masks.hh"
-#include <gtest/gtest.h>
 
-class ai_protocol : public ::testing::Test {
+class ai_protocol : public ::testing::Test
+{
 protected:
     static void SetUpTestSuite()
     {
@@ -13,18 +15,19 @@ protected:
     }
 };
 
-
 TEST_F(ai_protocol, test_parse_fen_moves)
 {
     auto ia = ai::Ai();
-    ia.update_board("position fen rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1 moves e2e4 e7e5");
+    ia.update_board("position fen rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR "
+                    "w KQkq - 0 1 moves e2e4 e7e5");
     ia.print_board();
 }
 
 TEST_F(ai_protocol, test_parse_fen)
 {
     auto ia = ai::Ai();
-    ia.update_board("position fen rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
+    ia.update_board("position fen rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR "
+                    "w KQkq - 0 1");
     ia.print_board();
 }
 

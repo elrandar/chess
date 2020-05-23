@@ -1,13 +1,15 @@
 
 #include "perft.hh"
-#include "parsing/perft-parser/perft-object.hh"
-#include "chess_engine/board/chessboard.hh"
-#include <istream>
-#include <fstream>
-#include <sstream>
-#include <iostream>
 
-int Perft::run_perft(std::string filePath) {
+#include <fstream>
+#include <istream>
+#include <sstream>
+
+#include "chess_engine/board/chessboard.hh"
+#include "parsing/perft-parser/perft-object.hh"
+
+int Perft::run_perft(std::string filePath)
+{
     // parse and get chessboard
     std::ifstream file(filePath);
     std::stringstream buffer;
@@ -18,8 +20,6 @@ int Perft::run_perft(std::string filePath) {
 
     auto chessboard = board::Chessboard(perftObj.fen_get());
 
-
-
     return perft(chessboard, perftObj.depth_get());
 }
 
@@ -28,22 +28,13 @@ int Perft::perft(board::Chessboard chessboard, int depth)
     std::vector<board::Move> moveList;
     unsigned nodes = 0;
 
-    if (depth == 0) return 1;
+    if (depth == 0)
+        return 1;
 
     moveList = chessboard.generate_legal_moves();
     for (auto move : moveList)
     {
-//        if (depth == 2)
-//        {
-//            move.print();
-//        }
-//        if (depth == 1)
-//        {
-//            std::cout << '\t';
-//            move.print();
-//        }
         chessboard.do_move(move);
-//        chessboard.getBoardRpr().print();
         nodes += perft(chessboard, depth - 1);
         chessboard.undo_move(move);
     }
