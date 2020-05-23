@@ -18,8 +18,6 @@ namespace board
         unsigned int turn_;
         unsigned int last_fifty_turn_;
 
-
-
     public:
         int white_king_rook_moved;
         int white_queen_rook_moved;
@@ -27,11 +25,10 @@ namespace board
         int black_queen_rook_moved;
         int white_king_moved;
         int black_king_moved;
-        size_t indexLastIrreversiblePosition;
         Chessboard();
         explicit Chessboard(perft_parser::FenObject fenObject);
         std::vector<Move> generate_legal_moves();
-        void do_move(Move move);
+        void do_move(Move &move);
         void undo_move(Move move);
         bool is_move_legal(Move move);
         bool is_check();
@@ -66,7 +63,5 @@ namespace board
         void print();
 
         bool is_pat(const std::vector<Move>& moves);
-
-        std::vector<uint64_t> trackPositions;
     };
 }
