@@ -46,8 +46,33 @@ namespace ai
 
         double sign = side == board::Color::WHITE ? +1 : -1;
 
-        return sign * (checkmate_value + queen_value + rook_value +
+        auto eval =  (checkmate_value + queen_value + rook_value +
             bishop_value + knight_value + pawn_value + dbi_value + king_value);
+
+        // check for draw
+        bool isThreefold = false;
+        if (chessboard_.trackPositions.size() - chessboard_.indexLastIrreversiblePosition >= 4)
+        {
+            int count = 0;
+            for (size_t i = chessboard_.indexLastIrreversiblePosition; i < chessboard_.trackPositions.size(); i++)
+            {
+                if (chessboard_.trackPositions[i] == chessboard_.trackPositions[chessboard_.trackPositions.size() - 1])
+                    count++;
+            }
+            if (count >= 3)
+                isThreefold = true;
+        }
+        if (isThreefold)
+        {
+            if (eval < -2000)
+            {
+                eval += 100;
+            } else
+            {
+                eval -= 1000;
+            }
+        }
+        return eval * sign;
     }
 
     double Evaluation::count_pieces(PieceType pieceType, Color color, double pieceValue)

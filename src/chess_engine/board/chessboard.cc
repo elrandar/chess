@@ -6,6 +6,7 @@
 #include "chessboard.hh"
 #include "rule.hh"
 #include "magic.hh"
+#include "zobrist.hh"
 
 namespace board
 {
@@ -120,8 +121,12 @@ namespace board
             boardRpr.boards[rook_board] |= queen_side_rook_set;
         }
     }
-    void Chessboard::do_move(Move &move)
+    void Chessboard::do_move(Move move)
     {
+        trackPositions.emplace_back(
+                Zobrist::updateHashWithMove(
+                        trackPositions[trackPositions.size() - 1],
+                                    move, *this));
         if (move.isKingCastling() || move.isQueenCastling())
         {
             do_castling(move);
@@ -140,6 +145,10 @@ namespace board
         auto piece = std::pair<PieceType, Color>(move.piece_get(), isWhiteTurn() ? Color::WHITE : Color::BLACK);
         bool capture = move.getCapture().has_value();
         std::optional<PieceType> promotion = move.get_promotion();
+
+
+        if (capture || piece.first == PieceType::PAWN)
+            indexLastIrreversiblePosition = trackPositions[trackPositions.size() - 1];
 
         update_castling(move);
 
@@ -205,6 +214,9 @@ namespace board
     void Chessboard::undo_move(Move move)
     {
         getEnPassant().pop();
+        trackPositions.erase(trackPositions.end() - 1);
+        Zobrist::updateHashWithMove(trackPositions[trackPositions.size() - 1],
+                move, *this);
         if (move.isQueenCastling() || move.isKingCastling())
         {
             undo_castling(move);
@@ -347,6 +359,8 @@ namespace board
         boardRpr = Chessboard_rpr();
         en_passant_ = std::stack<BitBoard>();
         en_passant_.push(0ul);
+        trackPositions.emplace_back(Zobrist::hash(*this));
+        indexLastIrreversiblePosition = 0;
     }
 
     Chessboard_rpr& Chessboard::getBoardRpr() {
@@ -481,6 +495,8 @@ namespace board
         }
         else
             en_passant_.push(0ul);
+        trackPositions.emplace_back(Zobrist::hash(*this));
+        indexLastIrreversiblePosition = 0;
     }
 
     void Chessboard::getMatchingLegalMoveAndDo(Move move) {
