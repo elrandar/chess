@@ -44,3 +44,18 @@ TEST_F(search, bugged)
 
     ASSERT_EQ(move.toString(), "e1d1");
 }
+
+TEST_F(search, bugged2)
+{
+    using namespace perft_parser;
+    board::Masks::init();
+    board::BitboardOperations::init_ms1bTable();
+    board::magic::build_table();
+
+    auto obj = parse_fen("4k3/8/4K3/p7/5p2/5Q2/7p/8 w - - 0 64");
+    board::Chessboard cb = board::Chessboard(obj);
+    cb.print();
+    auto move = ai::search::findNextMove(cb);
+
+    ASSERT_EQ(move.toString(), "f3a8");
+}

@@ -46,6 +46,16 @@ namespace ai
         return tree;
     }
 
+    void print_tab(int depth, const std::vector<board::Move>& moves) {
+        for (auto move : moves)
+        {
+            for (int i = 0; i < depth; i++)
+            {
+                std::cout << '\t';
+            }
+            std::cout << move.toString() << '\n';
+        }
+    }
     std::pair<double, int>
     search::minMax(bool maximizing, int depth, double alpha, double beta,
                    board::Chessboard chessboard)
@@ -70,11 +80,13 @@ namespace ai
         if (maximizing)
         {
             double value = - std::numeric_limits<double>::infinity();
-            int value_depth;
+            int value_depth = 0;
             for (auto& move : moveList) {
                 chessboard.do_move(move);
                 auto rec = minMax(false, depth + 1, alpha,
                             beta, chessboard);
+                if (depth == 0)
+                    Ai::pair_list.push_back(rec);
                 auto oldValue = value;
                 value = std::max(value, rec.first);
                 if (oldValue != value)
@@ -84,21 +96,21 @@ namespace ai
                 if (alpha >= beta)
                     break;
             }
-            if (depth == 1)
-                Ai::pair_list.emplace_back(value, value_depth);
 
             return std::make_pair(value, value_depth);
         }
         else
         {
             double value = std::numeric_limits<double>::infinity();
-            int value_depth;
+            int value_depth = 0;
             for (auto& move : moveList) {
 
                 chessboard.do_move(move);
 
                 auto rec = minMax(true, depth + 1, alpha, beta,
                         chessboard);
+                if (depth == 0)
+                    Ai::pair_list.push_back(rec);
                 auto oldValue = value;
                 value = std::min(value, rec.first);
                 if (oldValue != value)
@@ -109,9 +121,6 @@ namespace ai
                 if (alpha >= beta)
                     break;
             }
-            if (depth == 1)
-                Ai::pair_list.emplace_back(value, value_depth);
-
             return std::make_pair(value, value_depth);
         }
     }
@@ -148,4 +157,5 @@ namespace ai
         }
         return bestMove;
     }
+
 }

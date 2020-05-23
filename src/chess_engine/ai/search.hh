@@ -1,4 +1,7 @@
 
+#pragma once
+
+#include <iostream>
 #include "gtree.hh"
 #include "../board/chessboard.hh"
 #include "../board/color.hh"
@@ -14,4 +17,6 @@ namespace ai::search
            board::Chessboard chessboard);
 
     board::Move findNextMove(board::Chessboard chessboard);
+
+
 }
