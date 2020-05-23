@@ -7,6 +7,8 @@
 #include "search.hh"
 #include "../board/move.hh"
 
+board::Color ai::Ai::ai_color;
+
 void ai::Ai::run() {
 
     ai::init("E-won McGregor");
@@ -30,11 +32,13 @@ ai::Ai::Ai() {
 }
 
 void ai::Ai::update_board(const std::string& boardString) {
+
     auto firstSpacePos = boardString.find(' ');
     auto nextSpacePos = boardString.find(' ', firstSpacePos + 1);
 
     std::string positionType =
-            boardString.substr(firstSpacePos + 1, nextSpacePos - firstSpacePos - 1);
+            boardString.substr(firstSpacePos + 1,
+                                nextSpacePos - firstSpacePos - 1);
     if (positionType == "startpos")
         chessboard = board::Chessboard();
     else if (positionType == "fen")
@@ -76,6 +80,7 @@ void ai::Ai::update_board(const std::string& boardString) {
         for (auto move : vec)
             chessboard.getMatchingLegalMoveAndDo(move);
     }
+
 }
 
 void ai::Ai::print_board() {

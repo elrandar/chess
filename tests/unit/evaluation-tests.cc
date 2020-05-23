@@ -16,62 +16,6 @@ protected:
     }
 };
 
-TEST_F(evaluation, count_pieces_1)
-{
-    using namespace board;
-    using namespace ai;
-    auto board = Chessboard();
-    auto evaluation = Evaluation(board);
-
-    std::vector<int> results = {1, 2, 2, 2, 8, 1};
-
-    for (int i = 0; i < 6; i++)
-    {
-        for (int j = 0; j < 2; j++)
-        {
-            EXPECT_EQ(evaluation.count_pieces(static_cast<PieceType>(i),
-                    static_cast<Color>(j)), results.at(i));
-        }
-    }
-}
-
-TEST_F(evaluation, count_pawns_1)
-{
-    using namespace board;
-    using namespace ai;
-    auto board = Chessboard(perft_parser::parse_fen(
-            "8/p2p4/p2p4/8/8/8/PPPP1PPP/8 b KQkq - 2 2"));
-
-    auto evaluation = Evaluation(board);
-
-
-    auto thing = evaluation.count_pawns(board::Color::BLACK);
-
-    EXPECT_EQ(thing, 4);
-    EXPECT_EQ(evaluation.BisolatedPawns, 4);
-    EXPECT_EQ(evaluation.BblockedPawns, 2);
-    EXPECT_EQ(evaluation.BdoubledPawns, 2);
-}
-
-TEST_F(evaluation, count_pawns_2)
-{
-    using namespace board;
-    using namespace ai;
-    auto board = Chessboard(perft_parser::parse_fen(
-            "8/8/8/3P4/8/P2P3P/3P4/8 w - - 0 1"));
-    board.getBoardRpr().print();
-
-    auto evaluation = Evaluation(board);
-
-
-    auto nbPawns = evaluation.count_pawns(board::Color::WHITE);
-
-    EXPECT_EQ(nbPawns, 5);
-    EXPECT_EQ(evaluation.WisolatedPawns, 5);
-    EXPECT_EQ(evaluation.WblockedPawns, 1);
-    EXPECT_EQ(evaluation.WdoubledPawns, 2);
-}
-
 TEST_F(evaluation, rating_1)
 {
     using namespace board;
@@ -88,4 +32,100 @@ TEST_F(evaluation, rating_1)
     EXPECT_GT(evalBoardOne, evalBoardTwo);
 
 
+}
+
+TEST_F(evaluation, end_game_true)
+{
+
+    using namespace board;
+    using namespace ai;
+    auto board = Chessboard(perft_parser::parse_fen(
+            "2bqk3/5p1p/8/8/8/8/1P1P1PPP/3QK1N1 w - - 0 1"));
+    auto evaluation = Evaluation(board);
+
+    ASSERT_TRUE(evaluation.is_end_game());
+}
+
+TEST_F(evaluation, end_game_false)
+{
+
+    using namespace board;
+    using namespace ai;
+    auto board = Chessboard();
+    auto evaluation = Evaluation(board);
+
+    ASSERT_FALSE(evaluation.is_end_game());
+}
+
+TEST_F(evaluation, end_game_true2)
+{
+
+    using namespace board;
+    using namespace ai;
+    auto board = Chessboard(perft_parser::parse_fen(
+            "1n1qk3/p1p1pppp/8/8/8/8/PPPPP2P/2BQK3 w - - 0 1"));
+    auto evaluation = Evaluation(board);
+
+    ASSERT_TRUE(evaluation.is_end_game());
+}
+
+TEST_F(evaluation, end_game_true3)
+{
+
+    using namespace board;
+    using namespace ai;
+    auto board = Chessboard(perft_parser::parse_fen(
+            "3qk3/p1p1pppp/8/8/8/8/PPPPP2P/2BQK3 w - - 0 1"));
+    auto evaluation = Evaluation(board);
+
+    ASSERT_TRUE(evaluation.is_end_game());
+}
+
+TEST_F(evaluation, end_game_false2)
+{
+
+    using namespace board;
+    using namespace ai;
+    auto board = Chessboard(perft_parser::parse_fen(
+            "rnbqkb1r/ppp1pppp/3p4/3nP3/3P4/5N2/PPP2PPP/RNBQKB1R b KQkq - 1 4"));
+    auto evaluation = Evaluation(board);
+
+    ASSERT_FALSE(evaluation.is_end_game());
+}
+
+TEST_F(evaluation, end_game_false3)
+{
+
+    using namespace board;
+    using namespace ai;
+    auto board = Chessboard(perft_parser::parse_fen(
+            "3q4/ppp1pppp/8/4P3/3P4/8/PP3PPP/3Q3R b - - 1 4"));
+    auto evaluation = Evaluation(board);
+
+    ASSERT_FALSE(evaluation.is_end_game());
+}
+
+
+TEST_F(evaluation, end_game_true5)
+{
+
+    using namespace board;
+    using namespace ai;
+    auto board = Chessboard(perft_parser::parse_fen(
+            "2kqb3/ppp1pppp/8/4P3/3P4/8/PP3PPP/2K5 b - - 1 4"));
+    auto evaluation = Evaluation(board);
+
+    ASSERT_TRUE(evaluation.is_end_game());
+}
+
+TEST_F(evaluation, end_game_true6)
+{
+
+    using namespace board;
+    using namespace ai;
+    auto board = Chessboard(perft_parser::parse_fen(
+            "2k1b3/ppp1pppp/8/4P3/3P4/8/PP3PPP/2KQ4 b - - 1 4"));
+    auto evaluation = Evaluation(board);
+
+    ASSERT_TRUE(evaluation.is_end_game());
 }
