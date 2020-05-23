@@ -3,6 +3,7 @@
 #include "perft.hh"
 #include "chess_engine/board/masks.hh"
 #include "chess_engine/board/magic.hh"
+#include "chess_engine/board/zobrist.hh"
 #include "parsing/option.hh"
 #include <chrono>
 #include "parsing/perft-parser/perft-object.hh"
@@ -16,6 +17,7 @@ int main(int argc, char **argv)
     board::Masks::init();
     board::BitboardOperations::init_ms1bTable();
     board::magic::build_table();
+    board::Zobrist::initRandomArray();
 
     using namespace board;
     Option option;
@@ -23,7 +25,7 @@ int main(int argc, char **argv)
 
     if (option.isHelp())
     {
-        option.show_help();
+        Option::show_help();
     }
     else if (!option.getPgnPath().empty())
     {

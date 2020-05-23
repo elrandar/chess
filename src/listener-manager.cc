@@ -2,6 +2,7 @@
 #include "chess_engine/board/move.hh"
 #include "parsing/pgn-parser/pgn-parser.hh"
 #include "chess_engine/board/chessboard.hh"
+#include "chess_engine/board/zobrist.hh"
 #include <utility>
 #include <vector>
 #include <dlfcn.h>
@@ -11,6 +12,7 @@ namespace listener
     ListenerManager::ListenerManager(const std::vector<std::string>& files, board::Chessboard &chessboard)
     {
         chessboard_ = std::move(chessboard);
+        positions.emplace_back(board::Zobrist::hash(chessboard_));
         listeners = std::vector<Listener*>();
         handlers = std::vector<void*>();
 
@@ -132,6 +134,12 @@ namespace listener
             // Move is executed, active side changes
             chessboard_.do_move(move);
 
+            // pushback new position in position vector
+            positions.push_back(board::Zobrist::updateHashWithMove(
+                            positions[positions.size() - 1],
+                                    move, chessboard_));
+
+
             if (chessboard_.is_checkmate()) //Checks if the other player (the one that has not played the move) is checkmate
             {
                 on_player_mat(enemyColor);
@@ -149,16 +157,26 @@ namespace listener
                 on_game_finished();
                 break;
             }
-            if (chessboard_.is_draw())
+
+            if (chessboard_.is_draw() || isThreefold())
             {
                 on_draw();
                 on_game_finished();
                 break;
             }
-//            chessboard_.getBoardRpr().print();
             // Continue, there is no draw, the game is not finished
         }
         return true;
+    }
+
+    bool ListenerManager::isThreefold() const {
+        auto count = 0;
+        for (auto hash : positions)
+        {
+            if (hash == positions.at(positions.size() - 1))
+                count++;
+        }
+        return count == 3;
     }
 }
 

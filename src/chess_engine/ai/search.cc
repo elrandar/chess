@@ -138,12 +138,13 @@ namespace ai
 
         auto inf = std::numeric_limits<double>::infinity();
         auto best_move_pair = minMax(true, 0, -inf, inf,
-                                      std::move(chessboard));
+                                      chessboard);
 
 
         // find optimal move from optimal move value
         std::pair<double, int> bestPair = std::make_pair(best_move_pair.first, 400);
         auto bestMove = Move(0, 0);
+        int bestIndex = 0;
 
         int i = 0;
         for (auto pair : Ai::pair_list)
@@ -152,9 +153,39 @@ namespace ai
             {
                 bestPair = pair;
                 bestMove = moveList[i];
+                bestIndex = i;
             }
             i++;
         }
+
+        chessboard.do_move(bestMove);
+        auto newHash = Zobrist::hash(chessboard);
+        std::cout << "NEW HASH : " << newHash << '\n';
+        int count = 0;
+        for (auto hash : ai::Ai::boardPositionsHash)
+        {
+            if (newHash == hash)
+                count++;
+        }
+        if (count == 2)
+        {
+            i = 0;
+            auto newBestMove = Move(0, 0);
+            auto newBestMoveValue = -100000;
+            for (auto move : Ai::pair_list)
+            {
+                std::cout << move.first << " | " << move.second << '\n';
+                if (i != bestIndex && move.first > newBestMoveValue)
+                {
+                    std::cout << "i CHOOSE YOU" << '\n';
+                    newBestMove = moveList[i];
+                    newBestMoveValue = move.first;
+                }
+                i++;
+            }
+            bestMove = newBestMove;
+        }
+
         return bestMove;
     }
 

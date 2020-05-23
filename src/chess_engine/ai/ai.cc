@@ -9,6 +9,7 @@
 
 board::Color ai::Ai::ai_color;
 std::vector<std::pair<double, int>> ai::Ai::pair_list;
+std::vector<uint64_t> ai::Ai::boardPositionsHash;
 
 void ai::Ai::run() {
 
@@ -19,9 +20,19 @@ void ai::Ai::run() {
 
         update_board(board);
 
-        print_board();
+        boardPositionsHash.push_back(board::Zobrist::hash(chessboard));
+
+        for (int value : boardPositionsHash)
+        {
+            std::cout << value << '|';
+        }
+        std::cout << '\n';
+
 
         board::Move move = ai::search::findNextMove(chessboard);
+
+        chessboard.do_move(move);
+        boardPositionsHash.push_back(board::Zobrist::hash(chessboard));
 
         ai::play_move(move.toString());
     }
@@ -29,6 +40,7 @@ void ai::Ai::run() {
 
 ai::Ai::Ai() {
     chessboard = board::Chessboard();
+    boardPositionsHash = std::vector<uint64_t>();
     gameFinished = false;
 }
 
@@ -86,6 +98,10 @@ void ai::Ai::update_board(const std::string& boardString) {
 
 void ai::Ai::print_board() {
     chessboard.getBoardRpr().print();
+}
+
+unsigned long ai::Ai::last_hash() {
+    return boardPositionsHash[boardPositionsHash.size() - 1];
 }
 
 

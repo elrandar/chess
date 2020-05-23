@@ -19,6 +19,8 @@ namespace listener
         std::vector<Listener*> listeners;
         std::vector<void*> handlers;
 
+        std::vector<uint64_t> positions;
+
     public:
         ListenerManager(const std::vector<std::string>& files, board::Chessboard &chessboard);
         ~ListenerManager() override;
@@ -28,7 +30,6 @@ namespace listener
 
         // Functions used to run
         bool run_pgn(const std::string& pgn_path);
-        bool do_castling(board::Move move, board::Rank rank);
         void disqualify(board::Color color);
 
 
@@ -56,5 +57,7 @@ namespace listener
         void on_draw();
 
         static int is_pgn_move_castling(board::PgnMove pgnMove);
+
+        bool isThreefold() const;
     };
 }

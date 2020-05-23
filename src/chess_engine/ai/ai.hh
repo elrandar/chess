@@ -1,5 +1,6 @@
 #pragma once
 
+#include "../board/zobrist.hh"
 #include "../board/chessboard.hh"
 
 namespace ai
@@ -14,8 +15,12 @@ namespace ai
         void run();
         void update_board(const std::string& boardString);
         void print_board();
+
+        static std::vector<uint64_t> boardPositionsHash;
         static board::Color ai_color;
         static const int ai_depth = 4;
         static std::vector<std::pair<double, int>> pair_list;
+
+        static unsigned long last_hash();
     };
 }
