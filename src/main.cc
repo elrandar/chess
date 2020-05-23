@@ -44,12 +44,12 @@ int main(int argc, char **argv)
 
         auto fenObj = perft_parser::parse_fen("r2qkb1r/p3nppp/2b1p3/3pP1B1/2p3P1/2N1QN2/PPP2P1P/3RR1K1 w kq - 2 15");
         auto cb = Chessboard(fenObj);
-        std::cout << ai::search::findNextMove(cb, 4).toString() << '\n';
+        std::cout << ai::search::findNextMove(cb).toString() << '\n';
 
         auto stop = std::chrono::high_resolution_clock::now();
-    auto duration =
+        auto duration =
             std::chrono::duration_cast<std::chrono::milliseconds>(stop - start);
-    std::cout << "\nIt took : " << duration.count() << " ms\n";
+        std::cout << "\nIt took : " << duration.count() << " ms\n";
     }
     else
     {

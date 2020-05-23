@@ -25,7 +25,7 @@ TEST_F(search, eat_that_rook)
     auto obj = parse_fen("k7/8/4N3/8/8/2p5/3R2K1/8 b - - 0 1");
     board::Chessboard cb = board::Chessboard(obj);
     cb.print();
-    auto move = ai::search::findNextMove(cb, 4);
+    auto move = ai::search::findNextMove(cb);
 
     ASSERT_EQ(move.toString(), "c3d2");
 }
@@ -40,7 +40,7 @@ TEST_F(search, bugged)
     auto obj = parse_fen("8/PP1RQ3/4P3/8/3K1N2/4B3/8/4k3 b - - 10 84");
     board::Chessboard cb = board::Chessboard(obj);
     cb.print();
-    auto move = ai::search::findNextMove(cb, 3);
+    auto move = ai::search::findNextMove(cb);
 
-    ASSERT_EQ(move.toString(), "c3d2");
+    ASSERT_EQ(move.toString(), "e1d1");
 }
