@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+
 #include "fen-object.hh"
 
 namespace perft_parser
@@ -10,6 +11,7 @@ namespace perft_parser
     private:
         FenObject fen_;
         int depth_;
+
     public:
         PerftObject(FenObject fenObject, int depth);
         FenObject fen_get();
@@ -18,6 +20,4 @@ namespace perft_parser
 
     PerftObject parse_perft(const std::string& input);
     FenObject parse_fen(std::string fenString);
-}
-
-
+} // namespace perft_parser

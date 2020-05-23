@@ -1,11 +1,13 @@
 #include <gtest/gtest.h>
+
+#include "../../src/chess_engine/ai/gtree.hh"
 #include "../../src/chess_engine/ai/search.hh"
 #include "../../src/chess_engine/board/magic.hh"
 #include "../../src/chess_engine/board/masks.hh"
 #include "../../src/parsing/perft-parser/perft-object.hh"
-#include "../../src/chess_engine/ai/gtree.hh"
 
-class search : public ::testing::Test {
+class search : public ::testing::Test
+{
 protected:
     static void SetUpTestSuite()
     {

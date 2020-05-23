@@ -3,8 +3,8 @@
 #include <string>
 #include <vector>
 
-class Option {
-
+class Option
+{
 private:
     std::string pgn_path;
     std::string perft_path;
@@ -16,14 +16,13 @@ public:
 
     bool timeTest;
 
-    bool parse_options(int argc, char **argv);
+    bool parse_options(int argc, char** argv);
     static void show_help();
-    const std::vector<std::string> &getListenersVector() const;
-    const std::string &getPgnPath() const;
-    const std::string &getPerftPath() const;
-    bool isHelp() const {
+    const std::vector<std::string>& getListenersVector() const;
+    const std::string& getPgnPath() const;
+    const std::string& getPerftPath() const;
+    bool isHelp() const
+    {
         return help;
     }
-
-
 };

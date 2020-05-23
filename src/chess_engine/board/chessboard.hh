@@ -1,11 +1,12 @@
 #pragma once
 
-#include <vector>
 #include <stack>
-#include "move.hh"
-#include "color.hh"
-#include "chessboard-representation.hh"
+#include <vector>
+
 #include "../../parsing/perft-parser/fen-object.hh"
+#include "chessboard-representation.hh"
+#include "color.hh"
+#include "move.hh"
 
 namespace board
 {
@@ -28,17 +29,18 @@ namespace board
         Chessboard();
         explicit Chessboard(perft_parser::FenObject fenObject);
         std::vector<Move> generate_legal_moves();
-        void do_move(Move &move);
+        void do_move(Move move);
         void undo_move(Move move);
         bool is_move_legal(Move move);
         bool is_check();
         bool is_checkmate();
         bool is_pat();
         bool is_draw();
-        std::optional<std::pair<PieceType, Color>> operator[](const Position &position) const;
-        Chessboard_rpr &getBoardRpr();
+        std::optional<std::pair<PieceType, Color>>
+        operator[](const Position& position) const;
+        Chessboard_rpr& getBoardRpr();
 
-        std::stack<BitBoard> & getEnPassant();
+        std::stack<BitBoard>& getEnPassant();
 
         std::optional<Position> king_position();
         bool isWhiteTurn() const;
@@ -46,15 +48,15 @@ namespace board
 
         bool is_sq_attacked_by_color(int sq, Color color);
 
-        void do_castling(Move &move);
+        void do_castling(Move& move);
 
-        void undo_castling(Move &move);
+        void undo_castling(Move& move);
 
         void undo_update_castling();
 
-        void update_castling(Move &move);
+        void update_castling(Move& move);
 
-        void generate_castling(std::vector<Move> &moves);
+        void generate_castling(std::vector<Move>& moves);
 
         void getMatchingLegalMoveAndDo(Move move);
 
@@ -64,4 +66,4 @@ namespace board
 
         bool is_pat(const std::vector<Move>& moves);
     };
-}
+} // namespace board

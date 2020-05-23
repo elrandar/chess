@@ -1,25 +1,30 @@
 #pragma once
 
+#include <memory>
 #include <utility>
 #include <vector>
-#include <memory>
-#include "../board/move.hh"
-#include "../board/color.hh"
+
 #include "../board/chessboard.hh"
+#include "../board/color.hh"
+#include "../board/move.hh"
 
 namespace ai
 {
-    class Node {
-
+    class Node
+    {
     public:
-
-        Node(double value, std::string move, board::Color color) : value_(value), move_(std::move(move)) {
+        Node(double value, std::string move, board::Color color)
+            : value_(value)
+            , move_(std::move(move))
+        {
             color_ = color;
             children = std::vector<std::shared_ptr<Node>>();
             checkmated_ = false;
         }
 
-        Node(std::string move, board::Color color) : move_(std::move(move)) {
+        Node(std::string move, board::Color color)
+            : move_(std::move(move))
+        {
             value_ = 0;
             color_ = color;
             checkmated_ = false;
@@ -34,11 +39,10 @@ namespace ai
         std::vector<std::shared_ptr<Node>> children;
     };
 
-    class Gtree {
+    class Gtree
+    {
     public:
-
         std::shared_ptr<Node> node_;
         std::vector<board::Move> moves_;
-
     };
-}
+} // namespace ai

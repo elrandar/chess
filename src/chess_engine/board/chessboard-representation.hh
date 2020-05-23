@@ -1,16 +1,16 @@
 #pragma once
 
+#include <array>
 #include <cstdint>
 #include <vector>
-#include <array>
-#include "move.hh"
-#include "color.hh"
-#include "bitboard-operations.hh"
+
 #include "../../parsing/perft-parser/fen-object.hh"
+#include "bitboard-operations.hh"
+#include "color.hh"
+#include "move.hh"
 
 namespace board
 {
-
     class Chessboard_rpr
     {
     private:
@@ -29,6 +29,7 @@ namespace board
         static std::string bitBoardPrint(BitBoard bitBoard);
         Chessboard_rpr();
         void print();
-        [[nodiscard]] std::optional<std::pair<PieceType, Color>> at(Position pos) const;
+        [[nodiscard]] std::optional<std::pair<PieceType, Color>>
+        at(Position pos) const;
     };
-}
+} // namespace board

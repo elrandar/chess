@@ -1,17 +1,20 @@
 #include "search.hh"
-#include "evaluation.hh"
-#include "ai.hh"
+
+#include <iostream>
 #include <limits>
 #include <utility>
-#include <iostream>
+
+#include "ai.hh"
+#include "evaluation.hh"
 
 namespace ai
 {
-    std::shared_ptr<Node> search::build_node(board::Chessboard chessboard,
-                            int depth,
-                            const std::string& moveThatGotMeHere)
+    std::shared_ptr<Node>
+    search::build_node(board::Chessboard chessboard, int depth,
+                       const std::string& moveThatGotMeHere)
     {
-        auto currentColor = chessboard.isWhiteTurn() ? Color::WHITE : Color::BLACK;
+        auto currentColor =
+            chessboard.isWhiteTurn() ? Color::WHITE : Color::BLACK;
         auto moveList = chessboard.generate_legal_moves();
 
         auto tree = std::make_shared<Node>(moveThatGotMeHere, currentColor);
@@ -29,7 +32,9 @@ namespace ai
         for (auto move : moveList)
         {
             chessboard.do_move(move);
-            tree->children.push_back(build_node(chessboard, depth - 1,moveThatGotMeHere + '/' + move.toString()));
+            tree->children.push_back(
+                build_node(chessboard, depth - 1,
+                           moveThatGotMeHere + '/' + move.toString()));
 
             chessboard.undo_move(move);
         }
@@ -46,7 +51,8 @@ namespace ai
         return tree;
     }
 
-    void print_tab(int depth, const std::vector<board::Move>& moves) {
+    void print_tab(int depth, const std::vector<board::Move>& moves)
+    {
         for (auto move : moves)
         {
             for (int i = 0; i < depth; i++)
@@ -56,13 +62,14 @@ namespace ai
             std::cout << move.toString() << '\n';
         }
     }
-    std::pair<double, int>
-    search::minMax(bool maximizing, int depth, double alpha, double beta,
-                   board::Chessboard chessboard)
+    std::pair<double, int> search::minMax(bool maximizing, int depth,
+                                          double alpha, double beta,
+                                          board::Chessboard chessboard)
     {
         // generate the legal moves
         auto moveList = chessboard.generate_legal_moves();
-        auto currentColor = chessboard.isWhiteTurn() ? Color::WHITE : Color::BLACK;
+        auto currentColor =
+            chessboard.isWhiteTurn() ? Color::WHITE : Color::BLACK;
 
         auto checkmated = chessboard.is_checkmate(moveList);
         auto pat = chessboard.is_pat(moveList);
@@ -75,16 +82,17 @@ namespace ai
                 evaluation.whiteIsCheckmated = true;
             else if (checkmated && currentColor == board::Color::BLACK)
                 evaluation.blackIsCheckmated = true;
-            return std::pair<double, int>(evaluation.rate_chessboard(Ai::ai_color), depth);
+            return std::pair<double, int>(
+                evaluation.rate_chessboard(Ai::ai_color), depth);
         }
         if (maximizing)
         {
-            double value = - std::numeric_limits<double>::infinity();
+            double value = -std::numeric_limits<double>::infinity();
             int value_depth = 0;
-            for (auto& move : moveList) {
+            for (auto& move : moveList)
+            {
                 chessboard.do_move(move);
-                auto rec = minMax(false, depth + 1, alpha,
-                            beta, chessboard);
+                auto rec = minMax(false, depth + 1, alpha, beta, chessboard);
                 if (depth == 0)
                     Ai::pair_list.push_back(rec);
                 auto oldValue = value;
@@ -98,17 +106,15 @@ namespace ai
             }
 
             return std::make_pair(value, value_depth);
-        }
-        else
+        } else
         {
             double value = std::numeric_limits<double>::infinity();
             int value_depth = 0;
-            for (auto& move : moveList) {
-
+            for (auto& move : moveList)
+            {
                 chessboard.do_move(move);
 
-                auto rec = minMax(true, depth + 1, alpha, beta,
-                        chessboard);
+                auto rec = minMax(true, depth + 1, alpha, beta, chessboard);
                 if (depth == 0)
                     Ai::pair_list.push_back(rec);
                 auto oldValue = value;
@@ -127,7 +133,8 @@ namespace ai
 
     Move search::findNextMove(board::Chessboard chessboard)
     {
-        Ai::ai_color = chessboard.isWhiteTurn() ? board::Color::WHITE : board::Color::BLACK;
+        Ai::ai_color = chessboard.isWhiteTurn() ? board::Color::WHITE
+                                                : board::Color::BLACK;
 
         // compute next moves
         auto moveList = chessboard.generate_legal_moves();
@@ -137,12 +144,11 @@ namespace ai
         Ai::pair_list = std::vector<std::pair<double, int>>();
 
         auto inf = std::numeric_limits<double>::infinity();
-        auto best_move_pair = minMax(true, 0, -inf, inf,
-                                      chessboard);
-
+        auto best_move_pair = minMax(true, 0, -inf, inf, chessboard);
 
         // find optimal move from optimal move value
-        std::pair<double, int> bestPair = std::make_pair(best_move_pair.first, 400);
+        std::pair<double, int> bestPair =
+            std::make_pair(best_move_pair.first, 400);
         auto bestMove = Move(0, 0);
         int bestIndex = 0;
 
@@ -189,4 +195,4 @@ namespace ai
         return bestMove;
     }
 
-}
+} // namespace ai

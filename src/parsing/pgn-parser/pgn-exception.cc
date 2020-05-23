@@ -1,6 +1,5 @@
 #include "pgn-exception.hh"
 
-
 namespace pgn_parser
 {
     PgnParsingException::PgnParsingException(const std::string& message,
