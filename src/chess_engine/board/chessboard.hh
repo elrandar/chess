@@ -61,5 +61,7 @@ namespace board
         bool is_checkmate(const std::vector<Move>& moves);
 
         void print();
+
+        bool is_pat(const std::vector<Move>& moves);
     };
 }

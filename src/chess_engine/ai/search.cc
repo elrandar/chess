@@ -3,6 +3,8 @@
 #include "ai.hh"
 #include <limits>
 #include <utility>
+#include <iostream>
+
 namespace ai
 {
     std::shared_ptr<Node> search::build_node(board::Chessboard chessboard, int depth,
@@ -14,8 +16,9 @@ namespace ai
         auto tree = std::make_shared<Node>(moveThatGotMeHere, currentColor);
 
         auto checkmated = chessboard.is_checkmate(moveList);
+        auto pat = chessboard.is_pat(moveList);
 
-        if (depth == 0 || checkmated)
+        if (depth == 0 || checkmated || pat)
         {
             tree->checkmated_ = checkmated;
             tree->chessboard_ = chessboard;
@@ -46,12 +49,16 @@ namespace ai
     {
         if (tree->children.empty())
         {
+            if (!tree->chessboard_.has_value())
+            {
+                std::cout << tree->move_ << '\n';
+            }
             auto evaluation = Evaluation(tree->chessboard_.value());
-           if (tree->checkmated_ && tree->color_ == board::Color::WHITE)
-               evaluation.whiteIsCheckmated = true;
-           else if (tree->checkmated_ && tree->color_ == board::Color::BLACK)
-               evaluation.blackIsCheckmated = true;
-           tree->value_ = evaluation.rate_chessboard(Ai::ai_color);
+            if (tree->checkmated_ && tree->color_ == board::Color::WHITE)
+                evaluation.whiteIsCheckmated = true;
+            else if (tree->checkmated_ && tree->color_ == board::Color::BLACK)
+                evaluation.blackIsCheckmated = true;
+            tree->value_ = evaluation.rate_chessboard(Ai::ai_color);
             return tree->value_;
         }
         if (maximizing)

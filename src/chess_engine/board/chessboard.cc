@@ -420,12 +420,16 @@ namespace board
         return !is_check() && generate_legal_moves().empty();
     }
 
+    bool Chessboard::is_pat(const std::vector<Move>& moves) {
+        return moves.empty() && !is_check();
+    }
+
     bool Chessboard::is_checkmate() {
         return is_check() && generate_legal_moves().empty();
     }
 
     bool Chessboard::is_checkmate(const std::vector<Move>& moves) {
-        return is_check() && moves.empty();
+        return moves.empty() && is_check();
     }
 
     bool Chessboard::is_draw() {
