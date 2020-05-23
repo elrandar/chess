@@ -129,3 +129,15 @@ TEST_F(evaluation, end_game_true6)
 
     ASSERT_TRUE(evaluation.is_end_game());
 }
+
+TEST_F(evaluation, white_mask_king)
+{
+    using namespace board;
+    using namespace ai;
+    auto board = Chessboard(perft_parser::parse_fen(
+            "8/2k5/8/8/8/8/2K5/8 w - - 0 1"));
+    auto evaluation = Evaluation(board);
+
+    EXPECT_EQ(evaluation.rate_chessboard(board::Color::WHITE), 0);
+    EXPECT_EQ(evaluation.rate_chessboard(board::Color::BLACK), 0);
+}

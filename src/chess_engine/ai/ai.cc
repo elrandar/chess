@@ -8,6 +8,7 @@
 #include "../board/move.hh"
 
 board::Color ai::Ai::ai_color;
+std::vector<std::pair<double, int>> ai::Ai::pair_list;
 
 void ai::Ai::run() {
 
@@ -20,7 +21,7 @@ void ai::Ai::run() {
 
         print_board();
 
-        board::Move move = ai::search::findNextMove(chessboard, 3);
+        board::Move move = ai::search::findNextMove(chessboard);
 
         ai::play_move(move.toString());
     }
