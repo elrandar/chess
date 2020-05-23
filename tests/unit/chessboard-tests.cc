@@ -160,6 +160,18 @@ TEST_F(chessboard, is_check_false)
     ASSERT_FALSE(chessboard.is_check());
 }
 
+TEST_F(chessboard, is_pat_true)
+{
+    using namespace board;
+    using namespace perft_parser;
+
+    auto fen = parse_fen("8/PP1R4/4P3/8/3K1N1Q/4B3/8/5k2 b - - 0 1");
+    auto chessboard = Chessboard(fen);
+
+    ASSERT_TRUE(chessboard.is_pat());
+}
+
+
 TEST_F(chessboard, castling_test_white_king_side)
 {
     using namespace board;
