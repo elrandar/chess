@@ -20,7 +20,7 @@ void ai::Ai::run() {
 
         print_board();
 
-        board::Move move = ai::search::findNextMove(chessboard, 4);
+        board::Move move = ai::search::findNextMove(chessboard, 3);
 
         ai::play_move(move.toString());
     }
@@ -37,7 +37,8 @@ void ai::Ai::update_board(const std::string& boardString) {
     auto nextSpacePos = boardString.find(' ', firstSpacePos + 1);
 
     std::string positionType =
-            boardString.substr(firstSpacePos + 1, nextSpacePos - firstSpacePos - 1);
+            boardString.substr(firstSpacePos + 1,
+                                nextSpacePos - firstSpacePos - 1);
     if (positionType == "startpos")
         chessboard = board::Chessboard();
     else if (positionType == "fen")
