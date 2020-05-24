@@ -136,6 +136,11 @@ namespace ai
         Ai::ai_color = chessboard.isWhiteTurn() ? board::Color::WHITE
                                                 : board::Color::BLACK;
 
+        auto evaluation = Evaluation(chessboard);
+        if (evaluation.gamePhase > 22)
+        {
+            Ai::ai_depth = 5;
+        }
         // compute next moves
         auto moveList = chessboard.generate_legal_moves();
 

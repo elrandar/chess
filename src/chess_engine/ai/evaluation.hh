@@ -298,7 +298,10 @@ namespace ai
         double eval_black();
 
         double pawns_evaluation(Color color);
-        double pawn_shelter(Color color);
-        double pawn_king_defense(Color color);
-    };
+    double pawn_shelter(Color color);
+double pawn_king_defense(Color color);
+double pawn_storm(Color color);
+double pawn_storm(Color color, BitBoard fileToCheck);
+double pawn_storm_castling(Color color);
+};
 } // namespace ai

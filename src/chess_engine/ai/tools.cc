@@ -43,4 +43,22 @@ namespace ai
         auto distance = std::abs(distanceTo - pawnRank);
         return -36 + (distance * distance);
     }
-} // namespace ai
+
+    int tools::hpap(board::Color color, board::Chessboard_rpr &rpr, board::BitBoard fileToCheck)
+    {
+        auto eval = 0;
+        auto opponent_color = color == board::Color::WHITE ? board::Color::BLACK : board::Color::WHITE;
+        auto opponentPawnsBoard = rpr.get(board::PieceType::PAWN, opponent_color);
+        auto opponentPawnsFile = opponentPawnsBoard & fileToCheck;
+        auto rank4OpPawn = board::BitboardOperations::rank4 & opponentPawnsFile;
+        auto rank5OpPawn = board::BitboardOperations::rank5 & opponentPawnsFile;
+        auto rank6OpPawn = board::BitboardOperations::rank6 & opponentPawnsFile;
+        if (rank4OpPawn)
+            eval += -10;
+        if (rank5OpPawn)
+            eval += -30;
+        if (rank6OpPawn)
+            eval += -60;
+        return eval;
+    }
+}

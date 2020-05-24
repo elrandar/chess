@@ -223,9 +223,10 @@ namespace ai
         {
             auto eval = 0;
             eval += pawn_shelter(color);
-            return eval * (static_cast<float>(24 - gamePhase))
-                / (static_cast<float>(24));
-        } else
+            eval += pawn_storm_castling(color);
+            return eval * (static_cast<float >(24 - gamePhase)) / (static_cast<float >(24));
+        ;}
+        else
             return 0;
     }
 
@@ -261,4 +262,56 @@ namespace ai
         else
             return eval;
     }
-} // namespace ai
+
+    double Evaluation::pawn_storm(Color color, BitBoard fileToCheck)
+    {
+
+        auto eval = 0;
+        auto &rpr = chessboard_.getBoardRpr();
+
+        if (fileToCheck != 0)
+        {
+            eval += tools::hpap(color, rpr, fileToCheck + 1);
+        }
+        if (fileToCheck != 7)
+        {
+            eval += tools::hpap(color, rpr, fileToCheck - 1);
+        }
+
+        eval += tools::hpap(color, rpr, fileToCheck);
+
+        return eval;
+    }
+
+    double Evaluation::pawn_storm_castling(Color color)
+    {
+        auto king_moved = color == board::Color::WHITE ? chessboard_.white_king_moved : chessboard_.black_king_moved;
+        auto queen_rook_moved = color == board::Color::WHITE ? chessboard_.white_queen_rook_moved : chessboard_.black_queen_rook_moved;
+        auto king_rook_moved = color == board::Color::WHITE ? chessboard_.white_king_rook_moved : chessboard_.black_king_moved;
+
+        auto rpr = chessboard_.getBoardRpr();
+        auto kingBoard = rpr.get(board::PieceType::KING, color);
+        auto kingIndex = BitboardOperations::bitScanForward(kingBoard);
+        auto kingFile = BitboardOperations::arrFileMask[kingIndex % 8];
+
+        auto king_pawn_storm = pawn_storm(color, kingFile);
+
+        if (!king_moved && (!queen_rook_moved || !king_rook_moved))
+        {
+            auto castling_pawn_storm = 0;
+            if (!queen_rook_moved)
+            {
+                castling_pawn_storm = pawn_storm(color, BitboardOperations::arrFileMask[0]);
+            }
+            if (!king_rook_moved)
+            {
+                auto tmp_pawn_storm_castling = pawn_storm(color, BitboardOperations::arrFileMask[7]);
+                if (tmp_pawn_storm_castling > castling_pawn_storm)
+                    castling_pawn_storm = tmp_pawn_storm_castling;
+            }
+            return (king_pawn_storm + castling_pawn_storm) / 2;
+        }
+        else
+            return king_pawn_storm;
+    }
+}

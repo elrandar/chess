@@ -12,9 +12,11 @@
 board::Color ai::Ai::ai_color;
 std::vector<std::pair<double, int>> ai::Ai::pair_list;
 std::vector<uint64_t> ai::Ai::boardPositionsHash;
+int ai::Ai::ai_depth;
 
 void ai::Ai::run()
 {
+    ai_depth = 4;
     ai::init("E-won McGregor");
     while (!gameFinished)
     {

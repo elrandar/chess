@@ -22,7 +22,7 @@ namespace ai
 
         static std::vector<uint64_t> boardPositionsHash;
         static board::Color ai_color;
-        static const int ai_depth = 4;
+        static int ai_depth;
         static std::vector<std::pair<double, int>> pair_list;
 
         static unsigned long last_hash();
