@@ -166,24 +166,21 @@ namespace ai
 
         chessboard.do_move(bestMove);
         auto newHash = Zobrist::hash(chessboard);
-        std::cout << "NEW HASH : " << newHash << '\n';
         int count = 0;
         for (auto hash : ai::Ai::boardPositionsHash)
         {
             if (newHash == hash)
                 count++;
         }
-        if (count == 2)
+        if (count == 2 && best_move_pair.first < 1000)
         {
             i = 0;
             auto newBestMove = Move(0, 0);
             auto newBestMoveValue = -100000;
             for (auto move : Ai::pair_list)
             {
-                std::cout << move.first << " | " << move.second << '\n';
                 if (i != bestIndex && move.first > newBestMoveValue)
                 {
-                    std::cout << "i CHOOSE YOU" << '\n';
                     newBestMove = moveList[i];
                     newBestMoveValue = move.first;
                 }
@@ -191,7 +188,7 @@ namespace ai
             }
             bestMove = newBestMove;
         }
-
+        std::cout << Ai::boardPositionsHash.size() << "|" << " BEST MOVE V A L U E : " << best_move_pair.first << '\n';
         return bestMove;
     }
 

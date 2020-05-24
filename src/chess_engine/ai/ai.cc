@@ -24,12 +24,6 @@ void ai::Ai::run()
 
         boardPositionsHash.push_back(board::Zobrist::hash(chessboard));
 
-        for (int value : boardPositionsHash)
-        {
-            std::cout << value << '|';
-        }
-        std::cout << '\n';
-
         board::Move move = ai::search::findNextMove(chessboard);
 
         chessboard.do_move(move);
