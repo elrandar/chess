@@ -157,5 +157,4 @@ namespace ai
         }
         return bestMove;
     }
-
 }

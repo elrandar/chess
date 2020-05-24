@@ -1,5 +1,6 @@
 #include "evaluation.hh"
 #include "../board/bitboard-operations.hh"
+#include "tools.hh"
 
 namespace ai
 {
@@ -22,35 +23,12 @@ namespace ai
 
     double Evaluation::rate_chessboard(Color side)
     {
-        double checkmate_factor = 20000;
-        double queen_factor = 900;
-        double rook_factor = 500;
-        double knight_factor = 320;
-        double bishop_factor = 330;
-        double double_blocked_isolated_pawn_factor = 5;
-
-        double checkmate_value = checkmate_factor * (blackIsCheckmated - whiteIsCheckmated);
-        double king_value = count_pieces(PieceType::KING, board::Color::WHITE, 0) - count_pieces(PieceType::KING, board::Color::BLACK, 0);
-        double queen_value = count_pieces(board::PieceType::QUEEN, board::Color::WHITE, queen_factor)
-                                - count_pieces(board::PieceType::QUEEN, board::Color::BLACK, queen_factor);
-        double rook_value = count_pieces(board::PieceType::ROOK, board::Color::WHITE, rook_factor)
-                                           - count_pieces(board::PieceType::ROOK, board::Color::BLACK, rook_factor);
-        double knight_value = count_pieces(board::PieceType::KNIGHT, board::Color::WHITE, knight_factor)
-                - count_pieces(board::PieceType::KNIGHT, board::Color::BLACK, knight_factor);
-        double bishop_value = count_pieces(board::PieceType::BISHOP, board::Color::WHITE, bishop_factor)
-                               - count_pieces(board::PieceType::BISHOP, board::Color::BLACK, bishop_factor);
-        double pawn_value = count_pawns(board::Color::WHITE) - count_pawns(board::Color::BLACK);
-        double dbi_value = double_blocked_isolated_pawn_factor * (WdoubledPawns - BdoubledPawns
-                + WblockedPawns - BblockedPawns
-                + WisolatedPawns - BisolatedPawns);
-
-        double sign = side == board::Color::WHITE ? +1 : -1;
-
-        return sign * (checkmate_value + queen_value + rook_value +
-            bishop_value + knight_value + pawn_value + dbi_value + king_value);
+        auto white_eval = eval_white();
+        auto black_eval = eval_black();
+        return side == board::Color::WHITE ? white_eval + (-black_eval) : black_eval + (-white_eval);
     }
 
-    double Evaluation::count_pieces(PieceType pieceType, Color color, double pieceValue)
+    double Evaluation::count_pieces_and_pos(PieceType pieceType, Color color)
     {
         auto remainingPieces = chessboard_.getBoardRpr().get(pieceType, color);
         double count = 0;
@@ -59,12 +37,20 @@ namespace ai
             uint8_t bitToUnset = BitboardOperations::bitScanForward(remainingPieces);
             int rawRank = bitToUnset / 8;
             int file = bitToUnset % 8;
-            int rank = color == Color::WHITE ? 7 - rawRank : rawRank;
-            int end_game_king = pieceType == board::PieceType::KING && is_end_game() ? 1 : 0;
+            int rank = 7 - rawRank;
 
             remainingPieces &= ~(1ul << bitToUnset);
 
-            count += pieceValue + tables[static_cast<int>(pieceType) + end_game_king][rank][file];
+            auto gamePhase = tools::gamePhase(chessboard_.getBoardRpr());
+
+            auto opening = color == board::Color::WHITE ? openWhiteTables[static_cast<int>(pieceType)][rank][file] : openBlackTables[static_cast<int>(pieceType)][rank][file];
+            auto endgame = color == board::Color::WHITE ?  endWhiteTables[static_cast<int>(pieceType)][rank][file] : endBlackTables[static_cast<int>(pieceType)][rank][file];
+            auto factor =  pieceType == board::PieceType::KING ? 0 :  factorArray[static_cast<int>(pieceType)];
+
+            auto openvalue = ((float)(24 - gamePhase) / (float)24) * opening;
+            auto endvalue = (gamePhase / (float)24) * endgame;
+
+            count += factor + openvalue + endvalue;
         }
         return count;
     }
@@ -106,8 +92,18 @@ namespace ai
 
             int rawRank = pawnSquare / 8;
             int file = pawnSquare % 8;
-            int rank = color == Color::WHITE ? 7 - rawRank : rawRank;
-            count += 100 + tables[static_cast<int>(PieceType::PAWN)][rank][file];
+            int rank = 7 - rawRank;
+
+            int gamePhase = tools::gamePhase(chessboard_.getBoardRpr());
+
+            auto opening = color == board::Color::WHITE ? openWhiteTables[static_cast<int>(PieceType::PAWN)][rank][file] : openBlackTables[static_cast<int>(PieceType::PAWN)][rank][file];
+            auto endgame = color == board::Color::WHITE ?  endWhiteTables[static_cast<int>(PieceType::PAWN)][rank][file] : endBlackTables[static_cast<int>(PieceType::PAWN)][rank][file];
+
+            auto openvalue = ((float)(24 - gamePhase) / (float)24) * opening;
+            auto endvalue = (gamePhase / (float)24) * endgame;
+
+            count +=  factorArray[static_cast<int>(PieceType::PAWN)] + openvalue
+                      + endvalue;
 
             count++;
         }
@@ -120,36 +116,63 @@ namespace ai
         return chessboard_.getBoardRpr().at(Position(pos)).has_value();
     }
 
-    bool Evaluation::is_end_game() //we're in the end game now.
+
+    double Evaluation::pawns_evaluation(Color color)
     {
-        auto &rpr = chessboard_.getBoardRpr();
-        if (!rpr.get(board::PieceType::QUEEN, board::Color::WHITE)
-            && !rpr.get(board::PieceType::QUEEN, board::Color::BLACK)) {
-            return true;
-        }
-        else if (rpr.get(board::PieceType::QUEEN, board::Color::WHITE) &&rpr.get(board::PieceType::QUEEN, board::Color::BLACK))
-        {
-            return check_has_qmp(rpr, board::Color::WHITE) && check_has_qmp(rpr, board::Color::BLACK);
-        }
-        else if (rpr.get(board::PieceType::QUEEN, board::Color::WHITE))
-        {
-            return check_has_qmp(rpr, board::Color::WHITE);
-        }
-        else if (rpr.get(board::PieceType::QUEEN, board::Color::BLACK))
-        {
-            return check_has_qmp(rpr, board::Color::BLACK);
-        }
-        return false;
+        double eval = 0;
+        eval = count_pawns(color);
+
+        auto isolated = color == board::Color::WHITE ? WisolatedPawns : BisolatedPawns;
+        auto blocked = color == board::Color::WHITE ? WblockedPawns : BblockedPawns;
+        auto doubled = color == board::Color::WHITE ? WdoubledPawns : BdoubledPawns;
+        auto gamePhase = tools::gamePhase(chessboard_.getBoardRpr());
+        auto openPhase = (24 - gamePhase) / 24;
+        auto endPhase = gamePhase / 24;
+
+        eval += (isolatedFactor.first * openPhase + isolatedFactor.second * endPhase) * isolated;
+        eval += (blockedFactor.first * openPhase + blockedFactor.second * endPhase) * blocked;
+        eval += (doubledFactor.first * openPhase + doubledFactor.second * endPhase) * doubled;
+
+        return eval;
     }
 
-    bool Evaluation::check_has_qmp(Chessboard_rpr &rpr, Color color) const {
-        auto wp_knight = rpr.get(PieceType::KNIGHT, color);
-        auto wp_bishop = rpr.get(PieceType::BISHOP, color);
-        auto wp_rook = rpr.get(PieceType::ROOK, color);
-        auto toUnsetBishop = BitboardOperations::bitScanForward(wp_bishop);
-        auto toUnsetKnight = BitboardOperations::bitScanForward(wp_knight);
-        wp_knight &= ~(1UL << toUnsetKnight);
-        wp_bishop &= ~(1UL << toUnsetBishop);
-        return !wp_rook && ((toUnsetBishop == -1 && !wp_knight) || (!wp_bishop && toUnsetKnight == -1));
+    double Evaluation::eval_white() {
+        double eval = 0;
+        for (int i = 0; i < 6; i++)
+        {
+            if (i == static_cast<int>(PieceType::PAWN))
+                eval += pawns_evaluation(board::Color::WHITE);
+            else
+                eval += count_pieces_and_pos(static_cast<PieceType>(i), Color::WHITE);
+            if (i == static_cast<int>(PieceType::KING))
+            {
+                eval += white_opponent_checkmated();
+            }
+        }
+        return eval;
     }
+    double Evaluation::eval_black() {
+        double eval = 0;
+        for (int i = 0; i < 6; i++)
+        {
+            if (i == 4)
+                eval += pawns_evaluation(board::Color::BLACK);
+            else
+                eval += count_pieces_and_pos(static_cast<PieceType>(i), Color::BLACK);
+            if (i == static_cast<int>(PieceType::KING))
+            {
+                eval += black_opponent_checkmated();
+            }
+        }
+        return eval;
+    }
+
+    double Evaluation::white_opponent_checkmated() {
+        return factorArray[static_cast<int>(PieceType::KING)] * blackIsCheckmated;
+    }
+
+    double Evaluation::black_opponent_checkmated() {
+        return factorArray[static_cast<int>(PieceType::KING)] * whiteIsCheckmated;
+    }
+
 }

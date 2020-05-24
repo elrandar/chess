@@ -40,6 +40,8 @@ set(SRC_ENGINE
         "src/chess_engine/ai/search.cc"
         "src/chess_engine/ai/gtree.cc"
         "src/chess_engine/ai/ai.cc"
+        "src/chess_engine/ai/tools.cc"
+        "src/chess_engine/ai/tools.hh"
         )
 
 # Put your test files here
@@ -60,7 +62,7 @@ set(SRC_GTEST
 # COVERAGE FLAGS
 
 set(COV_FLAGS
-        "--coverage"
+        ""
 )
 
 # END COVERAGE FLAGS
@@ -79,7 +81,7 @@ endif()
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Werror -Wextra -pedantic")
 set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} ${OPT_FLAGS}")
-set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -O0 -g3 -fsanitize=address ${COV_FLAGS}")
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG}  -g3 ${COV_FLAGS}")
 
 # LIBRARIES
 if (CMAKE_BUILD_TYPE STREQUAL "Release")
