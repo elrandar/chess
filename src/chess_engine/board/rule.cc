@@ -66,7 +66,7 @@ namespace board
         }
     }
 
-    //==============================PAWN===========================================
+    //==============================PAWN=======================================
 
     std::vector<Move> Rule::generate_pawn_moves_color(Chessboard_rpr& boardRpr,
                                                       Color color,
