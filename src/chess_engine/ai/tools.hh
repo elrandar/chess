@@ -13,9 +13,10 @@ namespace ai
     class tools
     {
     public:
-        static int nb_piece(board::PieceType pieceType, board::Color color, board::Chessboard_rpr &rpr);
-        static int gamePhase(board::Chessboard_rpr &rpr);
-        static int fpap(board::Color color, board::Chessboard_rpr& rpr, board::BitBoard fileToCheck);
-static int hpap(board::Color color, board::Chessboard_rpr& rpr, board::BitBoard fileToCheck);
-};
-}
+        static int nb_piece(board::PieceType pieceType, board::Color color,
+                            board::Chessboard_rpr& rpr);
+        static int gamePhase(board::Chessboard_rpr& rpr);
+        static int fpap(board::Color color, board::Chessboard_rpr& rpr,
+                        board::BitBoard fileToCheck);
+    };
+} // namespace ai

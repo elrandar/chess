@@ -10,9 +10,6 @@ namespace ai
         static constexpr double factorArray[6] = {900, 500, 330,
                                                   320, 100, 20000};
 
-        static constexpr double pieceAttackWeights[7] = {0,    0.5,  0.75, 0.88,
-                                                         0.94, 0.97, 0.99};
-
         constexpr static std::pair<int, int> doubledFactor =
             std::pair<int, int>(10, 20);
         constexpr static std::pair<int, int> isolatedFactor =
@@ -303,11 +300,5 @@ namespace ai
         double pawns_evaluation(Color color);
         double pawn_shelter(Color color);
         double pawn_king_defense(Color color);
-        double pawn_storm(Color color);
-        double pawn_storm(Color color, BitBoard fileToCheck);
-        double pawn_storm_castling(Color color);
-        double piece_attack(Color color);
-        static int numberOfKnightsAttackingAdjacentSquares(int kingIndex,
-                                                    BitBoard knights) ;
     };
 } // namespace ai
