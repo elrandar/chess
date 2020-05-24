@@ -188,7 +188,8 @@ namespace ai
             }
             bestMove = newBestMove;
         }
-        std::cout << Ai::boardPositionsHash.size() << "|" << " BEST MOVE V A L U E : " << best_move_pair.first << '\n';
+        std::cout << Ai::boardPositionsHash.size() << "|"
+                  << " BEST MOVE V A L U E : " << best_move_pair.first << '\n';
         return bestMove;
     }
 
