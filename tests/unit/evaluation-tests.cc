@@ -2,11 +2,10 @@
 #include <gtest/gtest.h>
 
 #include "../../src/chess_engine/ai/evaluation.hh"
+#include "../../src/chess_engine/ai/search.hh"
 #include "../../src/chess_engine/board/magic.hh"
 #include "../../src/chess_engine/board/masks.hh"
 #include "../../src/parsing/perft-parser/perft-object.hh"
-#include <gtest/gtest.h>
-#include "../../src/chess_engine/ai/search.hh"
 
 class evaluation : public ::testing::Test
 {
@@ -39,8 +38,8 @@ TEST_F(evaluation, white_mask_king)
 {
     using namespace board;
     using namespace ai;
-    auto board = Chessboard(perft_parser::parse_fen(
-            "8/2k5/8/8/8/8/2K5/8 w - - 0 1"));
+    auto board =
+        Chessboard(perft_parser::parse_fen("8/2k5/8/8/8/8/2K5/8 w - - 0 1"));
     auto evaluation = Evaluation(board);
 
     EXPECT_EQ(evaluation.rate_chessboard(board::Color::WHITE), 0);
@@ -55,7 +54,7 @@ TEST_F(evaluation, is_he_very_dumb)
     using namespace board;
     using namespace ai;
     auto board = Chessboard(perft_parser::parse_fen(
-            "rnbq1bnk/ppppppp1/8/8/8/8/PPPPPPP1/RNBQKBR1 w Qq - 0 1"));
+        "rnbq1bnk/ppppppp1/8/8/8/8/PPPPPPP1/RNBQKBR1 w Qq - 0 1"));
     auto bestMove = ai::search::findNextMove(board);
 
     EXPECT_EQ(bestMove.toString(), "g1h1");

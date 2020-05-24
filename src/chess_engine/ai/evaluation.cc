@@ -28,7 +28,8 @@ namespace ai
     {
         auto white_eval = eval_white();
         auto black_eval = eval_black();
-        return side == board::Color::WHITE ? white_eval + (-black_eval) : black_eval + (-white_eval);
+        return side == board::Color::WHITE ? white_eval + (-black_eval)
+                                           : black_eval + (-white_eval);
     }
 
     double Evaluation::count_pieces_and_pos(PieceType pieceType, Color color)
@@ -103,14 +104,19 @@ namespace ai
             int rank = 7 - rawRank;
 
 
-            auto opening = color == board::Color::WHITE ? openWhiteTables[static_cast<int>(PieceType::PAWN)][rank][file] : openBlackTables[static_cast<int>(PieceType::PAWN)][rank][file];
-            auto endgame = color == board::Color::WHITE ?  endWhiteTables[static_cast<int>(PieceType::PAWN)][rank][file] : endBlackTables[static_cast<int>(PieceType::PAWN)][rank][file];
+            auto opening = color == board::Color::WHITE
+                ? openWhiteTables[static_cast<int>(PieceType::PAWN)][rank][file]
+                : openBlackTables[static_cast<int>(PieceType::PAWN)][rank]
+                                 [file];
+            auto endgame = color == board::Color::WHITE
+                ? endWhiteTables[static_cast<int>(PieceType::PAWN)][rank][file]
+                : endBlackTables[static_cast<int>(PieceType::PAWN)][rank][file];
 
             auto openvalue = ((float)(24 - gamePhase) / (float)24) * opening;
             auto endvalue = (gamePhase / (float)24) * endgame;
 
-            count +=  factorArray[static_cast<int>(PieceType::PAWN)] + openvalue
-                      + endvalue;
+            count += factorArray[static_cast<int>(PieceType::PAWN)] + openvalue
+                + endvalue;
 
             count++;
         }
@@ -124,7 +130,6 @@ namespace ai
         return chessboard_.getBoardRpr().at(Position(pos)).has_value();
     }
 
-
     double Evaluation::pawns_evaluation(Color color)
     {
         double eval = 0;
@@ -136,23 +141,31 @@ namespace ai
         auto openPhase = (24 - gamePhase) / 24;
         auto endPhase = gamePhase / 24;
 
-        eval += (isolatedFactor.first * openPhase + isolatedFactor.second * endPhase) * isolated;
-        eval += (blockedFactor.first * openPhase + blockedFactor.second * endPhase) * blocked;
-        eval += (doubledFactor.first * openPhase + doubledFactor.second * endPhase) * doubled;
+        eval += (isolatedFactor.first * openPhase
+                 + isolatedFactor.second * endPhase)
+            * isolated;
+        eval +=
+            (blockedFactor.first * openPhase + blockedFactor.second * endPhase)
+            * blocked;
+        eval +=
+            (doubledFactor.first * openPhase + doubledFactor.second * endPhase)
+            * doubled;
 
         eval += pawn_king_defense(color);
 
         return eval;
     }
 
-    double Evaluation::eval_white() {
+    double Evaluation::eval_white()
+    {
         double eval = 0;
         for (int i = 0; i < 6; i++)
         {
             if (i == static_cast<int>(PieceType::PAWN))
                 eval += pawns_evaluation(board::Color::WHITE);
             else
-                eval += count_pieces_and_pos(static_cast<PieceType>(i), Color::WHITE);
+                eval += count_pieces_and_pos(static_cast<PieceType>(i),
+                                             Color::WHITE);
             if (i == static_cast<int>(PieceType::KING))
             {
                 eval += white_opponent_checkmated();
@@ -160,14 +173,16 @@ namespace ai
         }
         return eval;
     }
-    double Evaluation::eval_black() {
+    double Evaluation::eval_black()
+    {
         double eval = 0;
         for (int i = 0; i < 6; i++)
         {
             if (i == 4)
                 eval += pawns_evaluation(board::Color::BLACK);
             else
-                eval += count_pieces_and_pos(static_cast<PieceType>(i), Color::BLACK);
+                eval += count_pieces_and_pos(static_cast<PieceType>(i),
+                                             Color::BLACK);
             if (i == static_cast<int>(PieceType::KING))
             {
                 eval += black_opponent_checkmated();
@@ -176,12 +191,16 @@ namespace ai
         return eval;
     }
 
-    double Evaluation::white_opponent_checkmated() {
-        return factorArray[static_cast<int>(PieceType::KING)] * blackIsCheckmated;
+    double Evaluation::white_opponent_checkmated()
+    {
+        return factorArray[static_cast<int>(PieceType::KING)]
+            * blackIsCheckmated;
     }
 
-    double Evaluation::black_opponent_checkmated() {
-        return factorArray[static_cast<int>(PieceType::KING)] * whiteIsCheckmated;
+    double Evaluation::black_opponent_checkmated()
+    {
+        return factorArray[static_cast<int>(PieceType::KING)]
+            * whiteIsCheckmated;
     }
 
     double Evaluation::pawn_king_defense(Color color)
