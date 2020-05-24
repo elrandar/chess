@@ -8,6 +8,7 @@ namespace ai
     Evaluation::Evaluation(Chessboard& chessboard)
         : chessboard_(chessboard)
     {
+
         WisolatedPawns = 0;
         WblockedPawns = 0;
         WdoubledPawns = 0;
@@ -19,6 +20,8 @@ namespace ai
         blackIsCheckmated = false;
 
         chessboard_ = chessboard;
+
+        gamePhase = tools::gamePhase(chessboard.getBoardRpr());
     }
 
     double Evaluation::rate_chessboard(Color side)
@@ -41,8 +44,6 @@ namespace ai
             int rank = 7 - rawRank;
 
             remainingPieces &= ~(1ul << bitToUnset);
-
-            auto gamePhase = tools::gamePhase(chessboard_.getBoardRpr());
 
             auto opening = color == board::Color::WHITE ? openWhiteTables[static_cast<int>(pieceType)][rank][file] : openBlackTables[static_cast<int>(pieceType)][rank][file];
             auto endgame = color == board::Color::WHITE ?  endWhiteTables[static_cast<int>(pieceType)][rank][file] : endBlackTables[static_cast<int>(pieceType)][rank][file];
@@ -101,7 +102,6 @@ namespace ai
             int file = pawnSquare % 8;
             int rank = 7 - rawRank;
 
-            int gamePhase = tools::gamePhase(chessboard_.getBoardRpr());
 
             auto opening = color == board::Color::WHITE ? openWhiteTables[static_cast<int>(PieceType::PAWN)][rank][file] : openBlackTables[static_cast<int>(PieceType::PAWN)][rank][file];
             auto endgame = color == board::Color::WHITE ?  endWhiteTables[static_cast<int>(PieceType::PAWN)][rank][file] : endBlackTables[static_cast<int>(PieceType::PAWN)][rank][file];
@@ -133,13 +133,14 @@ namespace ai
         auto isolated = color == board::Color::WHITE ? WisolatedPawns : BisolatedPawns;
         auto blocked = color == board::Color::WHITE ? WblockedPawns : BblockedPawns;
         auto doubled = color == board::Color::WHITE ? WdoubledPawns : BdoubledPawns;
-        auto gamePhase = tools::gamePhase(chessboard_.getBoardRpr());
         auto openPhase = (24 - gamePhase) / 24;
         auto endPhase = gamePhase / 24;
 
         eval += (isolatedFactor.first * openPhase + isolatedFactor.second * endPhase) * isolated;
         eval += (blockedFactor.first * openPhase + blockedFactor.second * endPhase) * blocked;
         eval += (doubledFactor.first * openPhase + doubledFactor.second * endPhase) * doubled;
+
+        eval += pawn_king_defense(color);
 
         return eval;
     }
@@ -183,4 +184,44 @@ namespace ai
         return factorArray[static_cast<int>(PieceType::KING)] * whiteIsCheckmated;
     }
 
+    double Evaluation::pawn_king_defense(Color color)
+    {
+        auto &rpr = chessboard_.getBoardRpr();
+        auto opponent_color = color == board::Color::WHITE ? board::Color::BLACK : board::Color::WHITE;
+        if (rpr.get(board::PieceType::QUEEN, opponent_color)
+        && (rpr.get(board::PieceType::ROOK, opponent_color) | rpr.get(board::PieceType::BISHOP, opponent_color) | rpr.get(board::PieceType::KNIGHT, opponent_color)))
+        {
+            auto eval = 0;
+            eval += pawn_shelter(color);
+            return eval * (static_cast<float >(24 - gamePhase)) / (static_cast<float >(24));
+        }
+        else
+            return 0;
+    }
+
+    double Evaluation::pawn_shelter(Color color)
+    {
+
+        auto eval = 0;
+        auto &rpr = chessboard_.getBoardRpr();
+        auto kingBoard = rpr.get(board::PieceType::KING, color);
+        auto kingFile = BitboardOperations::bitScanForward(kingBoard) % 8;
+
+        if (kingFile != 0)
+        {
+            eval += tools::fpap(color, rpr, BitboardOperations::arrFileMask[static_cast<int>(kingFile) + 1]);
+        }
+        if (kingFile != 7)
+        {
+            eval += tools::fpap(color, rpr, BitboardOperations::arrFileMask[static_cast<int>(kingFile) - 1]);
+        }
+
+        eval += 2 * (tools::fpap(color, rpr, BitboardOperations::arrFileMask[static_cast<int>(kingFile)]));
+
+        if (eval == 0)
+            return -11;
+        else
+            return eval;
+
+    }
 }

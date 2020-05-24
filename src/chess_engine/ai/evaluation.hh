@@ -276,6 +276,8 @@ namespace ai
 
         Chessboard &chessboard_;
 
+        int gamePhase;
+
         int WdoubledPawns;
         int WblockedPawns;
         int WisolatedPawns;
@@ -297,5 +299,7 @@ namespace ai
         double eval_black();
 
         double pawns_evaluation(Color color);
-    };
+    double pawn_shelter(Color color);
+double pawn_king_defense(Color color);
+};
 } // namespace ai

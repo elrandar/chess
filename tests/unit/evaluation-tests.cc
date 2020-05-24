@@ -61,16 +61,31 @@ TEST_F(evaluation, is_he_very_dumb)
     EXPECT_EQ(bestMove.toString(), "g1h1");
 }
 
-TEST_F(evaluation, is_he_very_dumb2)
+TEST_F(evaluation, pawn_shelter_basic_white)
 {
     board::Masks::init();
     board::BitboardOperations::init_ms1bTable();
     board::magic::build_table();
     using namespace board;
     using namespace ai;
-    auto board = Chessboard(perft_parser::parse_fen(
-            "rnbq1bnk/ppppppp1/8/8/8/8/PPPPPPP1/RNBQKBR1 w Qq - 0 1"));
-    auto bestMove = ai::search::findNextMove(board);
+    auto board = Chessboard();
 
-    ASSERT_TRUE(bestMove == bestMove);
+    auto evaluation = Evaluation(board);
+    auto ps_val = evaluation.pawn_shelter(board::Color::WHITE);
+    EXPECT_EQ(ps_val, -11);
+}
+
+TEST_F(evaluation, pawn_shelter_basic_black)
+{
+    board::Masks::init();
+    board::BitboardOperations::init_ms1bTable();
+    board::magic::build_table();
+    using namespace board;
+    using namespace ai;
+    auto board = Chessboard();
+    board.setWhiteTurn(false);
+
+    auto evaluation = Evaluation(board);
+    auto ps_val = evaluation.pawn_shelter(board::Color::WHITE);
+    EXPECT_EQ(ps_val, -11);
 }
