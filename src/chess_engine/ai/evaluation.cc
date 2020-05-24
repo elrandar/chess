@@ -180,7 +180,7 @@ namespace ai
                 eval += white_opponent_checkmated();
             }
         }
-//        eval += piece_attack(Color::WHITE);
+        eval += piece_attack(Color::WHITE);
         return eval;
     }
     double Evaluation::eval_black()
@@ -198,7 +198,7 @@ namespace ai
                 eval += black_opponent_checkmated();
             }
         }
-//        eval += piece_attack(Color::BLACK);
+        eval += piece_attack(Color::BLACK);
         return eval;
     }
 
