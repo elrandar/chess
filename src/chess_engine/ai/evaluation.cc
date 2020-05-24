@@ -1,6 +1,8 @@
 #include "evaluation.hh"
 
 #include "../board/bitboard-operations.hh"
+#include "../board/magic.hh"
+#include "../board/masks.hh"
 #include "tools.hh"
 
 namespace ai
@@ -178,6 +180,7 @@ namespace ai
                 eval += white_opponent_checkmated();
             }
         }
+        eval += piece_attack(Color::WHITE);
         return eval;
     }
     double Evaluation::eval_black()
@@ -195,6 +198,7 @@ namespace ai
                 eval += black_opponent_checkmated();
             }
         }
+        eval += piece_attack(Color::BLACK);
         return eval;
     }
 
@@ -223,8 +227,10 @@ namespace ai
         {
             auto eval = 0;
             eval += pawn_shelter(color);
+            eval += pawn_storm_castling(color);
             return eval * (static_cast<float>(24 - gamePhase))
                 / (static_cast<float>(24));
+            ;
         } else
             return 0;
     }
@@ -260,5 +266,213 @@ namespace ai
             return -11;
         else
             return eval;
+    }
+
+    double Evaluation::pawn_storm(Color color, BitBoard fileToCheck)
+    {
+        auto eval = 0;
+        auto& rpr = chessboard_.getBoardRpr();
+
+        if (fileToCheck != 0)
+        {
+            eval += tools::hpap(color, rpr, fileToCheck + 1);
+        }
+        if (fileToCheck != 7)
+        {
+            eval += tools::hpap(color, rpr, fileToCheck - 1);
+        }
+
+        eval += tools::hpap(color, rpr, fileToCheck);
+
+        return eval;
+    }
+
+    double Evaluation::pawn_storm_castling(Color color)
+    {
+        auto king_moved = color == board::Color::WHITE
+            ? chessboard_.white_king_moved
+            : chessboard_.black_king_moved;
+        auto queen_rook_moved = color == board::Color::WHITE
+            ? chessboard_.white_queen_rook_moved
+            : chessboard_.black_queen_rook_moved;
+        auto king_rook_moved = color == board::Color::WHITE
+            ? chessboard_.white_king_rook_moved
+            : chessboard_.black_king_moved;
+
+        auto& rpr = chessboard_.getBoardRpr();
+        auto kingBoard = rpr.get(board::PieceType::KING, color);
+        auto kingIndex = BitboardOperations::bitScanForward(kingBoard);
+        auto kingFile = BitboardOperations::arrFileMask[kingIndex % 8];
+
+        auto king_pawn_storm = pawn_storm(color, kingFile);
+
+        if (!king_moved && (!queen_rook_moved || !king_rook_moved))
+        {
+            auto castling_pawn_storm = 0;
+            if (!queen_rook_moved)
+            {
+                castling_pawn_storm =
+                    pawn_storm(color, BitboardOperations::arrFileMask[0]);
+            }
+            if (!king_rook_moved)
+            {
+                auto tmp_pawn_storm_castling =
+                    pawn_storm(color, BitboardOperations::arrFileMask[7]);
+                if (tmp_pawn_storm_castling > castling_pawn_storm)
+                    castling_pawn_storm = tmp_pawn_storm_castling;
+            }
+            return (king_pawn_storm + castling_pawn_storm) / 2;
+        } else
+            return king_pawn_storm;
+    }
+
+    double Evaluation::piece_attack(Color color)
+    {
+        auto& rpr = chessboard_.getBoardRpr();
+
+        Color enemyColor =
+            color == board::Color::WHITE ? Color::BLACK : Color::WHITE;
+
+        auto kingBoard = rpr.get(board::PieceType::KING, enemyColor);
+        if (!kingBoard)
+            return 0;
+
+        auto kingIndex = BitboardOperations::bitScanForward(kingBoard);
+
+        auto knights = rpr.get(board::PieceType::KNIGHT, color);
+
+        int numberOfKnights =
+            numberOfKnightsAttackingAdjacentSquares(kingIndex, knights);
+
+        // build mask used for bishop rook and queen.
+
+        auto kingMaskOneMove = board::Masks::king_attacks(kingIndex);
+        //    * * *
+        //    * K *
+        //    * * *
+
+        auto remainingSquares = kingMaskOneMove;
+
+        auto rooks = rpr.get(board::PieceType::ROOK, color);
+        auto bishops = rpr.get(board::PieceType::BISHOP, color);
+        auto queens = rpr.get(board::PieceType::QUEEN, color);
+
+        BitBoard attackingRooks = 0;
+        BitBoard attackingBishops = 0;
+        BitBoard attackingQueens = 0;
+
+        while (remainingSquares)
+        {
+            auto sqToAttack =
+                BitboardOperations::bitScanForward(remainingSquares);
+            remainingSquares &= ~(1ul << sqToAttack);
+
+            auto rookDirectAttacks =
+                Masks::rook_attack_rays[Masks::NORTH][sqToAttack]
+                | Masks::rook_attack_rays[Masks::EAST][sqToAttack]
+                | Masks::rook_attack_rays[Masks::WEST][sqToAttack]
+                | Masks::rook_attack_rays[Masks::SOUTH][sqToAttack];
+            auto bishopDirectAttacks =
+                Masks::bishop_attack_rays[Masks::NORTH_EAST][sqToAttack]
+                | Masks::bishop_attack_rays[Masks::SOUTH_EAST][sqToAttack]
+                | Masks::bishop_attack_rays[Masks::NORTH_WEST][sqToAttack]
+                | Masks::bishop_attack_rays[Masks::SOUTH_WEST][sqToAttack];
+
+            attackingRooks |= rookDirectAttacks & rooks;
+            attackingBishops |= bishopDirectAttacks & bishops;
+            attackingQueens |=
+                (rookDirectAttacks | bishopDirectAttacks) & queens;
+        }
+
+        auto kingMaskTwoMoves = kingMaskOneMove;
+        //  * * * * *
+        //  * * * * *
+        //  * * K * *
+        //  * * * * *
+        //  * * * * *
+
+        remainingSquares = kingMaskOneMove;
+
+        while (remainingSquares)
+        {
+            auto attackSquare =
+                BitboardOperations::bitScanForward(remainingSquares);
+            remainingSquares &= ~(1ul << attackSquare);
+
+            kingMaskTwoMoves |= board::Masks::king_attacks(attackSquare);
+        }
+
+        BitBoard attackingTwoQueens = 0;
+        BitBoard attackingTwoRooks = 0;
+        BitBoard attackingTwoBishops = 0;
+
+        while (kingMaskTwoMoves)
+        {
+            auto attackSquare =
+                BitboardOperations::bitScanForward(kingMaskTwoMoves);
+            kingMaskTwoMoves &= ~(1ul << attackSquare);
+
+            auto bishopRealAttack =
+                board::magic::attack_bishop(rpr.occupied, attackSquare);
+            auto rookRealAttack =
+                board::magic::attack_rook(rpr.occupied, attackSquare);
+
+            attackingTwoQueens |= (bishopRealAttack | rookRealAttack) & queens;
+            attackingTwoBishops |= bishopRealAttack & bishops;
+            attackingTwoRooks |= rookRealAttack & rooks;
+        }
+
+        attackingBishops &= attackingTwoBishops;
+        attackingQueens &= attackingTwoQueens;
+        attackingRooks &= attackingTwoRooks;
+
+        int nbAttackBishop = __builtin_popcount(attackingBishops);
+        int nbAttackRook = __builtin_popcount(attackingRooks);
+        int nbAttackQueen = __builtin_popcount(attackingQueens);
+
+        int valuedSum = nbAttackBishop + nbAttackQueen * 4 + nbAttackRook * 2
+            + numberOfKnights;
+
+        int numberOfAttackers =
+            nbAttackQueen + nbAttackRook + nbAttackBishop + numberOfKnights;
+        if (numberOfAttackers > 7)
+            numberOfAttackers = 7;
+        return 20 * valuedSum * pieceAttackWeights[numberOfAttackers - 1];
+    }
+
+    int Evaluation::numberOfKnightsAttackingAdjacentSquares(int kingIndex,
+                                                            BitBoard knights)
+    {
+        int totalKnightsAttacking = 0;
+
+        if (kingIndex % 8 != 7)
+        {
+            auto knightsAttackingRightSquare =
+                Masks::knight_attacks(kingIndex + 1) & knights;
+            totalKnightsAttacking +=
+                __builtin_popcount(knightsAttackingRightSquare);
+        }
+        if (kingIndex % 8 != 0)
+        {
+            auto knightsAttackingLeftSquare =
+                Masks::knight_attacks(kingIndex - 1) & knights;
+            totalKnightsAttacking +=
+                __builtin_popcount(knightsAttackingLeftSquare);
+        }
+        if (kingIndex > 7)
+        {
+            auto knightsAttackingBottomSquare =
+                Masks::knight_attacks(kingIndex - 8) & knights;
+            totalKnightsAttacking +=
+                __builtin_popcount(knightsAttackingBottomSquare);
+        }
+        if (kingIndex < 56)
+        {
+            auto knightsAttackingTopSquare =
+                Masks::knight_attacks(kingIndex + 8) & knights;
+            totalKnightsAttacking +=
+                __builtin_popcount(knightsAttackingTopSquare);
+        }
+        return totalKnightsAttacking;
     }
 } // namespace ai
