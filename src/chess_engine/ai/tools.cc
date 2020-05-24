@@ -3,6 +3,11 @@
 //
 
 #include "tools.hh"
+
+#include "../board/color.hh"
+#include "../board/magic.hh"
+#include "../board/masks.hh"
+#include "../board/piece-type.hh"
 namespace ai
 {
     int tools::nb_piece(board::PieceType pieceType, board::Color color,
@@ -44,11 +49,15 @@ namespace ai
         return -36 + (distance * distance);
     }
 
-    int tools::hpap(board::Color color, board::Chessboard_rpr &rpr, board::BitBoard fileToCheck)
+    int tools::hpap(board::Color color, board::Chessboard_rpr& rpr,
+                    board::BitBoard fileToCheck)
     {
         auto eval = 0;
-        auto opponent_color = color == board::Color::WHITE ? board::Color::BLACK : board::Color::WHITE;
-        auto opponentPawnsBoard = rpr.get(board::PieceType::PAWN, opponent_color);
+        auto opponent_color = color == board::Color::WHITE
+            ? board::Color::BLACK
+            : board::Color::WHITE;
+        auto opponentPawnsBoard =
+            rpr.get(board::PieceType::PAWN, opponent_color);
         auto opponentPawnsFile = opponentPawnsBoard & fileToCheck;
         auto rank4OpPawn = board::BitboardOperations::rank4 & opponentPawnsFile;
         auto rank5OpPawn = board::BitboardOperations::rank5 & opponentPawnsFile;
@@ -61,4 +70,4 @@ namespace ai
             eval += -60;
         return eval;
     }
-}
+} // namespace ai
