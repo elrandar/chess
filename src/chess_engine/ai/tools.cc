@@ -9,7 +9,7 @@ namespace ai
                         board::Chessboard_rpr& rpr)
     {
         int isBlack = color == board::Color::BLACK ? 6 : 0;
-        return __builtin_popcount(
+        return __builtin_popcountll(
             rpr.boards[static_cast<int>(pieceType) + isBlack]);
     }
 
