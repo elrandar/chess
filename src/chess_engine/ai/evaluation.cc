@@ -8,7 +8,6 @@ namespace ai
     Evaluation::Evaluation(Chessboard& chessboard)
         : chessboard_(chessboard)
     {
-
         WisolatedPawns = 0;
         WblockedPawns = 0;
         WdoubledPawns = 0;
@@ -46,9 +45,15 @@ namespace ai
 
             remainingPieces &= ~(1ul << bitToUnset);
 
-            auto opening = color == board::Color::WHITE ? openWhiteTables[static_cast<int>(pieceType)][rank][file] : openBlackTables[static_cast<int>(pieceType)][rank][file];
-            auto endgame = color == board::Color::WHITE ?  endWhiteTables[static_cast<int>(pieceType)][rank][file] : endBlackTables[static_cast<int>(pieceType)][rank][file];
-            auto factor =  pieceType == board::PieceType::KING ? 0 :  factorArray[static_cast<int>(pieceType)];
+            auto opening = color == board::Color::WHITE
+                ? openWhiteTables[static_cast<int>(pieceType)][rank][file]
+                : openBlackTables[static_cast<int>(pieceType)][rank][file];
+            auto endgame = color == board::Color::WHITE
+                ? endWhiteTables[static_cast<int>(pieceType)][rank][file]
+                : endBlackTables[static_cast<int>(pieceType)][rank][file];
+            auto factor = pieceType == board::PieceType::KING
+                ? 0
+                : factorArray[static_cast<int>(pieceType)];
 
             auto openvalue = ((float)(24 - gamePhase) / (float)24) * opening;
             auto endvalue = (gamePhase / (float)24) * endgame;
@@ -103,7 +108,6 @@ namespace ai
             int file = pawnSquare % 8;
             int rank = 7 - rawRank;
 
-
             auto opening = color == board::Color::WHITE
                 ? openWhiteTables[static_cast<int>(PieceType::PAWN)][rank][file]
                 : openBlackTables[static_cast<int>(PieceType::PAWN)][rank]
@@ -135,9 +139,12 @@ namespace ai
         double eval = 0;
         eval = count_pawns(color);
 
-        auto isolated = color == board::Color::WHITE ? WisolatedPawns : BisolatedPawns;
-        auto blocked = color == board::Color::WHITE ? WblockedPawns : BblockedPawns;
-        auto doubled = color == board::Color::WHITE ? WdoubledPawns : BdoubledPawns;
+        auto isolated =
+            color == board::Color::WHITE ? WisolatedPawns : BisolatedPawns;
+        auto blocked =
+            color == board::Color::WHITE ? WblockedPawns : BblockedPawns;
+        auto doubled =
+            color == board::Color::WHITE ? WdoubledPawns : BdoubledPawns;
         auto openPhase = (24 - gamePhase) / 24;
         auto endPhase = gamePhase / 24;
 
@@ -205,42 +212,53 @@ namespace ai
 
     double Evaluation::pawn_king_defense(Color color)
     {
-        auto &rpr = chessboard_.getBoardRpr();
-        auto opponent_color = color == board::Color::WHITE ? board::Color::BLACK : board::Color::WHITE;
+        auto& rpr = chessboard_.getBoardRpr();
+        auto opponent_color = color == board::Color::WHITE
+            ? board::Color::BLACK
+            : board::Color::WHITE;
         if (rpr.get(board::PieceType::QUEEN, opponent_color)
-        && (rpr.get(board::PieceType::ROOK, opponent_color) | rpr.get(board::PieceType::BISHOP, opponent_color) | rpr.get(board::PieceType::KNIGHT, opponent_color)))
+            && (rpr.get(board::PieceType::ROOK, opponent_color)
+                | rpr.get(board::PieceType::BISHOP, opponent_color)
+                | rpr.get(board::PieceType::KNIGHT, opponent_color)))
         {
             auto eval = 0;
             eval += pawn_shelter(color);
-            return eval * (static_cast<float >(24 - gamePhase)) / (static_cast<float >(24));
-        }
-        else
+            return eval * (static_cast<float>(24 - gamePhase))
+                / (static_cast<float>(24));
+        } else
             return 0;
     }
 
     double Evaluation::pawn_shelter(Color color)
     {
-
         auto eval = 0;
-        auto &rpr = chessboard_.getBoardRpr();
+        auto& rpr = chessboard_.getBoardRpr();
         auto kingBoard = rpr.get(board::PieceType::KING, color);
         auto kingFile = BitboardOperations::bitScanForward(kingBoard) % 8;
 
         if (kingFile != 0)
         {
-            eval += tools::fpap(color, rpr, BitboardOperations::arrFileMask[static_cast<int>(kingFile) + 1]);
+            eval += tools::fpap(
+                color, rpr,
+                BitboardOperations::arrFileMask[static_cast<int>(kingFile)
+                                                + 1]);
         }
         if (kingFile != 7)
         {
-            eval += tools::fpap(color, rpr, BitboardOperations::arrFileMask[static_cast<int>(kingFile) - 1]);
+            eval += tools::fpap(
+                color, rpr,
+                BitboardOperations::arrFileMask[static_cast<int>(kingFile)
+                                                - 1]);
         }
 
-        eval += 2 * (tools::fpap(color, rpr, BitboardOperations::arrFileMask[static_cast<int>(kingFile)]));
+        eval += 2
+            * (tools::fpap(
+                color, rpr,
+                BitboardOperations::arrFileMask[static_cast<int>(kingFile)]));
 
         if (eval == 0)
             return -11;
         else
             return eval;
-
     }
-}
+} // namespace ai

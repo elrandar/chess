@@ -29,11 +29,13 @@ namespace ai
             + nb_piece(board::PieceType::KNIGHT, board::Color::BLACK, rpr);
         return 24 - (4 * nb_queens) - (2 * nb_rooks) - nb_bishops - nb_knights;
     }
-    int tools::fpap(board::Color color, board::Chessboard_rpr &rpr, board::BitBoard fileToCheck)
+    int tools::fpap(board::Color color, board::Chessboard_rpr& rpr,
+                    board::BitBoard fileToCheck)
     {
         auto pawnBoard = rpr.get(board::PieceType::PAWN, color);
         auto pawnOnFileToCheck = fileToCheck & pawnBoard;
-        auto indexPawnOnFileToCheck = board::BitboardOperations::bitScanForward(pawnOnFileToCheck);
+        auto indexPawnOnFileToCheck =
+            board::BitboardOperations::bitScanForward(pawnOnFileToCheck);
         if (indexPawnOnFileToCheck == -1)
             return -36;
         auto pawnRank = indexPawnOnFileToCheck / 8;
@@ -41,4 +43,4 @@ namespace ai
         auto distance = std::abs(distanceTo - pawnRank);
         return -36 + (distance * distance);
     }
-}
+} // namespace ai
