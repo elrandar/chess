@@ -2,7 +2,6 @@
 
 #include <utility>
 
-
 namespace board
 {
     /* The file enum represent the colomns
@@ -32,7 +31,6 @@ namespace board
         SEVEN,
         EIGHT,
     };
-
 
     /* Position represent a coordinate on the board */
     class Position final

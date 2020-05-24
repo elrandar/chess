@@ -6,7 +6,8 @@
 
 namespace perft_parser
 {
-    class FenObject {
+    class FenObject
+    {
     private:
         std::vector<FenRank> ranks_;
         board::Color side_to_move_;
@@ -15,7 +16,8 @@ namespace perft_parser
 
     public:
         explicit FenObject(std::string fenString);
-        std::optional<std::pair<board::PieceType, board::Color>> operator[](board::Position position);
+        std::optional<std::pair<board::PieceType, board::Color>>
+        operator[](board::Position position);
 
         board::Color side_to_move_get();
         std::vector<char> castling_get();
@@ -23,7 +25,4 @@ namespace perft_parser
 
         void print();
     };
-}
-
-
-
+} // namespace perft_parser

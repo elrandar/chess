@@ -2,9 +2,9 @@
 
 #include <optional>
 
+#include "../../chess_engine/board/color.hh"
 #include "../../chess_engine/board/piece-type.hh"
 #include "../../chess_engine/board/position.hh"
-#include "../../chess_engine/board/color.hh"
 #include "report-type.hh"
 
 namespace board
@@ -48,9 +48,9 @@ namespace board
             return capture_;
         }
 
-        bool operator==(const PgnMove &rhs) const;
+        bool operator==(const PgnMove& rhs) const;
 
-        bool operator!=(const PgnMove &rhs) const;
+        bool operator!=(const PgnMove& rhs) const;
 
     private:
         // The original position of the piece

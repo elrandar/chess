@@ -1,11 +1,11 @@
 #include "evaluation.hh"
+
 #include "../board/bitboard-operations.hh"
 #include "tools.hh"
 
 namespace ai
 {
-
-    Evaluation::Evaluation(Chessboard &chessboard)
+    Evaluation::Evaluation(Chessboard& chessboard)
         : chessboard_(chessboard)
     {
         WisolatedPawns = 0;
@@ -34,7 +34,8 @@ namespace ai
         double count = 0;
         while (remainingPieces != 0)
         {
-            uint8_t bitToUnset = BitboardOperations::bitScanForward(remainingPieces);
+            uint8_t bitToUnset =
+                BitboardOperations::bitScanForward(remainingPieces);
             int rawRank = bitToUnset / 8;
             int file = bitToUnset % 8;
             int rank = 7 - rawRank;
@@ -57,38 +58,44 @@ namespace ai
 
     double Evaluation::count_pawns(Color color)
     {
-        auto remainingPieces = chessboard_.getBoardRpr().get(board::PieceType::PAWN, color);
-        auto alliedPawns = chessboard_.getBoardRpr().get(board::PieceType::PAWN, color);
+        auto remainingPieces =
+            chessboard_.getBoardRpr().get(board::PieceType::PAWN, color);
+        auto alliedPawns =
+            chessboard_.getBoardRpr().get(board::PieceType::PAWN, color);
         double count = 0;
 
         std::array<bool, 8> pawnOnFile = {false};
 
         while (remainingPieces != 0)
         {
-            uint8_t pawnSquare = BitboardOperations::bitScanForward(remainingPieces);
+            uint8_t pawnSquare =
+                BitboardOperations::bitScanForward(remainingPieces);
             remainingPieces &= ~(1ul << pawnSquare);
 
             // bloked pawns
             if (is_pawn_blocked(pawnSquare, color))
-                color == board::Color::WHITE ? WblockedPawns++ : BblockedPawns++;
+                color == board::Color::WHITE ? WblockedPawns++
+                                             : BblockedPawns++;
             auto fileNumber = pawnSquare % 8;
 
             // doubled Pawns
             if (pawnOnFile.at(fileNumber))
-                color == board::Color::WHITE ? WdoubledPawns++ : BdoubledPawns++;
+                color == board::Color::WHITE ? WdoubledPawns++
+                                             : BdoubledPawns++;
             else
                 pawnOnFile.at(fileNumber) = true;
 
             // isolated Pawns
-            BitBoard adjFileMask =
-                    fileNumber == 0 ?
-                        BitboardOperations::arrFileMask[fileNumber + 1]
-                    : fileNumber == 7 ?
-                        BitboardOperations::arrFileMask[fileNumber - 1]
-                    : BitboardOperations::arrFileMask[fileNumber - 1] | BitboardOperations::arrFileMask[fileNumber + 1];
+            BitBoard adjFileMask = fileNumber == 0
+                ? BitboardOperations::arrFileMask[fileNumber + 1]
+                : fileNumber == 7
+                    ? BitboardOperations::arrFileMask[fileNumber - 1]
+                    : BitboardOperations::arrFileMask[fileNumber - 1]
+                        | BitboardOperations::arrFileMask[fileNumber + 1];
 
             if (!(alliedPawns & adjFileMask))
-                color == board::Color::WHITE ? WisolatedPawns++ : BisolatedPawns++;
+                color == board::Color::WHITE ? WisolatedPawns++
+                                             : BisolatedPawns++;
 
             int rawRank = pawnSquare / 8;
             int file = pawnSquare % 8;
@@ -112,7 +119,8 @@ namespace ai
 
     bool Evaluation::is_pawn_blocked(uint8_t pawnSquare, Color color)
     {
-        auto pos = color == board::Color::WHITE ? pawnSquare + 8 : pawnSquare - 8;
+        auto pos =
+            color == board::Color::WHITE ? pawnSquare + 8 : pawnSquare - 8;
         return chessboard_.getBoardRpr().at(Position(pos)).has_value();
     }
 

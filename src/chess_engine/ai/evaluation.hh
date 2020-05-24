@@ -4,7 +4,8 @@
 namespace ai
 {
     using namespace board;
-    class Evaluation {
+    class Evaluation
+    {
     public:
         static constexpr double factorArray[6] = {900, 500, 330, 320, 100, 20000};
 
@@ -285,7 +286,7 @@ namespace ai
         bool whiteIsCheckmated;
         bool blackIsCheckmated;
 
-        explicit Evaluation(Chessboard &chessboard);
+        explicit Evaluation(Chessboard& chessboard);
         double rate_chessboard(board::Color side);
         double count_pieces_and_pos(PieceType pieceType, Color color);
         double count_pawns(Color color);
@@ -297,7 +298,4 @@ namespace ai
 
         double pawns_evaluation(Color color);
     };
-}
-
-
-
+} // namespace ai

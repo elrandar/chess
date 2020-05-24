@@ -1,7 +1,7 @@
 
-#include <strings.h>
 #include "bitboard-operations.hh"
 
+#include <strings.h>
 
 namespace board
 {
@@ -44,46 +44,49 @@ namespace board
         return (b >> 7) & notAFile;
     }
 
-
-    void BitboardOperations::init_ms1bTable() {
+    void BitboardOperations::init_ms1bTable()
+    {
         int i;
-        for (i=0; i<256; i++) {
-            BitboardOperations::ms1bTable[i] = (
-                    (i>127) ? 7 :
-                    (i> 63) ? 6 :
-                    (i> 31) ? 5 :
-                    (i> 15) ? 4 :
-                    (i>  7) ? 3 :
-                    (i>  3) ? 2 :
-                    (i>  1) ? 1 :
-                    0
-            );
+        for (i = 0; i < 256; i++)
+        {
+            BitboardOperations::ms1bTable[i] =
+                ((i > 127) ? 7
+                           : (i > 63) ? 6
+                                      : (i > 31) ? 5
+                                                 : (i > 15)
+                                 ? 4
+                                 : (i > 7) ? 3 : (i > 3) ? 2 : (i > 1) ? 1 : 0);
         }
     }
 
     int BitboardOperations::bitScanReverse(BitBoard bb)
     {
         int result = 0;
-        if (bb > 0xFFFFFFFF) {
+        if (bb > 0xFFFFFFFF)
+        {
             bb >>= 32;
             result = 32;
         }
-        if (bb > 0xFFFF) {
+        if (bb > 0xFFFF)
+        {
             bb >>= 16;
             result += 16;
         }
-        if (bb > 0xFF) {
+        if (bb > 0xFF)
+        {
             bb >>= 8;
             result += 8;
         }
         return result + BitboardOperations::ms1bTable[bb];
     }
 
-    int BitboardOperations::bitScanForward(BitBoard bb) {
+    int BitboardOperations::bitScanForward(BitBoard bb)
+    {
         return ffsll(bb) - 1;
     }
 
-    BitBoard BitboardOperations::trim_edges(int i, BitBoard bb) {
+    BitBoard BitboardOperations::trim_edges(int i, BitBoard bb)
+    {
         if (!(i <= 7))
             bb &= ~FirstRank;
         if (!(i >= 56))
@@ -94,5 +97,4 @@ namespace board
             bb &= notHFile;
         return bb;
     }
-}
-
+} // namespace board

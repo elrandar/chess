@@ -1,19 +1,22 @@
 
-#include <utility>
 #include "perft-object.hh"
 
-namespace perft_parser {
+#include <utility>
 
+namespace perft_parser
+{
     PerftObject::PerftObject(FenObject fenObject, int depth)
-    : fen_(std::move(fenObject))
-    , depth_(depth)
+        : fen_(std::move(fenObject))
+        , depth_(depth)
     {}
 
-    FenObject PerftObject::fen_get() {
+    FenObject PerftObject::fen_get()
+    {
         return FenObject(fen_);
     }
 
-    int PerftObject::depth_get() const {
+    int PerftObject::depth_get() const
+    {
         return depth_;
     }
 
@@ -33,4 +36,4 @@ namespace perft_parser {
     {
         return FenObject(std::move(fenString));
     }
-}
+} // namespace perft_parser

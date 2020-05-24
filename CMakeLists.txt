@@ -40,6 +40,7 @@ set(SRC_ENGINE
         "src/chess_engine/ai/search.cc"
         "src/chess_engine/ai/gtree.cc"
         "src/chess_engine/ai/ai.cc"
+        "src/chess_engine/board/zobrist.cc"
         "src/chess_engine/ai/tools.cc"
         "src/chess_engine/ai/tools.hh"
         )
@@ -55,6 +56,7 @@ set(SRC_GTEST
         "tests/unit/move-generation-tests.cc"
         "tests/unit/search-tests.cc"
         "tests/unit/ai-tests.cc"
+        "tests/unit/hashing-tests.cc"
 )
 
 # END SOURCES

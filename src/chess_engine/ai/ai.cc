@@ -1,17 +1,20 @@
 
-#include <list>
-#include <iostream>
 #include "ai.hh"
-#include "uci.hh"
+
+#include <iostream>
+#include <list>
+
 #include "../../parsing/perft-parser/perft-object.hh"
-#include "search.hh"
 #include "../board/move.hh"
+#include "search.hh"
+#include "uci.hh"
 
 board::Color ai::Ai::ai_color;
 std::vector<std::pair<double, int>> ai::Ai::pair_list;
+std::vector<uint64_t> ai::Ai::boardPositionsHash;
 
-void ai::Ai::run() {
-
+void ai::Ai::run()
+{
     ai::init("E-won McGregor");
     while (!gameFinished)
     {
@@ -19,27 +22,37 @@ void ai::Ai::run() {
 
         update_board(board);
 
-        print_board();
+        boardPositionsHash.push_back(board::Zobrist::hash(chessboard));
+
+        for (int value : boardPositionsHash)
+        {
+            std::cout << value << '|';
+        }
+        std::cout << '\n';
 
         board::Move move = ai::search::findNextMove(chessboard);
+
+        chessboard.do_move(move);
+        boardPositionsHash.push_back(board::Zobrist::hash(chessboard));
 
         ai::play_move(move.toString());
     }
 }
 
-ai::Ai::Ai() {
+ai::Ai::Ai()
+{
     chessboard = board::Chessboard();
+    boardPositionsHash = std::vector<uint64_t>();
     gameFinished = false;
 }
 
-void ai::Ai::update_board(const std::string& boardString) {
-
+void ai::Ai::update_board(const std::string& boardString)
+{
     auto firstSpacePos = boardString.find(' ');
     auto nextSpacePos = boardString.find(' ', firstSpacePos + 1);
 
     std::string positionType =
-            boardString.substr(firstSpacePos + 1,
-                                nextSpacePos - firstSpacePos - 1);
+        boardString.substr(firstSpacePos + 1, nextSpacePos - firstSpacePos - 1);
     if (positionType == "startpos")
         chessboard = board::Chessboard();
     else if (positionType == "fen")
@@ -54,26 +67,32 @@ void ai::Ai::update_board(const std::string& boardString) {
         chessboard = board::Chessboard(fenObj);
     }
 
-
     size_t cursor = 0;
-    if ((cursor = boardString.find("moves", cursor)) != std::string::npos) {
-
+    if ((cursor = boardString.find("moves", cursor)) != std::string::npos)
+    {
         auto vec = std::vector<board::Move>();
 
-        while ((cursor = boardString.find(' ', cursor)) != std::string::npos) {
+        while ((cursor = boardString.find(' ', cursor)) != std::string::npos)
+        {
             cursor++;
-            auto srcFile = static_cast<board::File>(boardString.at(cursor) - 'a');
+            auto srcFile =
+                static_cast<board::File>(boardString.at(cursor) - 'a');
             cursor++;
-            auto srcRank = static_cast<board::Rank>(boardString.at(cursor) - '0' - 1);
+            auto srcRank =
+                static_cast<board::Rank>(boardString.at(cursor) - '0' - 1);
             cursor++;
-            auto dstFile = static_cast<board::File>(boardString.at(cursor) - 'a');
+            auto dstFile =
+                static_cast<board::File>(boardString.at(cursor) - 'a');
             cursor++;
-            auto dstRank = static_cast<board::Rank>(boardString.at(cursor) - '0' - 1);
+            auto dstRank =
+                static_cast<board::Rank>(boardString.at(cursor) - '0' - 1);
             cursor++;
             auto move = board::Move(board::Position(srcFile, srcRank),
                                     board::Position(dstFile, dstRank));
-            if (cursor != boardString.size() && boardString.at(cursor) != ' ') {
-                auto promotionPiece = board::char_to_piece(toupper(boardString.at(cursor)));
+            if (cursor != boardString.size() && boardString.at(cursor) != ' ')
+            {
+                auto promotionPiece =
+                    board::char_to_piece(toupper(boardString.at(cursor)));
                 move.setPromotion(promotionPiece);
             }
             vec.push_back(move);
@@ -81,11 +100,14 @@ void ai::Ai::update_board(const std::string& boardString) {
         for (auto move : vec)
             chessboard.getMatchingLegalMoveAndDo(move);
     }
-
 }
 
-void ai::Ai::print_board() {
+void ai::Ai::print_board()
+{
     chessboard.getBoardRpr().print();
 }
 
-
+unsigned long ai::Ai::last_hash()
+{
+    return boardPositionsHash[boardPositionsHash.size() - 1];
+}

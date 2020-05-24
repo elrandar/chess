@@ -21,8 +21,10 @@ namespace board
     public:
         Move(Position start, Position dest);
         Move(Position start, Position dest, PieceType pieceType);
-        Move(Position start, Position dest, PieceType pieceType, PieceType capture);
-        Move(Position start, Position end, PieceType pieceType, std::optional<PieceType> promotion);
+        Move(Position start, Position dest, PieceType pieceType,
+             PieceType capture);
+        Move(Position start, Position end, PieceType pieceType,
+             std::optional<PieceType> promotion);
         PieceType piece_get();
         Position start_pos_get();
         Position dest_pos_get();
@@ -33,11 +35,11 @@ namespace board
 
         void setQueenCastling(bool queenCastling);
 
-        bool operator==(const Move &rhs) const;
+        bool operator==(const Move& rhs) const;
 
-        bool operator!=(const Move &rhs) const;
+        bool operator!=(const Move& rhs) const;
 
-        void setCapture(const std::optional<PieceType> &capture);
+        void setCapture(const std::optional<PieceType>& capture);
 
         bool isEnPassant() const;
 
@@ -51,9 +53,9 @@ namespace board
 
         bool isQueenCastling() const;
 
-        const std::optional<PieceType> &getCapture() const;
+        const std::optional<PieceType>& getCapture() const;
         opt_piecetype_t get_promotion();
-        void setPromotion(const std::optional<PieceType> &promotion);
+        void setPromotion(const std::optional<PieceType>& promotion);
 
         std::string toString();
     };

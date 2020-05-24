@@ -1,13 +1,14 @@
 #include "chessboard-representation.hh"
-#include "piece-type.hh"
 
 #include <cstdlib>
-#include <vector>
-#include <utility>
-#include <optional>
 #include <iostream>
+#include <optional>
 #include <sstream>
+#include <utility>
+#include <vector>
+
 #include "color.hh"
+#include "piece-type.hh"
 
 namespace board
 {
@@ -23,8 +24,8 @@ namespace board
         boards[2] = white_bishop;
         BitBoard white_knight = 1UL << 1u | 1UL << 6u;
         boards[3] = white_knight;
-        BitBoard white_pawn = 1UL << 8u | 1UL << 9u | 1UL << 10u | 1UL << 11u |
-                     1UL << 12u | 1UL << 13u | 1UL << 14u | 1UL << 15u;
+        BitBoard white_pawn = 1UL << 8u | 1UL << 9u | 1UL << 10u | 1UL << 11u
+            | 1UL << 12u | 1UL << 13u | 1UL << 14u | 1UL << 15u;
         boards[4] = white_pawn;
         BitBoard white_king = 1UL << 4u;
         boards[5] = white_king;
@@ -37,8 +38,8 @@ namespace board
         boards[8] = black_bishop;
         BitBoard black_knight = 1UL << 57u | 1UL << 62u;
         boards[9] = black_knight;
-        BitBoard black_pawn = 1UL << 48u | 1UL << 49u | 1UL << 50u | 1UL << 51u |
-                              1UL << 52u | 1UL << 53u | 1UL << 54u | 1UL << 55u;
+        BitBoard black_pawn = 1UL << 48u | 1UL << 49u | 1UL << 50u | 1UL << 51u
+            | 1UL << 52u | 1UL << 53u | 1UL << 54u | 1UL << 55u;
         boards[10] = black_pawn;
         BitBoard black_king = 1UL << 60u;
         boards[11] = black_king;
@@ -48,25 +49,28 @@ namespace board
         WhitePieces = computeWhitePieces();
     }
 
-
     void Chessboard_rpr::print()
     {
         std::string line;
         std::vector<std::string> out;
-        std::vector<char> chars {'Q', 'R', 'B', 'C', 'P', 'K', 'q', 'r', 'b', 'c', 'p', 'k'};
+        std::vector<char> chars{'Q', 'R', 'B', 'C', 'P', 'K',
+                                'q', 'r', 'b', 'c', 'p', 'k'};
 
         for (size_t i = 0; i < 64; i++)
         {
             auto size = line.size();
-            for (int j = 0; j < 12; ++j) {
-                if ((boards.at(j) >> i) & 1U) {
+            for (int j = 0; j < 12; ++j)
+            {
+                if ((boards.at(j) >> i) & 1U)
+                {
                     line += chars.at(j);
                     line += " ";
                 }
             }
             if (size == line.size())
                 line += ". ";
-            if ((i + 1) % 8 == 0) {
+            if ((i + 1) % 8 == 0)
+            {
                 line += "\n";
                 out.insert(out.begin(), line);
                 line = "";
@@ -77,9 +81,11 @@ namespace board
         std::cout << "\n";
     }
 
-
-    std::optional<std::pair<PieceType, Color>> Chessboard_rpr::at(Position pos) const {
-        unsigned int pos_int = static_cast<int>(pos.file_get()) + static_cast<int>(pos.rank_get()) * 8;
+    std::optional<std::pair<PieceType, Color>>
+    Chessboard_rpr::at(Position pos) const
+    {
+        unsigned int pos_int = static_cast<int>(pos.file_get())
+            + static_cast<int>(pos.rank_get()) * 8;
 
         for (size_t i = 0; i < 12; i++)
         {
@@ -93,7 +99,8 @@ namespace board
         return std::nullopt;
     }
 
-    BitBoard Chessboard_rpr::computeOccupied() {
+    BitBoard Chessboard_rpr::computeOccupied()
+    {
         BitBoard res = 0UL;
         for (auto bitboard : boards)
         {
@@ -133,7 +140,8 @@ namespace board
             else
                 line += ". ";
 
-            if ((i + 1) % 8 == 0) {
+            if ((i + 1) % 8 == 0)
+            {
                 line += "\n";
                 out.insert(out.begin(), line);
                 line = "";
@@ -151,8 +159,10 @@ namespace board
         return stream.str();
     }
 
-    BitBoard Chessboard_rpr::get(PieceType pieceType, Color color) {
-        return boards[static_cast<int>(pieceType) + static_cast<int>(color) * 6];
+    BitBoard Chessboard_rpr::get(PieceType pieceType, Color color)
+    {
+        return boards[static_cast<int>(pieceType)
+                      + static_cast<int>(color) * 6];
     }
 
     Chessboard_rpr::Chessboard_rpr(perft_parser::FenObject fenObject)
@@ -167,7 +177,7 @@ namespace board
             if (pieceSquare.has_value())
             {
                 int boardNumber = static_cast<int>(pieceSquare.value().first)
-                        + (pieceSquare.value().second == Color::WHITE ? 0 : 6);
+                    + (pieceSquare.value().second == Color::WHITE ? 0 : 6);
                 boards.at(boardNumber) |= 1ul << i;
             }
         }
@@ -176,9 +186,10 @@ namespace board
         WhitePieces = computeWhitePieces();
     }
 
-    void Chessboard_rpr::update() {
+    void Chessboard_rpr::update()
+    {
         occupied = computeOccupied();
         WhitePieces = computeWhitePieces();
         BlackPieces = computeBlackPieces();
     }
-}
+} // namespace board

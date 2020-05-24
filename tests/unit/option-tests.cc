@@ -1,7 +1,7 @@
 
 #include <gtest/gtest.h>
-#include "../../src/parsing/option.hh"
 
+#include "../../src/parsing/option.hh"
 
 TEST(options, empty)
 {
