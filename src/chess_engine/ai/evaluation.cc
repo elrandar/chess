@@ -180,7 +180,6 @@ namespace ai
                 eval += white_opponent_checkmated();
             }
         }
-        eval += piece_attack(Color::WHITE);
         return eval;
     }
     double Evaluation::eval_black()
@@ -198,7 +197,6 @@ namespace ai
                 eval += black_opponent_checkmated();
             }
         }
-        eval += piece_attack(Color::BLACK);
         return eval;
     }
 
@@ -227,7 +225,8 @@ namespace ai
         {
             auto eval = 0;
             eval += pawn_shelter(color);
-            eval += pawn_storm_castling(color);
+//            eval += pawn_storm_castling(color);
+            eval += piece_attack(color);
             return eval * (static_cast<float>(24 - gamePhase))
                 / (static_cast<float>(24));
             ;
@@ -426,9 +425,9 @@ namespace ai
         attackingQueens &= attackingTwoQueens;
         attackingRooks &= attackingTwoRooks;
 
-        int nbAttackBishop = __builtin_popcount(attackingBishops);
-        int nbAttackRook = __builtin_popcount(attackingRooks);
-        int nbAttackQueen = __builtin_popcount(attackingQueens);
+        int nbAttackBishop = __builtin_popcountll(attackingBishops);
+        int nbAttackRook = __builtin_popcountll(attackingRooks);
+        int nbAttackQueen = __builtin_popcountll(attackingQueens);
 
         int valuedSum = nbAttackBishop + nbAttackQueen * 4 + nbAttackRook * 2
             + numberOfKnights;
@@ -437,42 +436,40 @@ namespace ai
             nbAttackQueen + nbAttackRook + nbAttackBishop + numberOfKnights;
         if (numberOfAttackers > 7)
             numberOfAttackers = 7;
+        if (numberOfAttackers == 0)
+            numberOfAttackers = 1;
         return 20 * valuedSum * pieceAttackWeights[numberOfAttackers - 1];
     }
 
     int Evaluation::numberOfKnightsAttackingAdjacentSquares(int kingIndex,
                                                             BitBoard knights)
     {
-        int totalKnightsAttacking = 0;
+        BitBoard knightsAttacking = 0;
 
         if (kingIndex % 8 != 7)
         {
             auto knightsAttackingRightSquare =
                 Masks::knight_attacks(kingIndex + 1) & knights;
-            totalKnightsAttacking +=
-                __builtin_popcount(knightsAttackingRightSquare);
+            knightsAttacking |= knightsAttackingRightSquare;
         }
         if (kingIndex % 8 != 0)
         {
             auto knightsAttackingLeftSquare =
                 Masks::knight_attacks(kingIndex - 1) & knights;
-            totalKnightsAttacking +=
-                __builtin_popcount(knightsAttackingLeftSquare);
+            knightsAttacking |= knightsAttackingLeftSquare;
         }
         if (kingIndex > 7)
         {
             auto knightsAttackingBottomSquare =
                 Masks::knight_attacks(kingIndex - 8) & knights;
-            totalKnightsAttacking +=
-                __builtin_popcount(knightsAttackingBottomSquare);
+            knightsAttacking |= knightsAttackingBottomSquare;
         }
         if (kingIndex < 56)
         {
             auto knightsAttackingTopSquare =
                 Masks::knight_attacks(kingIndex + 8) & knights;
-            totalKnightsAttacking +=
-                __builtin_popcount(knightsAttackingTopSquare);
+            knightsAttacking |= knightsAttackingTopSquare;
         }
-        return totalKnightsAttacking;
+        return __builtin_popcountll(knightsAttacking);
     }
 } // namespace ai

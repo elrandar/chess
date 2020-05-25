@@ -88,3 +88,18 @@ TEST_F(evaluation, pawn_shelter_basic_black)
     auto ps_val = evaluation.pawn_shelter(board::Color::WHITE);
     EXPECT_EQ(ps_val, -11);
 }
+
+TEST_F(evaluation, piece_attack)
+{
+    board::Masks::init();
+    board::BitboardOperations::init_ms1bTable();
+    board::magic::build_table();
+    using namespace board;
+    using namespace ai;
+    auto fen = perft_parser::parse_fen("8/3k4/3p4/1N3N2/8/8/3R4/8 w - - 0 1");
+    auto board = Chessboard(fen);
+
+    auto evaluation = Evaluation(board);
+    auto pa_val = evaluation.piece_attack(board::Color::WHITE);
+    EXPECT_EQ(pa_val, 60);
+}

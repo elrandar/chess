@@ -308,6 +308,6 @@ namespace ai
         double pawn_storm_castling(Color color);
         double piece_attack(Color color);
         static int numberOfKnightsAttackingAdjacentSquares(int kingIndex,
-                                                    BitBoard knights) ;
+                                                           BitBoard knights);
     };
 } // namespace ai
